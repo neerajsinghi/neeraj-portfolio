@@ -1,0 +1,22 @@
+# deps & build
+node_modules/
+.next/
+out/
+backend/server
+# env
+.env
+.env.local
+# os
+.DS_Store
+# editor
+.history/
+*.tsbuildinfo
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+terraform.tfvars
+
+# K8s secrets (never commit)
+backend/k8s/secret.yaml
