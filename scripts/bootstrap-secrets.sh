@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 # bootstrap-secrets.sh
 #
-# Push API keys into AWS SSM Parameter Store as SecureStrings.
+# Push backend environment variables into AWS SSM Parameter Store as SecureStrings.
 # Run once after provisioning the AWS infrastructure, then again on key rotation.
 #
 # Usage:
 #   export ANTHROPIC_API_KEY=sk-ant-...
-#   export OPENAI_API_KEY=sk-...
-#   export XAI_API_KEY=xai-...
-#   export GEMINI_API_KEY=AI...
+#   export ANTHROPIC_MODEL=claude-sonnet-4-6
+#   export OPENAI_MODEL=gpt-4o
+#   export GROK_MODEL=grok-3
+#   export GEMINI_MODEL=gemini-2.0-flash
+#   export GITHUB_USER=neerajsinghi
+#   export GITHUB_TOKEN=ghp_xxx   # optional
+#   export PORT=8080
 #   export ALLOWED_ORIGIN=https://your-frontend.amplifyapp.com
 #
 #   ./scripts/bootstrap-secrets.sh [--region ap-south-1] [--no-overwrite]
@@ -35,7 +39,7 @@ done
 command -v aws &>/dev/null || { echo "ERROR: aws CLI not found"; exit 1; }
 
 missing=()
-for var in ANTHROPIC_API_KEY OPENAI_API_KEY XAI_API_KEY GEMINI_API_KEY ALLOWED_ORIGIN; do
+for var in ANTHROPIC_API_KEY ALLOWED_ORIGIN; do
   [[ -z "${!var:-}" ]] && missing+=("$var")
 done
 
@@ -44,6 +48,11 @@ if [[ ${#missing[@]} -gt 0 ]]; then
   printf '  %s\n' "${missing[@]}"
   exit 1
 fi
+
+# Defaults for non-secret runtime variables.
+ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-claude-sonnet-4-6}"
+GITHUB_USER="${GITHUB_USER:-neerajsinghi}"
+PORT="${PORT:-8080}"
 
 # ── Helper ────────────────────────────────────────────────────────────────────
 put_param() {
@@ -70,10 +79,17 @@ echo "Prefix: $SSM_PREFIX"
 echo "---"
 
 put_param "anthropic-api-key" "$ANTHROPIC_API_KEY"
-put_param "openai-api-key"    "$OPENAI_API_KEY"
-put_param "xai-api-key"       "$XAI_API_KEY"
-put_param "gemini-api-key"    "$GEMINI_API_KEY"
+
+put_param "anthropic-model"   "$ANTHROPIC_MODEL"
+put_param "github-user"       "$GITHUB_USER"
+put_param "port"              "$PORT"
 put_param "allowed-origin"    "$ALLOWED_ORIGIN"
+
+if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+  put_param "github-token" "$GITHUB_TOKEN"
+else
+  echo "  • Skipping /github-token (not set)"
+fi
 
 echo "---"
 echo "All parameters stored. Verifying (names only):"
