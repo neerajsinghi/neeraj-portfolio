@@ -10,12 +10,13 @@ output "branch_name" {
 	value = aws_amplify_branch.main.branch_name
 }
 
+# aws_amplify_branch has no "web_url" attribute; Amplify branch URLs follow this fixed pattern.
 output "branch_web_url" {
-	value = aws_amplify_branch.main.web_url
+	value = "https://${aws_amplify_branch.main.branch_name}.${aws_amplify_app.frontend.default_domain}"
 }
 
 output "app_url" {
-	value = aws_amplify_branch.main.web_url
+	value = "https://${aws_amplify_branch.main.branch_name}.${aws_amplify_app.frontend.default_domain}"
 }
 
 output "custom_domain" {

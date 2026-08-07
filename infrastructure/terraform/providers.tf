@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.6.0"
+  required_version = ">= 1.10.0"
 
   required_providers {
     aws = {
@@ -12,18 +12,15 @@ terraform {
     }
   }
 
-  # Bootstrap: create the S3 bucket and DynamoDB table before running init.
+  # Bootstrap: create the S3 bucket before running init.
   #   aws s3api create-bucket --bucket neeraj-portfolio-tf-state --region ap-south-1
-  #   aws dynamodb create-table --table-name neeraj-portfolio-tf-lock \
-  #     --attribute-definitions AttributeName=LockID,AttributeType=S \
-  #     --key-schema AttributeName=LockID,KeyType=HASH \
-  #     --billing-mode PAY_PER_REQUEST
+  # Locking uses native S3 conditional writes (use_lockfile) — no DynamoDB table needed.
   backend "s3" {
-    bucket         = "neeraj-portfolio-tf-state"
-    key            = "portfolio/terraform.tfstate"
-    region         = "ap-south-1"
-    dynamodb_table = "neeraj-portfolio-tf-lock"
-    encrypt        = true
+    bucket       = "neeraj-portfolio-tf-state"
+    key          = "portfolio/terraform.tfstate"
+    region       = "ap-south-1"
+    use_lockfile = true
+    encrypt      = true
   }
 }
 

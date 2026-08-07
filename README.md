@@ -204,6 +204,13 @@ SSM Parameter Store (path prefix: `/neeraj-portfolio`):
 - `openai-api-key`
 - `xai-api-key`
 - `gemini-api-key`
+- `anthropic-model`
+- `openai-model`
+- `grok-model`
+- `gemini-model`
+- `github-user`
+- `github-token` (optional)
+- `port`
 - `allowed-origin` (used when `enable_custom_domains=false`; auto-derived in terraform otherwise)
 
 Terraform variables (`terraform.tfvars`):

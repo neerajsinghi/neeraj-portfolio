@@ -1,5 +1,11 @@
 data "aws_caller_identity" "current" {}
 
+data "aws_ssm_parameters_by_path" "backend_env" {
+  path            = "/${var.project}"
+  recursive       = false
+  with_decryption = true
+}
+
 data "aws_route53_zone" "root" {
   count        = var.enable_custom_domain ? 1 : 0
   name         = "${var.root_domain}."
@@ -8,6 +14,10 @@ data "aws_route53_zone" "root" {
 
 locals {
   api_custom_fqdn = "${var.api_subdomain}.${var.root_domain}"
+  ssm_values_by_key = {
+    for idx, name in data.aws_ssm_parameters_by_path.backend_env.names :
+    trimprefix(name, "/${var.project}/") => data.aws_ssm_parameters_by_path.backend_env.values[idx]
+  }
   cert_validation_options = var.enable_custom_domain ? {
     for dvo in aws_acm_certificate.api[0].domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
@@ -15,26 +25,6 @@ locals {
       type   = dvo.resource_record_type
     }
   } : {}
-}
-
-data "aws_ssm_parameter" "anthropic_api_key" {
-  name            = "/${var.project}/anthropic-api-key"
-  with_decryption = true
-}
-
-data "aws_ssm_parameter" "openai_api_key" {
-  name            = "/${var.project}/openai-api-key"
-  with_decryption = true
-}
-
-data "aws_ssm_parameter" "xai_api_key" {
-  name            = "/${var.project}/xai-api-key"
-  with_decryption = true
-}
-
-data "aws_ssm_parameter" "gemini_api_key" {
-  name            = "/${var.project}/gemini-api-key"
-  with_decryption = true
 }
 
 resource "aws_iam_role" "lambda_exec" {
@@ -109,11 +99,18 @@ resource "aws_lambda_function" "backend" {
 
   environment {
     variables = {
-      ALLOWED_ORIGIN    = var.allowed_origin
-      ANTHROPIC_API_KEY = data.aws_ssm_parameter.anthropic_api_key.value
-      OPENAI_API_KEY    = data.aws_ssm_parameter.openai_api_key.value
-      XAI_API_KEY       = data.aws_ssm_parameter.xai_api_key.value
-      GEMINI_API_KEY    = data.aws_ssm_parameter.gemini_api_key.value
+      ANTHROPIC_API_KEY = lookup(local.ssm_values_by_key, "anthropic-api-key", "")
+      OPENAI_API_KEY    = lookup(local.ssm_values_by_key, "openai-api-key", "")
+      XAI_API_KEY       = lookup(local.ssm_values_by_key, "xai-api-key", "")
+      GEMINI_API_KEY    = lookup(local.ssm_values_by_key, "gemini-api-key", "")
+      ANTHROPIC_MODEL   = lookup(local.ssm_values_by_key, "anthropic-model", "claude-sonnet-4-6")
+      OPENAI_MODEL      = lookup(local.ssm_values_by_key, "openai-model", "gpt-4o")
+      GROK_MODEL        = lookup(local.ssm_values_by_key, "grok-model", "grok-3")
+      GEMINI_MODEL      = lookup(local.ssm_values_by_key, "gemini-model", "gemini-2.0-flash")
+      GITHUB_USER       = lookup(local.ssm_values_by_key, "github-user", "neerajsinghi")
+      GITHUB_TOKEN      = lookup(local.ssm_values_by_key, "github-token", "")
+      PORT              = lookup(local.ssm_values_by_key, "port", "8080")
+      ALLOWED_ORIGIN    = lookup(local.ssm_values_by_key, "allowed-origin", var.allowed_origin)
     }
   }
 }
