@@ -5,12 +5,11 @@ resource "aws_amplify_app" "frontend" {
   platform     = "WEB_COMPUTE"
 
   # Amplify build spec for a monorepo Next.js app.
-  # appRoot scopes build commands, artifact paths, and cache paths.
+  # appRoot must be a sibling of "frontend:" (same indent level), not nested inside it.
   build_spec = <<-EOT
     version: 1
     applications:
       - frontend:
-          appRoot: ${var.frontend_app_root}
           phases:
             preBuild:
               commands:
@@ -25,11 +24,13 @@ resource "aws_amplify_app" "frontend" {
           cache:
             paths:
               - node_modules/**/*
+        appRoot: ${var.frontend_app_root}
   EOT
 
   environment_variables = {
-    NEXT_PUBLIC_API_BASE    = var.api_base_url
-    NEXT_TELEMETRY_DISABLED = "1"
+    NEXT_PUBLIC_API_BASE       = var.api_base_url
+    NEXT_TELEMETRY_DISABLED    = "1"
+    AMPLIFY_MONOREPO_APP_ROOT  = var.frontend_app_root
   }
 
   # Ignore changes to access_token after initial creation
@@ -47,8 +48,9 @@ resource "aws_amplify_branch" "main" {
   enable_auto_build = var.enable_auto_build
 
   environment_variables = {
-    NEXT_PUBLIC_API_BASE    = var.api_base_url
-    NEXT_TELEMETRY_DISABLED = "1"
+    NEXT_PUBLIC_API_BASE       = var.api_base_url
+    NEXT_TELEMETRY_DISABLED    = "1"
+    AMPLIFY_MONOREPO_APP_ROOT  = var.frontend_app_root
   }
 }
 
