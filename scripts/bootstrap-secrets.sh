@@ -11,14 +11,14 @@
 #   export GEMINI_API_KEY=AI...
 #   export ALLOWED_ORIGIN=https://your-frontend.amplifyapp.com
 #
-#   ./scripts/bootstrap-secrets.sh [--region us-east-1] [--no-overwrite]
+#   ./scripts/bootstrap-secrets.sh [--region ap-south-1] [--no-overwrite]
 #
 # Prerequisites: aws CLI configured with a profile that has ssm:PutParameter
 
 set -euo pipefail
 
 # ── Defaults ─────────────────────────────────────────────────────────────────
-REGION="${AWS_REGION:-us-east-1}"
+REGION="${AWS_REGION:-ap-south-1}"
 OVERWRITE="--overwrite"
 SSM_PREFIX="/neeraj-portfolio"
 

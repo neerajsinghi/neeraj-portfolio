@@ -3,6 +3,8 @@ node_modules/
 .next/
 out/
 backend/server
+backend/dist/
+backend/bootstrap
 # env
 .env
 .env.local

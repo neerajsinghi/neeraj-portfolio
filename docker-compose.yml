@@ -11,7 +11,11 @@ services:
       - PORT=8080
       - ALLOWED_ORIGIN=http://localhost:3000
 
-  frontend:
+  # Frontend is hosted on AWS Amplify in production.
+  # This service is optional and only for local development.
+  frontend-local:
+    profiles:
+      - local-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile

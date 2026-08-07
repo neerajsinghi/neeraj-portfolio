@@ -13,7 +13,7 @@ terraform {
   }
 
   # Bootstrap: create the S3 bucket and DynamoDB table before running init.
-  #   aws s3api create-bucket --bucket neeraj-portfolio-tf-state --region us-east-1
+  #   aws s3api create-bucket --bucket neeraj-portfolio-tf-state --region ap-south-1
   #   aws dynamodb create-table --table-name neeraj-portfolio-tf-lock \
   #     --attribute-definitions AttributeName=LockID,AttributeType=S \
   #     --key-schema AttributeName=LockID,KeyType=HASH \
@@ -21,7 +21,7 @@ terraform {
   backend "s3" {
     bucket         = "neeraj-portfolio-tf-state"
     key            = "portfolio/terraform.tfstate"
-    region         = "us-east-1"
+    region         = "ap-south-1"
     dynamodb_table = "neeraj-portfolio-tf-lock"
     encrypt        = true
   }

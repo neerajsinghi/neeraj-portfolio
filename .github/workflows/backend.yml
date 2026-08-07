@@ -12,11 +12,7 @@ on:
       - "backend/**"
 
 env:
-  ECR_REPOSITORY:  neeraj-portfolio-backend
-  K8S_DEPLOYMENT:  neeraj-portfolio-backend
-  K8S_NAMESPACE:   portfolio
-  K8S_CONTAINER:   backend
-  EKS_CLUSTER:     neeraj-portfolio
+  LAMBDA_FUNCTION: neeraj-portfolio-backend-api
 
 jobs:
   # ── 1. Build & vet (runs on every push and PR) ────────────────────────────
@@ -39,9 +35,9 @@ jobs:
         working-directory: backend
         run: go vet ./...
 
-  # ── 2. Push to ECR & deploy to EKS (main branch only) ────────────────────
+  # ── 2. Build and deploy Lambda backend (main branch only) ────────────────
   deploy:
-    name: Push to ECR & deploy to EKS
+    name: Deploy to Lambda
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -53,64 +49,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build, tag and push Docker image
-        id: build
-        env:
-          REGISTRY:  ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+      - name: Build Lambda artifact
         run: |
-          IMAGE=$REGISTRY/$ECR_REPOSITORY
-          docker build -t $IMAGE:$IMAGE_TAG -t $IMAGE:latest backend/
-          docker push $IMAGE:$IMAGE_TAG
-          docker push $IMAGE:latest
-          echo "image=$IMAGE:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          cd backend
+          GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o bootstrap ./cmd/lambda
+          zip -q lambda.zip bootstrap
 
-      - name: Update kubeconfig
+      - name: Update Lambda function code
         run: |
-          aws eks update-kubeconfig \
-            --name $EKS_CLUSTER \
-            --region ${{ vars.AWS_REGION }}
-
-      - name: Sync SSM secrets → K8s secret
-        run: |
-          # Pull SecureString values from SSM and upsert the K8s secret.
-          # Using dry-run + apply makes this idempotent (create or update).
-          get() {
-            aws ssm get-parameter \
-              --name "/neeraj-portfolio/$1" \
-              --with-decryption \
-              --query 'Parameter.Value' \
-              --output text
-          }
-
-          kubectl create secret generic portfolio-secrets \
-            --namespace "$K8S_NAMESPACE" \
-            --from-literal=anthropic-api-key="$(get anthropic-api-key)" \
-            --from-literal=allowed-origin="$(get allowed-origin)" \
-            --save-config \
-            --dry-run=client -o yaml \
-          | kubectl apply -f -
-
-      - name: Apply namespace & service (idempotent)
-        run: |
-          kubectl apply -f backend/k8s/namespace.yaml
-          kubectl apply -f backend/k8s/service.yaml
-          kubectl apply -f backend/k8s/hpa.yaml
-
-      - name: Roll out new image
-        run: |
-          kubectl set image deployment/$K8S_DEPLOYMENT \
-            $K8S_CONTAINER=${{ steps.build.outputs.image }} \
-            -n $K8S_NAMESPACE
-          kubectl rollout status deployment/$K8S_DEPLOYMENT \
-            -n $K8S_NAMESPACE --timeout=120s
+          set -euo pipefail
+          aws lambda update-function-code \
+            --function-name "$LAMBDA_FUNCTION" \
+            --zip-file "fileb://backend/lambda.zip" \
+            --publish \
+            --no-cli-pager
+          aws lambda wait function-updated \
+            --function-name "$LAMBDA_FUNCTION"

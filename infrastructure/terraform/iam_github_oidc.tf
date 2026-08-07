@@ -83,6 +83,24 @@ resource "aws_iam_policy" "github_amplify" {
   })
 }
 
+# ── Lambda deploy ────────────────────────────────────────────────────────────
+
+resource "aws_iam_policy" "github_lambda" {
+  name = "${var.project}-github-lambda"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "lambda:GetFunction",
+        "lambda:UpdateFunctionCode",
+        "lambda:UpdateFunctionConfiguration"
+      ]
+      Resource = "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:${var.project}-backend-api"
+    }]
+  })
+}
+
 # ── SSM Parameter Store (bootstrap write + deploy read) ──────────────────────
 
 resource "aws_iam_policy" "github_ssm" {
@@ -132,6 +150,11 @@ resource "aws_iam_role_policy_attachment" "github_eks" {
 resource "aws_iam_role_policy_attachment" "github_amplify" {
   role       = aws_iam_role.github_actions.name
   policy_arn = aws_iam_policy.github_amplify.arn
+}
+
+resource "aws_iam_role_policy_attachment" "github_lambda" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = aws_iam_policy.github_lambda.arn
 }
 
 resource "aws_iam_role_policy_attachment" "github_ssm" {

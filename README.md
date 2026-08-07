@@ -23,8 +23,8 @@ neeraj-portfolio/
 │   │   └── Topology.tsx         Background animation
 │   ├── lib/api.ts               Typed API client
 │   └── types/                   Shared types (Repo, ChatItem)
-├── infrastructure/terraform/  AWS infra (EKS + Amplify)
-│   └── modules/               vpc · ecr · eks · amplify
+├── infrastructure/terraform/  AWS infra (Amplify + Lambda default, optional EKS full mode)
+│   └── modules/               lambda_api · amplify · vpc · ecr · eks
 ├── backend/k8s/               Kubernetes manifests (EKS deploy)
 ├── .github/workflows/         CI/CD pipelines
 └── scripts/                   Bootstrap helpers
@@ -40,27 +40,27 @@ neeraj-portfolio/
 
 ### Available tools
 
-| Tool | Description |
-|---|---|
-| `search_profile` | TF-IDF RAG over the KB (top-N configurable) |
-| `list_projects` | Projects with URLs and tech stack |
-| `get_links` | Social / contact links |
-| `get_github_repos` | Live repos from GitHub API |
-| `get_skills` | Skills by category |
-| `get_education` | Education history |
-| `get_certifications` | Certifications |
-| `get_experience_summary` | Work experience timeline |
+| Tool                     | Description                                 |
+| ------------------------ | ------------------------------------------- |
+| `search_profile`         | TF-IDF RAG over the KB (top-N configurable) |
+| `list_projects`          | Projects with URLs and tech stack           |
+| `get_links`              | Social / contact links                      |
+| `get_github_repos`       | Live repos from GitHub API                  |
+| `get_skills`             | Skills by category                          |
+| `get_education`          | Education history                           |
+| `get_certifications`     | Certifications                              |
+| `get_experience_summary` | Work experience timeline                    |
 
 ### Supported LLM providers
 
 All share the `llm.Provider` interface — zero changes needed in the agent loop.
 
-| Provider | Package | Default model |
-|---|---|---|
-| Anthropic | `internal/llm/anthropic` | `claude-sonnet-4-6` |
-| OpenAI | `internal/llm/openai` | `gpt-4o` |
-| xAI Grok | `internal/llm/grok` | `grok-3` |
-| Google Gemini | `internal/llm/gemini` | `gemini-2.0-flash` |
+| Provider      | Package                  | Default model       |
+| ------------- | ------------------------ | ------------------- |
+| Anthropic     | `internal/llm/anthropic` | `claude-sonnet-4-6` |
+| OpenAI        | `internal/llm/openai`    | `gpt-4o`            |
+| xAI Grok      | `internal/llm/grok`      | `grok-3`            |
+| Google Gemini | `internal/llm/gemini`    | `gemini-2.0-flash`  |
 
 ## Run locally
 
@@ -83,33 +83,36 @@ npm install
 npm run dev                        # http://localhost:3000
 ```
 
-### Docker Compose (both services)
+### Docker Compose
 
 ```bash
 cp backend/.env.example backend/.env   # add your key(s)
-docker compose up --build
+docker compose up --build              # backend only (frontend is on Amplify)
+
+# optional: run frontend container locally too
+docker compose --profile local-frontend up --build
 ```
 
 ## Configuration
 
 ### Backend env vars
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | — | Required for Anthropic provider |
-| `ANTHROPIC_MODEL` | `claude-sonnet-4-6` | Model override |
-| `OPENAI_API_KEY` | — | Required for OpenAI provider |
-| `XAI_API_KEY` | — | Required for Grok provider |
-| `GEMINI_API_KEY` | — | Required for Gemini provider |
-| `GITHUB_USER` | `neerajsinghi` | GitHub account for repo strip |
-| `GITHUB_TOKEN` | — | Optional — raises GitHub rate limit |
-| `ALLOWED_ORIGIN` | `*` | CORS origin (set to frontend URL in prod) |
-| `PORT` | `8080` | HTTP listen port |
+| Variable            | Default             | Purpose                                   |
+| ------------------- | ------------------- | ----------------------------------------- |
+| `ANTHROPIC_API_KEY` | —                   | Required for Anthropic provider           |
+| `ANTHROPIC_MODEL`   | `claude-sonnet-4-6` | Model override                            |
+| `OPENAI_API_KEY`    | —                   | Required for OpenAI provider              |
+| `XAI_API_KEY`       | —                   | Required for Grok provider                |
+| `GEMINI_API_KEY`    | —                   | Required for Gemini provider              |
+| `GITHUB_USER`       | `neerajsinghi`      | GitHub account for repo strip             |
+| `GITHUB_TOKEN`      | —                   | Optional — raises GitHub rate limit       |
+| `ALLOWED_ORIGIN`    | `*`                 | CORS origin (set to frontend URL in prod) |
+| `PORT`              | `8080`              | HTTP listen port                          |
 
 ### Frontend env vars
 
-| Variable | Default | Purpose |
-|---|---|---|
+| Variable               | Default                 | Purpose                       |
+| ---------------------- | ----------------------- | ----------------------------- |
 | `NEXT_PUBLIC_API_BASE` | `http://localhost:8080` | Backend URL the browser calls |
 
 ## Customise
@@ -125,24 +128,34 @@ docker compose up --build
 Deployed on AWS using Terraform. No long-lived AWS credentials — GitHub Actions authenticates via **OIDC**.
 
 ```
-Backend  → EKS (Kubernetes)  via ECR image
+Default  → AWS Lambda + API Gateway backend (serverless)
+Optional → EKS (Kubernetes) backend via ECR image (full mode)
 Frontend → AWS Amplify       (Next.js SSR)
 Secrets  → AWS SSM Parameter Store (SecureString)
 ```
 
+### Cost modes
+
+- `infrastructure_mode="budget"` (default): provisions Lambda + API Gateway + Amplify. This is the mode to target monthly spend under ~$5 at low traffic.
+- `infrastructure_mode="full"`: provisions VPC + EKS + ECR + Amplify (significantly higher monthly baseline).
+
 ### First-time setup
 
 ```bash
-# 1. Provision AWS infrastructure
-cd infrastructure/terraform
-cp terraform.tfvars.example terraform.tfvars   # fill in values
-terraform init
-terraform apply
-
-# 2. Store API keys in SSM (one-time)
+# 1. Store API keys in SSM (one-time)
 export ANTHROPIC_API_KEY=...
 export ALLOWED_ORIGIN=https://your-amplify-url
 ./scripts/bootstrap-secrets.sh
+
+# 2. Provision AWS infrastructure
+cd infrastructure/terraform
+cp terraform.tfvars.example terraform.tfvars   # fill in values
+terraform init
+./scripts/build-lambda.sh
+terraform apply
+
+# Note: keep infrastructure_mode="budget" for low-cost operation.
+# Switch to "full" only when you explicitly want EKS.
 
 # — or — run the GitHub Actions workflow:
 # Actions → "Bootstrap — Store secrets in SSM" → Run workflow
@@ -152,22 +165,24 @@ export ALLOWED_ORIGIN=https://your-amplify-url
 
 Add these under **Settings → Secrets and variables → Actions**:
 
-| Key | Type | Value |
-|---|---|---|
-| `AWS_ROLE_ARN` | Secret | ARN from `terraform output github_actions_role_arn` |
-| `AMPLIFY_APP_ID` | Secret | From `terraform output amplify_app_id` |
-| `ANTHROPIC_API_KEY` | Secret | Your Anthropic key |
-| `OPENAI_API_KEY` | Secret | Your OpenAI key |
-| `XAI_API_KEY` | Secret | Your xAI key |
-| `GEMINI_API_KEY` | Secret | Your Gemini key |
-| `ALLOWED_ORIGIN` | Secret | Your Amplify frontend URL |
-| `AWS_REGION` | Variable | e.g. `us-east-1` |
+| Key                 | Type     | Value                                               |
+| ------------------- | -------- | --------------------------------------------------- |
+| `AWS_ROLE_ARN`      | Secret   | ARN from `terraform output github_actions_role_arn` |
+| `AMPLIFY_APP_ID`    | Secret   | From `terraform output amplify_app_id`              |
+| `ANTHROPIC_API_KEY` | Secret   | Your Anthropic key                                  |
+| `OPENAI_API_KEY`    | Secret   | Your OpenAI key                                     |
+| `XAI_API_KEY`       | Secret   | Your xAI key                                        |
+| `GEMINI_API_KEY`    | Secret   | Your Gemini key                                     |
+| `ALLOWED_ORIGIN`    | Secret   | Your Amplify frontend URL                           |
+| `AWS_REGION`        | Variable | e.g. `ap-south-1`                                   |
 
 ### GitHub Actions workflows
 
-| Workflow | Trigger | Jobs |
-|---|---|---|
-| `backend.yml` | Push to `main` → `backend/**` | Build+vet → ECR push → `kubectl rollout` |
-| `frontend.yml` | Push to `main` → `frontend/**` | Type-check+build → Amplify deploy |
-| `bootstrap-secrets.yml` | Manual (`workflow_dispatch`) | GitHub secrets → SSM Parameter Store |
+| Workflow                | Trigger                        | Jobs                                     |
+| ----------------------- | ------------------------------ | ---------------------------------------- |
+| `backend.yml`           | Push to `main` → `backend/**`  | Build+vet → build lambda zip → lambda deploy |
+| `frontend.yml`          | Push to `main` → `frontend/**` | Type-check+build → Amplify deploy        |
+| `bootstrap-secrets.yml` | Manual (`workflow_dispatch`)   | GitHub secrets → SSM Parameter Store     |
+
+In `budget` mode, backend deploy targets Lambda and frontend deploy targets Amplify.
 

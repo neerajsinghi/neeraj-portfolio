@@ -4,27 +4,27 @@ resource "aws_amplify_app" "frontend" {
   access_token = var.github_access_token
   platform     = "WEB_COMPUTE"
 
-  # Amplify build spec — frontend lives in /frontend sub-directory of the monorepo
+  # Amplify build spec for a monorepo Next.js app.
+  # appRoot scopes build commands, artifact paths, and cache paths.
   build_spec = <<-EOT
     version: 1
     applications:
       - frontend:
+          appRoot: ${var.frontend_app_root}
           phases:
             preBuild:
               commands:
-                - cd frontend
                 - npm ci
             build:
               commands:
                 - npm run build
           artifacts:
-            baseDirectory: frontend/.next
+            baseDirectory: .next
             files:
               - '**/*'
           cache:
             paths:
-              - frontend/node_modules/**/*
-        appRoot: frontend
+              - node_modules/**/*
   EOT
 
   environment_variables = {
@@ -40,11 +40,11 @@ resource "aws_amplify_app" "frontend" {
 
 resource "aws_amplify_branch" "main" {
   app_id      = aws_amplify_app.frontend.id
-  branch_name = "main"
+  branch_name = var.branch_name
   framework   = "Next.js - SSR"
   stage       = "PRODUCTION"
 
-  enable_auto_build = false # GitHub Actions triggers the build explicitly
+  enable_auto_build = var.enable_auto_build
 
   environment_variables = {
     NEXT_PUBLIC_API_BASE    = var.api_base_url

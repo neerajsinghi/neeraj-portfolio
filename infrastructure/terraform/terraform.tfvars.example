@@ -1,13 +1,23 @@
-aws_region   = "us-east-1"
+aws_region   = "ap-south-1"
 project      = "neeraj-portfolio"
 environment  = "prod"
+infrastructure_mode = "budget"                       # budget => Amplify only (target: < $5 at low traffic)
+enable_lambda_backend = true
+lambda_zip_path = "../../backend/dist/lambda.zip"
+lambda_memory_size = 512
+lambda_timeout = 60
+allowed_origin = "https://main.<app-id>.amplifyapp.com"
 
 github_repo         = "https://github.com/neerajsinghi/neeraj-portfolio"
 github_org_repo     = "neerajsinghi/neeraj-portfolio"
 github_access_token = "ghp_xxxxxxxxxxxxxxxxxxxx"   # GitHub PAT with repo scope
 
-api_base_url = "https://api.your-domain.com"       # backend LoadBalancer URL after first deploy
+api_base_url = ""                                    # leave empty when enable_lambda_backend=true
+amplify_branch = "main"
+amplify_frontend_app_root = "frontend"
+amplify_enable_auto_build = false                   # true if Amplify should build directly on git pushes
 
+# Used only when infrastructure_mode = "full"
 eks_node_instance_type = "t3.small"
 eks_desired_nodes      = 2
 eks_min_nodes          = 1
