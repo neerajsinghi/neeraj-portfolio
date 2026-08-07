@@ -57,6 +57,36 @@ variable "allowed_origin" {
   default     = "*"
 }
 
+variable "enable_custom_domains" {
+  description = "Enable custom domains for Amplify frontend and API Gateway backend"
+  type        = bool
+  default     = false
+}
+
+variable "root_domain" {
+  description = "Route53 hosted zone domain (e.g. neerajsinghi.com)"
+  type        = string
+  default     = ""
+}
+
+variable "frontend_subdomain" {
+  description = "Frontend subdomain prefix; empty string means apex domain"
+  type        = string
+  default     = ""
+}
+
+variable "frontend_enable_www" {
+  description = "Also map www.<domain> to the frontend branch when using apex"
+  type        = bool
+  default     = true
+}
+
+variable "api_subdomain" {
+  description = "API subdomain prefix under root_domain"
+  type        = string
+  default     = "api"
+}
+
 # ── EKS ──────────────────────────────────────────────────────────────────────
 
 variable "eks_node_instance_type" {

@@ -6,7 +6,12 @@ enable_lambda_backend = true
 lambda_zip_path = "../../backend/dist/lambda.zip"
 lambda_memory_size = 512
 lambda_timeout = 60
-allowed_origin = "https://main.<app-id>.amplifyapp.com"
+allowed_origin = "*"                                  # ignored when enable_custom_domains=true
+enable_custom_domains = true
+root_domain = "neerajsinghi.com"
+frontend_subdomain = ""                               # empty => apex domain neerajsinghi.com
+frontend_enable_www = true
+api_subdomain = "api"
 
 github_repo         = "https://github.com/neerajsinghi/neeraj-portfolio"
 github_org_repo     = "neerajsinghi/neeraj-portfolio"

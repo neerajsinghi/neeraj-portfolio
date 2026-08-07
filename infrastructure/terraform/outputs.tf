@@ -22,6 +22,11 @@ output "backend_api_base_url" {
   value       = var.enable_lambda_backend ? module.lambda_api[0].api_base_url : var.api_base_url
 }
 
+output "backend_api_custom_domain" {
+  description = "Backend API custom domain (if enabled)"
+  value       = var.enable_lambda_backend ? module.lambda_api[0].api_custom_domain : null
+}
+
 output "amplify_app_id" {
   description = "Amplify app ID — set as AMPLIFY_APP_ID in GitHub Actions secrets"
   value       = module.amplify.app_id
@@ -30,6 +35,16 @@ output "amplify_app_id" {
 output "amplify_app_url" {
   description = "Live frontend URL"
   value       = module.amplify.branch_web_url
+}
+
+output "frontend_custom_domain" {
+  description = "Frontend custom domain host (if enabled)"
+  value       = module.amplify.frontend_fqdn
+}
+
+output "resolved_allowed_origin" {
+  description = "Allowed origin value wired into backend"
+  value       = local.resolved_allowed_origin
 }
 
 output "amplify_default_domain" {

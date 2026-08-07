@@ -139,11 +139,29 @@ Secrets  → AWS SSM Parameter Store (SecureString)
 - `infrastructure_mode="budget"` (default): provisions Lambda + API Gateway + Amplify. This is the mode to target monthly spend under ~$5 at low traffic.
 - `infrastructure_mode="full"`: provisions VPC + EKS + ECR + Amplify (significantly higher monthly baseline).
 
+### Custom domain (Route53)
+
+Set these in `terraform.tfvars`:
+
+- `enable_custom_domains = true`
+- `root_domain = "neerajsinghi.com"`
+- `frontend_subdomain = ""` (apex domain) or e.g. `"app"`
+- `api_subdomain = "api"` (backend becomes `api.neerajsinghi.com`)
+
+When enabled:
+
+- Frontend host is auto-mapped in Amplify.
+- API Gateway is mapped to your API custom domain with ACM cert + Route53 alias records.
+- Backend CORS `ALLOWED_ORIGIN` is auto-derived from the frontend host.
+
 ### First-time setup
 
 ```bash
 # 1. Store API keys in SSM (one-time)
 export ANTHROPIC_API_KEY=...
+export OPENAI_API_KEY=...
+export XAI_API_KEY=...
+export GEMINI_API_KEY=...
 export ALLOWED_ORIGIN=https://your-amplify-url
 ./scripts/bootstrap-secrets.sh
 
@@ -151,7 +169,9 @@ export ALLOWED_ORIGIN=https://your-amplify-url
 cd infrastructure/terraform
 cp terraform.tfvars.example terraform.tfvars   # fill in values
 terraform init
+cd ../..
 ./scripts/build-lambda.sh
+cd infrastructure/terraform
 terraform apply
 
 # Note: keep infrastructure_mode="budget" for low-cost operation.
@@ -176,13 +196,32 @@ Add these under **Settings → Secrets and variables → Actions**:
 | `ALLOWED_ORIGIN`    | Secret   | Your Amplify frontend URL                           |
 | `AWS_REGION`        | Variable | e.g. `ap-south-1`                                   |
 
+### Environment matrix
+
+SSM Parameter Store (path prefix: `/neeraj-portfolio`):
+
+- `anthropic-api-key`
+- `openai-api-key`
+- `xai-api-key`
+- `gemini-api-key`
+- `allowed-origin` (used when `enable_custom_domains=false`; auto-derived in terraform otherwise)
+
+Terraform variables (`terraform.tfvars`):
+
+- `aws_region`, `project`, `environment`
+- `infrastructure_mode`, `enable_lambda_backend`
+- `github_repo`, `github_org_repo`, `github_access_token`
+- `enable_custom_domains`, `root_domain`, `frontend_subdomain`, `frontend_enable_www`, `api_subdomain`
+- `lambda_zip_path`, `lambda_memory_size`, `lambda_timeout`
+- `amplify_branch`, `amplify_frontend_app_root`, `amplify_enable_auto_build`
+
 ### GitHub Actions workflows
 
-| Workflow                | Trigger                        | Jobs                                     |
-| ----------------------- | ------------------------------ | ---------------------------------------- |
+| Workflow                | Trigger                        | Jobs                                         |
+| ----------------------- | ------------------------------ | -------------------------------------------- |
 | `backend.yml`           | Push to `main` → `backend/**`  | Build+vet → build lambda zip → lambda deploy |
-| `frontend.yml`          | Push to `main` → `frontend/**` | Type-check+build → Amplify deploy        |
-| `bootstrap-secrets.yml` | Manual (`workflow_dispatch`)   | GitHub secrets → SSM Parameter Store     |
+| `frontend.yml`          | Push to `main` → `frontend/**` | Type-check+build → Amplify deploy            |
+| `bootstrap-secrets.yml` | Manual (`workflow_dispatch`)   | GitHub secrets → SSM Parameter Store         |
 
 In `budget` mode, backend deploy targets Lambda and frontend deploy targets Amplify.
 

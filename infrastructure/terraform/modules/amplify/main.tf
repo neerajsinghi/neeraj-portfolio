@@ -51,3 +51,22 @@ resource "aws_amplify_branch" "main" {
     NEXT_TELEMETRY_DISABLED = "1"
   }
 }
+
+resource "aws_amplify_domain_association" "frontend" {
+  count       = var.enable_custom_domain ? 1 : 0
+  app_id      = aws_amplify_app.frontend.id
+  domain_name = var.root_domain
+
+  sub_domain {
+    branch_name = aws_amplify_branch.main.branch_name
+    prefix      = var.frontend_subdomain
+  }
+
+  dynamic "sub_domain" {
+    for_each = var.frontend_enable_www && var.frontend_subdomain == "" ? [1] : []
+    content {
+      branch_name = aws_amplify_branch.main.branch_name
+      prefix      = "www"
+    }
+  }
+}

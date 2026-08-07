@@ -1,5 +1,22 @@
 data "aws_caller_identity" "current" {}
 
+data "aws_route53_zone" "root" {
+  count        = var.enable_custom_domain ? 1 : 0
+  name         = "${var.root_domain}."
+  private_zone = false
+}
+
+locals {
+  api_custom_fqdn = "${var.api_subdomain}.${var.root_domain}"
+  cert_validation_options = var.enable_custom_domain ? {
+    for dvo in aws_acm_certificate.api[0].domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  } : {}
+}
+
 data "aws_ssm_parameter" "anthropic_api_key" {
   name            = "/${var.project}/anthropic-api-key"
   with_decryption = true
@@ -129,6 +146,72 @@ resource "aws_apigatewayv2_stage" "default" {
   api_id      = aws_apigatewayv2_api.backend.id
   name        = "$default"
   auto_deploy = true
+}
+
+resource "aws_acm_certificate" "api" {
+  count             = var.enable_custom_domain ? 1 : 0
+  domain_name       = local.api_custom_fqdn
+  validation_method = "DNS"
+}
+
+resource "aws_route53_record" "api_cert_validation" {
+  for_each = local.cert_validation_options
+
+  zone_id = data.aws_route53_zone.root[0].zone_id
+  name    = each.value.name
+  type    = each.value.type
+  ttl     = 60
+  records = [each.value.record]
+}
+
+resource "aws_acm_certificate_validation" "api" {
+  count                   = var.enable_custom_domain ? 1 : 0
+  certificate_arn         = aws_acm_certificate.api[0].arn
+  validation_record_fqdns = [for rec in aws_route53_record.api_cert_validation : rec.fqdn]
+}
+
+resource "aws_apigatewayv2_domain_name" "api" {
+  count       = var.enable_custom_domain ? 1 : 0
+  domain_name = local.api_custom_fqdn
+
+  domain_name_configuration {
+    certificate_arn = aws_acm_certificate_validation.api[0].certificate_arn
+    endpoint_type   = "REGIONAL"
+    security_policy = "TLS_1_2"
+  }
+}
+
+resource "aws_apigatewayv2_api_mapping" "api" {
+  count       = var.enable_custom_domain ? 1 : 0
+  api_id      = aws_apigatewayv2_api.backend.id
+  domain_name = aws_apigatewayv2_domain_name.api[0].id
+  stage       = aws_apigatewayv2_stage.default.name
+}
+
+resource "aws_route53_record" "api_alias_a" {
+  count   = var.enable_custom_domain ? 1 : 0
+  zone_id = data.aws_route53_zone.root[0].zone_id
+  name    = local.api_custom_fqdn
+  type    = "A"
+
+  alias {
+    name                   = aws_apigatewayv2_domain_name.api[0].domain_name_configuration[0].target_domain_name
+    zone_id                = aws_apigatewayv2_domain_name.api[0].domain_name_configuration[0].hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "api_alias_aaaa" {
+  count   = var.enable_custom_domain ? 1 : 0
+  zone_id = data.aws_route53_zone.root[0].zone_id
+  name    = local.api_custom_fqdn
+  type    = "AAAA"
+
+  alias {
+    name                   = aws_apigatewayv2_domain_name.api[0].domain_name_configuration[0].target_domain_name
+    zone_id                = aws_apigatewayv2_domain_name.api[0].domain_name_configuration[0].hosted_zone_id
+    evaluate_target_health = false
+  }
 }
 
 resource "aws_lambda_permission" "apigw_invoke" {

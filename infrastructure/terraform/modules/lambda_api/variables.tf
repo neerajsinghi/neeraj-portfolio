@@ -24,3 +24,18 @@ variable "allowed_origin" {
   type    = string
   default = "*"
 }
+
+variable "enable_custom_domain" {
+  type    = bool
+  default = false
+}
+
+variable "root_domain" {
+  type    = string
+  default = ""
+}
+
+variable "api_subdomain" {
+  type    = string
+  default = "api"
+}

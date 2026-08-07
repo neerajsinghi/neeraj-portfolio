@@ -17,6 +17,26 @@ variable "enable_auto_build" {
   default = false
 }
 
+variable "enable_custom_domain" {
+  type    = bool
+  default = false
+}
+
+variable "root_domain" {
+  type    = string
+  default = ""
+}
+
+variable "frontend_subdomain" {
+  type    = string
+  default = ""
+}
+
+variable "frontend_enable_www" {
+  type    = bool
+  default = true
+}
+
 variable "github_access_token" {
   type      = string
   sensitive = true

@@ -1,5 +1,9 @@
 locals {
   enable_full_stack = var.infrastructure_mode == "full"
+  frontend_fqdn = var.enable_custom_domains ? (
+    var.frontend_subdomain == "" ? var.root_domain : "${var.frontend_subdomain}.${var.root_domain}"
+  ) : ""
+  resolved_allowed_origin = var.enable_custom_domains ? "https://${local.frontend_fqdn}" : var.allowed_origin
 }
 
 module "lambda_api" {
@@ -10,7 +14,10 @@ module "lambda_api" {
   lambda_zip_path    = var.lambda_zip_path
   lambda_memory_size = var.lambda_memory_size
   lambda_timeout     = var.lambda_timeout
-  allowed_origin     = var.allowed_origin
+  allowed_origin     = local.resolved_allowed_origin
+  enable_custom_domain = var.enable_custom_domains
+  root_domain          = var.root_domain
+  api_subdomain        = var.api_subdomain
 }
 
 locals {
@@ -54,4 +61,8 @@ module "amplify" {
   branch_name         = var.amplify_branch
   frontend_app_root   = var.amplify_frontend_app_root
   enable_auto_build   = var.amplify_enable_auto_build
+  enable_custom_domain = var.enable_custom_domains
+  root_domain          = var.root_domain
+  frontend_subdomain   = var.frontend_subdomain
+  frontend_enable_www  = var.frontend_enable_www
 }
