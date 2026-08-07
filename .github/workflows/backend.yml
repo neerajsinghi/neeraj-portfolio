@@ -70,10 +70,14 @@ jobs:
       - name: Update Lambda function code
         run: |
           set -euo pipefail
+          # --query/--output text avoids printing the function's Environment.Variables
+          # (which include secrets) into the CI log.
           aws lambda update-function-code \
             --function-name "$LAMBDA_FUNCTION" \
             --zip-file "fileb://backend/lambda.zip" \
             --publish \
-            --no-cli-pager
+            --no-cli-pager \
+            --query 'FunctionArn' \
+            --output text
           aws lambda wait function-updated \
             --function-name "$LAMBDA_FUNCTION"

@@ -93,6 +93,7 @@ resource "aws_iam_policy" "github_lambda" {
       Effect = "Allow"
       Action = [
         "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
         "lambda:UpdateFunctionCode",
         "lambda:UpdateFunctionConfiguration"
       ]
