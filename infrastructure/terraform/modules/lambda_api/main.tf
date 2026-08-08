@@ -99,18 +99,23 @@ resource "aws_lambda_function" "backend" {
 
   environment {
     variables = {
-      ANTHROPIC_API_KEY = lookup(local.ssm_values_by_key, "anthropic-api-key", "")
-      OPENAI_API_KEY    = lookup(local.ssm_values_by_key, "openai-api-key", "")
-      XAI_API_KEY       = lookup(local.ssm_values_by_key, "xai-api-key", "")
-      GEMINI_API_KEY    = lookup(local.ssm_values_by_key, "gemini-api-key", "")
-      ANTHROPIC_MODEL   = lookup(local.ssm_values_by_key, "anthropic-model", "claude-sonnet-4-6")
-      OPENAI_MODEL      = lookup(local.ssm_values_by_key, "openai-model", "gpt-4o")
-      GROK_MODEL        = lookup(local.ssm_values_by_key, "grok-model", "grok-3")
-      GEMINI_MODEL      = lookup(local.ssm_values_by_key, "gemini-model", "gemini-2.0-flash")
-      GITHUB_USER       = lookup(local.ssm_values_by_key, "github-user", "neerajsinghi")
-      GITHUB_TOKEN      = lookup(local.ssm_values_by_key, "github-token", "")
-      PORT              = lookup(local.ssm_values_by_key, "port", "8080")
-      ALLOWED_ORIGIN    = lookup(local.ssm_values_by_key, "allowed-origin", var.allowed_origin)
+      ANTHROPIC_API_KEY    = lookup(local.ssm_values_by_key, "anthropic-api-key", "")
+      OPENAI_API_KEY       = lookup(local.ssm_values_by_key, "openai-api-key", "")
+      XAI_API_KEY          = lookup(local.ssm_values_by_key, "xai-api-key", "")
+      GEMINI_API_KEY       = lookup(local.ssm_values_by_key, "gemini-api-key", "")
+      ANTHROPIC_MODEL      = lookup(local.ssm_values_by_key, "anthropic-model", "claude-sonnet-4-6")
+      OPENAI_MODEL         = lookup(local.ssm_values_by_key, "openai-model", "gpt-4o")
+      GROK_MODEL           = lookup(local.ssm_values_by_key, "grok-model", "grok-3")
+      GEMINI_MODEL         = lookup(local.ssm_values_by_key, "gemini-model", "gemini-2.0-flash")
+      GITHUB_USER          = lookup(local.ssm_values_by_key, "github-user", "neerajsinghi")
+      GITHUB_TOKEN         = lookup(local.ssm_values_by_key, "github-token", "")
+      PORT                 = lookup(local.ssm_values_by_key, "port", "8080")
+      ALLOWED_ORIGIN       = lookup(local.ssm_values_by_key, "allowed-origin", var.allowed_origin)
+      MONGODB_URI          = lookup(local.ssm_values_by_key, "mongodb-uri", "")
+      MONGODB_DATABASE     = lookup(local.ssm_values_by_key, "mongodb-database", "neeraj_portfolio")
+      COGNITO_REGION       = var.aws_region
+      COGNITO_USER_POOL_ID = var.cognito_user_pool_id
+      COGNITO_CLIENT_ID    = var.cognito_client_id
     }
   }
 }

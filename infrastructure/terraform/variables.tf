@@ -87,6 +87,24 @@ variable "api_subdomain" {
   default     = "api"
 }
 
+variable "admin_subdomain" {
+  description = "Admin frontend subdomain prefix"
+  type        = string
+  default     = "admin"
+}
+
+variable "admin_callback_url" {
+  description = "Cognito callback URL used when custom domains are disabled"
+  type        = string
+  default     = "http://localhost:3200/auth/callback"
+}
+
+variable "admin_logout_url" {
+  description = "Cognito logout URL used when custom domains are disabled"
+  type        = string
+  default     = "http://localhost:3200"
+}
+
 # ── EKS ──────────────────────────────────────────────────────────────────────
 
 variable "eks_node_instance_type" {
@@ -139,6 +157,12 @@ variable "amplify_frontend_app_root" {
   description = "Path to the Next.js frontend app root inside the repository"
   type        = string
   default     = "frontend"
+}
+
+variable "admin_frontend_app_root" {
+  description = "Path to the admin Next.js app root inside the repository"
+  type        = string
+  default     = "admin"
 }
 
 variable "amplify_enable_auto_build" {

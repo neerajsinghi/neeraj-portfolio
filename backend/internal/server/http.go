@@ -2,39 +2,95 @@ package server
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"neeraj-portfolio/backend/internal/agent"
+	"neeraj-portfolio/backend/internal/auth"
+	"neeraj-portfolio/backend/internal/blog"
 	"neeraj-portfolio/backend/internal/github"
 	"neeraj-portfolio/backend/internal/llm"
 )
 
 // NewHandler builds the backend HTTP handler with CORS middleware.
 func NewHandler(prov llm.Provider) http.Handler {
-	ag := agent.New(prov)
+	var blogStore blog.Store
+	if os.Getenv("MONGODB_URI") != "" {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		store, err := blog.NewMongoStore(ctx, os.Getenv("MONGODB_URI"), os.Getenv("MONGODB_DATABASE"))
+		if err != nil {
+			log.Printf("blog storage unavailable: %v", err)
+		} else {
+			blogStore = store
+		}
+	}
+	var authenticator auth.Authenticator
+	if os.Getenv("COGNITO_USER_POOL_ID") != "" {
+		cognito, err := auth.NewCognito(os.Getenv("COGNITO_REGION"), os.Getenv("COGNITO_USER_POOL_ID"), os.Getenv("COGNITO_CLIENT_ID"))
+		if err != nil {
+			log.Printf("admin authentication unavailable: %v", err)
+		} else {
+			authenticator = cognito
+		}
+	}
+	return NewHandlerWithDependencies(prov, blogStore, authenticator)
+}
+
+// NewHandlerWithDependencies builds a handler with injectable blog dependencies for tests.
+func NewHandlerWithDependencies(prov llm.Provider, blogStore blog.Store, authenticator auth.Authenticator) http.Handler {
+	ag := agent.NewWithBlogStore(prov, blogStore)
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/health", func(w http.ResponseWriter, _ *http.Request) {
-		writeJSON(w, http.StatusOK, map[string]any{"ok": true, "model": prov.ModelName()})
+		writeJSON(w, http.StatusOK, map[string]any{
+			"ok": true, "model": prov.ModelName(),
+			"blog_configured": blogStore != nil, "admin_auth_configured": authenticator != nil,
+		})
 	})
 	mux.HandleFunc("/api/chat", chatHandler(ag))
 	mux.HandleFunc("/api/github", reposHandler)
+	mux.HandleFunc("GET /api/blogs", publicListHandler(blogStore))
+	mux.HandleFunc("GET /api/blogs/{slug}", publicDetailHandler(blogStore))
+	mux.HandleFunc("GET /api/admin/blogs", adminListHandler(blogStore, authenticator))
+	mux.HandleFunc("POST /api/admin/blogs", adminCreateHandler(blogStore, authenticator))
+	mux.HandleFunc("PUT /api/admin/blogs/{id}", adminUpdateHandler(blogStore, authenticator))
+	mux.HandleFunc("DELETE /api/admin/blogs/{id}", adminDeleteHandler(blogStore, authenticator))
 	return withCORS(mux)
 }
 
-// withCORS allows the Next.js dev/prod origin. Set ALLOWED_ORIGIN in prod.
+// withCORS allows configured comma-separated frontend origins.
 func withCORS(next http.Handler) http.Handler {
-	origin := os.Getenv("ALLOWED_ORIGIN")
-	if origin == "" {
-		origin = "*"
+	configured := strings.Split(os.Getenv("ALLOWED_ORIGIN"), ",")
+	allowed := make(map[string]bool, len(configured))
+	for _, origin := range configured {
+		if origin = strings.TrimSpace(origin); origin != "" {
+			allowed[origin] = true
+		}
+	}
+	if len(allowed) == 0 {
+		allowed["*"] = true
 	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", origin)
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		origin := r.Header.Get("Origin")
+		if allowed["*"] {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+		} else if allowed[origin] {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Add("Vary", "Origin")
+		}
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+		w.Header().Set("Access-Control-Max-Age", "600")
 		if r.Method == http.MethodOptions {
+			if !allowed["*"] && !allowed[origin] {
+				w.WriteHeader(http.StatusForbidden)
+				return
+			}
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}

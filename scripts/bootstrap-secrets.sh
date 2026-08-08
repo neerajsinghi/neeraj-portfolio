@@ -13,7 +13,9 @@
 #   export GITHUB_USER=neerajsinghi
 #   export GITHUB_TOKEN=ghp_xxx   # optional
 #   export PORT=8080
-#   export ALLOWED_ORIGIN=https://your-frontend.amplifyapp.com
+#   export ALLOWED_ORIGIN=https://neerajsinghi.com,https://admin.neerajsinghi.com
+#   export MONGODB_URI='mongodb+srv://...'
+#   export MONGODB_DATABASE=neeraj_portfolio
 #
 #   ./scripts/bootstrap-secrets.sh [--region ap-south-1] [--no-overwrite]
 #
@@ -39,7 +41,7 @@ done
 command -v aws &>/dev/null || { echo "ERROR: aws CLI not found"; exit 1; }
 
 missing=()
-for var in ANTHROPIC_API_KEY ALLOWED_ORIGIN; do
+for var in ANTHROPIC_API_KEY ALLOWED_ORIGIN MONGODB_URI; do
   [[ -z "${!var:-}" ]] && missing+=("$var")
 done
 
@@ -53,6 +55,7 @@ fi
 ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-claude-sonnet-4-6}"
 GITHUB_USER="${GITHUB_USER:-neerajsinghi}"
 PORT="${PORT:-8080}"
+MONGODB_DATABASE="${MONGODB_DATABASE:-neeraj_portfolio}"
 
 # ── Helper ────────────────────────────────────────────────────────────────────
 put_param() {
@@ -84,6 +87,8 @@ put_param "anthropic-model"   "$ANTHROPIC_MODEL"
 put_param "github-user"       "$GITHUB_USER"
 put_param "port"              "$PORT"
 put_param "allowed-origin"    "$ALLOWED_ORIGIN"
+put_param "mongodb-uri"       "$MONGODB_URI"
+put_param "mongodb-database"  "$MONGODB_DATABASE"
 
 if [[ -n "${GITHUB_TOKEN:-}" ]]; then
   put_param "github-token" "$GITHUB_TOKEN"

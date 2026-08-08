@@ -22,7 +22,7 @@ export default function Hero() {
         </div>
         <p className="lede">
           From license-enforcement and tamper detection at Dell to an AI-enabled marketplace today. Ask the agent
-          anything about my work — it runs on a Go backend that retrieves from my real résumé and GitHub.
+          about my work, published blogs, and engineering services. It retrieves live, grounded data from a Go backend.
         </p>
         <div className="cta">
           <a className="btn primary" href="#agent">

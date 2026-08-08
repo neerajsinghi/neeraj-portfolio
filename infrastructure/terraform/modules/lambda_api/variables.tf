@@ -25,6 +25,9 @@ variable "allowed_origin" {
   default = "*"
 }
 
+variable "cognito_user_pool_id" { type = string }
+variable "cognito_client_id" { type = string }
+
 variable "enable_custom_domain" {
   type    = bool
   default = false

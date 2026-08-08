@@ -1,39 +1,28 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { CHIPS } from "../lib/profile";
 import { streamChat } from "../lib/api";
 import { trackEvent } from "../lib/analytics";
 import type { ChatItem } from "../types";
 
-function boldify(line: string, keyBase: string) {
-  return line.split(/(\*\*[^*]+\*\*)/g).map((p, i) =>
-    p.startsWith("**") && p.endsWith("**") ? (
-      <strong key={keyBase + i}>{p.slice(2, -2)}</strong>
-    ) : (
-      <span key={keyBase + i}>{p}</span>
-    )
-  );
-}
 function Rich({ text }: { text: string }) {
   return (
-    <>
-      {text.split(/\n{2,}/).map((para, i) => (
-        <p key={i}>
-          {para.split("\n").map((line, j) => (
-            <span key={j}>
-              {j > 0 && <br />}
-              {boldify(line, `${i}-${j}-`)}
-            </span>
-          ))}
-        </p>
-      ))}
-    </>
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>,
+      }}
+    >
+      {text}
+    </ReactMarkdown>
   );
 }
 
 const GREETING =
-  "Hi — I'm **Neeraj's portfolio agent**. I answer from his real résumé, GitHub and LinkedIn using retrieval + tools, all served by a Go backend. Ask me anything, or tap a question below.";
+  "Hi — I'm **Neeraj's portfolio agent**. I answer from his résumé, experience, GitHub, and live published blogs using retrieval + tools. Ask about his work, read his latest writing, or explore the engineering services he offers.";
 
 export default function AgentConsole() {
   const [items, setItems] = useState<ChatItem[]>([{ kind: "bot", text: GREETING }]);
@@ -157,7 +146,7 @@ export default function AgentConsole() {
         <span className="tdot y" />
         <span className="tdot g" />
         <span className="console-title">
-          neeraj-agent · <span className="on">rag + tools online</span>
+          neeraj-agent · <span className="on">profile + blogs + tools online</span>
         </span>
       </div>
 
@@ -197,7 +186,7 @@ export default function AgentConsole() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && ask(input, "typed")}
-          placeholder="Ask about Neeraj's experience…"
+          placeholder="Ask about experience, blogs, or services…"
           autoComplete="off"
         />
         <button className="send" onClick={() => ask(input, "typed")} disabled={busy} title="Send" aria-label="Send question">

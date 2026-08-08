@@ -32,6 +32,20 @@ output "amplify_app_id" {
   value       = module.amplify.app_id
 }
 
+output "admin_amplify_app_id" {
+  description = "Admin Amplify app ID"
+  value       = module.admin_amplify.app_id
+}
+
+output "admin_app_url" {
+  description = "Admin custom domain or Amplify branch URL"
+  value       = var.enable_custom_domains ? "https://${local.admin_fqdn}" : module.admin_amplify.branch_web_url
+}
+
+output "cognito_user_pool_id" { value = module.cognito.user_pool_id }
+output "cognito_client_id" { value = module.cognito.client_id }
+output "cognito_domain" { value = module.cognito.domain }
+
 output "amplify_app_url" {
   description = "Live frontend URL"
   value       = module.amplify.branch_web_url

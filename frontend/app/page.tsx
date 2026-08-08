@@ -22,6 +22,7 @@ export default function Page() {
             <a href="#stack">Stack</a>
             <a href="#work">Work</a>
             <a href="#projects">Projects</a>
+            <a href="/blogs">Blogs</a>
             <a href="#agent">Ask AI</a>
             <span className="pill">
               <span className="dot" />

@@ -1,0 +1,68 @@
+name: Admin — Build & Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "admin/**"
+      - ".github/workflows/admin.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "admin/**"
+
+env:
+  AMPLIFY_BRANCH: main
+
+jobs:
+  check:
+    name: Type-check & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: admin/package-lock.json
+      - working-directory: admin
+        run: npm ci
+      - working-directory: admin
+        run: ./node_modules/.bin/tsc --noEmit
+      - working-directory: admin
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+
+  deploy:
+    name: Deploy to Amplify
+    runs-on: ubuntu-latest
+    needs: check
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Start Amplify deployment
+        id: start
+        run: |
+          job_id=$(aws amplify start-job --app-id "${{ secrets.ADMIN_AMPLIFY_APP_ID }}" --branch-name "$AMPLIFY_BRANCH" --job-type RELEASE --query 'jobSummary.jobId' --output text)
+          echo "job_id=$job_id" >> "$GITHUB_OUTPUT"
+      - name: Wait for deployment
+        env:
+          APP_ID: ${{ secrets.ADMIN_AMPLIFY_APP_ID }}
+          JOB_ID: ${{ steps.start.outputs.job_id }}
+        run: |
+          for attempt in $(seq 1 40); do
+            job_status=$(aws amplify get-job --app-id "$APP_ID" --branch-name "$AMPLIFY_BRANCH" --job-id "$JOB_ID" --query 'job.summary.status' --output text)
+            echo "Amplify status: $job_status"
+            [ "$job_status" = "SUCCEED" ] && exit 0
+            case "$job_status" in FAILED|CANCELLED) exit 1 ;; esac
+            sleep 15
+          done
+          echo "Timed out waiting for Amplify deployment"
+          exit 1

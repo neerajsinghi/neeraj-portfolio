@@ -103,10 +103,11 @@ export const PROJECTS: { tag: string; name: string; desc: string; stack: string[
 ];
 
 export const CHIPS = [
+  "Show me Neeraj's latest blogs",
+  "What engineering services does he offer?",
   "What did Neeraj do at Dell?",
   "Is he a fit for a Staff backend role?",
   "Show his AI / RAG work",
-  "What's his security / PKI experience?",
 ];
 
 export const LINKS = {

@@ -1,6 +1,11 @@
-variable "project"     { type = string }
+variable "project" { type = string }
 variable "github_repo" { type = string }
 variable "api_base_url" { type = string }
+
+variable "environment_variables" {
+  type    = map(string)
+  default = {}
+}
 
 variable "branch_name" {
   type    = string

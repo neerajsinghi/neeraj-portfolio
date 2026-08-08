@@ -1,0 +1,45 @@
+name: Content - Publish Approved
+
+on:
+  workflow_dispatch:
+    inputs:
+      file:
+        description: "Approved bundle path, for example content/drafts/2026-03-24.json"
+        required: true
+        type: string
+      platforms:
+        description: "Comma-separated: devto,linkedin"
+        required: true
+        default: "devto,linkedin"
+        type: string
+      approve:
+        description: "I reviewed this bundle and approve public publishing"
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  publish:
+    if: inputs.approve
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+      LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+      LINKEDIN_AUTHOR_URN: ${{ vars.LINKEDIN_AUTHOR_URN }}
+      LINKEDIN_VERSION: ${{ vars.LINKEDIN_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Publish approved bundle
+        working-directory: backend
+        env:
+          BUNDLE_FILE: ${{ inputs.file }}
+          PUBLISH_PLATFORMS: ${{ inputs.platforms }}
+        run: go run ./cmd/content publish --file "../$BUNDLE_FILE" --platforms "$PUBLISH_PLATFORMS" --approve

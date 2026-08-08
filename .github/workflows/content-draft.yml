@@ -1,0 +1,80 @@
+name: Content - Daily Draft
+
+on:
+  schedule:
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Optional specific topic"
+        required: false
+        type: string
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Generate article bundle
+        id: draft
+        env:
+          INPUT_TOPIC: ${{ inputs.topic }}
+        run: |
+          set -euo pipefail
+          day="$(date -u +%F)"
+          topic="${INPUT_TOPIC:-}"
+          if [ -z "$topic" ]; then
+            pillars=(
+              "Go runtime and internals: scheduler behavior, garbage collection, escape analysis, allocation, memory layout, reflection, or compiler tradeoffs"
+              "Production Go concurrency: cancellation, backpressure, worker coordination, ownership, race prevention, goroutine leaks, or bounded parallelism"
+              "Go language design in large backends: interfaces, generics, method sets, error semantics, package boundaries, API design, or testing seams"
+              "Go networking and APIs: net/http internals, connection pooling, gRPC, WebSockets, protocol evolution, middleware, graceful shutdown, or streaming"
+              "Distributed systems design: consistency, idempotency, retries, ordering, leases, consensus boundaries, sagas, outbox patterns, or failure recovery"
+              "Data-intensive backend design: MongoDB modeling and indexes, MySQL transactions, Redis caching, pagination, query planning, or data lifecycle"
+              "Backend performance engineering: profiling, latency budgets, contention, batching, compression, caching, capacity planning, or load shedding"
+              "Backend security: JWT and RBAC, PKI and mTLS, rate limiting, abuse prevention, entitlement systems, tamper evidence, encryption, or secret boundaries"
+              "Reliability and observability: OpenTelemetry, Prometheus, SLOs, tracing, structured logs, health checks, incident diagnosis, or safe degradation"
+              "AWS backend architecture: Lambda, API Gateway, ECS, ECR, S3, queues, event-driven services, serverless tradeoffs, or cost-aware scaling"
+              "Containers and delivery systems: Docker, Kubernetes, Terraform, CI/CD quality gates, release safety, artifact design, or zero-downtime deployment"
+              "Modern backend technology: eBPF observability, WebAssembly components, event streaming, platform engineering, new Go releases, or cloud-native protocols"
+              "Security-conscious systems software: pure-Go versus cgo, binary distribution, license enforcement, usage metering, cryptographic integrity, or daemon design"
+              "AI backend engineering: RAG pipelines, semantic retrieval, tool execution, evaluation, model gateways, prompt security, observability, or token-cost control"
+            )
+            day_of_year="$(date -u +%j)"
+            pillar="${pillars[$(((10#$day_of_year - 1) % ${#pillars[@]}))]}"
+            recent_titles="$(find content/drafts -type f -name '*.json' -mtime -90 -exec jq -r '.title' {} + 2>/dev/null | head -40 | tr '\n' '; ' || true)"
+            topic="Choose one narrow, advanced, production-focused article thesis within this pillar: $pillar. Ground the angle in Neeraj's background as a senior Go/backend engineer working across microservices, distributed systems, security, performance, MongoDB/Redis, AWS, containers, observability, SDKs, and backend AI integration. At least 70% of the article must be backend mechanics and tradeoffs. Prefer Go examples. Do not write a beginner tutorial, generic technology overview, career post, frontend article, or trend list. Avoid repeating these recent titles or their central thesis: ${recent_titles:-none}. Date context: $day"
+          fi
+          output="content/drafts/$day.json"
+          cd backend
+          go run ./cmd/content generate --topic "$topic" --output "../$output"
+          echo "day=$day" >> "$GITHUB_OUTPUT"
+          echo "output=$output" >> "$GITHUB_OUTPUT"
+
+      - name: Open review pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DAY: ${{ steps.draft.outputs.day }}
+          OUTPUT: ${{ steps.draft.outputs.output }}
+        run: |
+          set -euo pipefail
+          branch="content/draft-$DAY-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add "$OUTPUT"
+          git commit -m "content: add daily draft for $DAY"
+          git push --set-upstream origin "$branch"
+          gh pr create --title "Content draft: $DAY" --body "Daily article bundle generated for editorial review. Merging does not publish it. Use the Content - Publish Approved workflow after approval." --base main --head "$branch"

@@ -27,11 +27,11 @@ resource "aws_amplify_app" "frontend" {
         appRoot: ${var.frontend_app_root}
   EOT
 
-  environment_variables = {
+  environment_variables = merge({
     NEXT_PUBLIC_API_BASE      = var.api_base_url
     NEXT_TELEMETRY_DISABLED   = "1"
     AMPLIFY_MONOREPO_APP_ROOT = var.frontend_app_root
-  }
+  }, var.environment_variables)
 
   dynamic "custom_rule" {
     for_each = var.enable_custom_domain && var.frontend_enable_www && var.frontend_subdomain == "" ? [1] : []
@@ -56,11 +56,11 @@ resource "aws_amplify_branch" "main" {
 
   enable_auto_build = var.enable_auto_build
 
-  environment_variables = {
+  environment_variables = merge({
     NEXT_PUBLIC_API_BASE      = var.api_base_url
     NEXT_TELEMETRY_DISABLED   = "1"
     AMPLIFY_MONOREPO_APP_ROOT = var.frontend_app_root
-  }
+  }, var.environment_variables)
 }
 
 resource "aws_amplify_domain_association" "frontend" {

@@ -1,0 +1,24 @@
+# Publishing Platform Matrix
+
+API access and platform policies change. Verify official documentation before implementing a new connector.
+
+| Platform               | Best use                                   | Publishing path                                                           | Automation stance                                              | Canonical handling                                |
+| ---------------------- | ------------------------------------------ | ------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------- |
+| Personal site / GitHub | Canonical archive and ownership            | Add a blog renderer, commit Markdown, then deploy                         | Recommended future source of truth; not implemented yet        | Self-canonical after the route exists             |
+| DEV / Forem            | Developer tutorials and discussion         | Official Articles API with API key; draft or publish                      | Implemented                                                    | `canonical_url` supported                         |
+| LinkedIn               | Professional reach and discussion          | Official Posts API with OAuth and `w_member_social` or organization scope | Implemented for feed posts; app access required                | Link to canonical article; not a full duplicate   |
+| Medium                 | General technical readership               | Manual import or editor                                                   | Manual: no new API integration tokens                          | Import sets canonical; editor also supports it    |
+| Hashnode               | Developer long-form content                | Official GraphQL API where account/API access is available                | Good next connector after verifying current schema             | Use original URL/canonical feature if available   |
+| WordPress              | Owned long-form publication                | REST API `POST /wp/v2/posts`; application password/OAuth                  | Good connector candidate                                       | Configure SEO plugin/site canonical               |
+| Ghost                  | Owned newsletter and blog                  | Admin API with integration key                                            | Good connector candidate                                       | Native site is normally canonical                 |
+| Blogger                | General blog                               | Blogger v3 API with OAuth 2.0                                             | Supported by official API                                      | Prefer canonical site as source                   |
+| Substack               | Newsletter audience                        | Web editor/import/email workflow                                          | Manual unless Substack exposes an approved API for the account | Link to canonical or choose Substack as canonical |
+| Mastodon               | Open social distribution                   | Official status API with OAuth user token                                 | Good social connector; supports scheduling                     | Link post only                                    |
+| Bluesky                | Developer/social distribution              | AT Protocol record creation                                               | Good social connector after app-password/OAuth setup           | Link post only                                    |
+| Reddit                 | Community-specific discussion              | Official API, subreddit rules, OAuth                                      | Approval-only; tailor each submission                          | Link post; never mass cross-post                  |
+| X                      | Short-form reach                           | Official API with paid/access-tier constraints                            | Optional; verify account tier and limits                       | Link post only                                    |
+| GitHub Discussions     | Engineering discussion around repositories | GitHub GraphQL API                                                        | Use only when tied to a relevant repository/community          | Link to canonical                                 |
+
+## Recommended Channel Set
+
+Use DEV as the initial article home and LinkedIn for a shorter native insight plus link. Import selected high-performing pieces to Medium manually from DEV. Move the canonical source to the personal site after a real blog route exists. Add a newsletter only after a sustainable weekly cadence exists; daily long-form publication usually lowers quality and fragments engagement.

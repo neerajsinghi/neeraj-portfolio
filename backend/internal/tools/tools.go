@@ -1,9 +1,14 @@
 package tools
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"sort"
 	"strings"
+	"time"
 
+	"neeraj-portfolio/backend/internal/blog"
 	"neeraj-portfolio/backend/internal/github"
 	"neeraj-portfolio/backend/internal/kb"
 )
@@ -70,10 +75,39 @@ var Tools = []Tool{
 		"Fetch Neeraj's public GitHub repositories live (name, description, stars, primary language). Use when asked about his open-source work or GitHub activity.",
 		obj(map[string]any{}),
 	},
+	{
+		"list_blogs",
+		"List Neeraj's latest published blog posts with titles, summaries, tags, publication dates, and links. Use when asked what he has written or for a list of posts.",
+		obj(map[string]any{
+			"limit": map[string]any{"type": "integer", "description": "number of posts to return (1-10, default 5)", "default": 5},
+		}),
+	},
+	{
+		"search_blogs",
+		"Search Neeraj's published blog content by topic and return grounded excerpts with links. Use for questions about subjects covered in his writing.",
+		obj(map[string]any{
+			"query": map[string]any{"type": "string", "description": "topic or natural-language blog search query"},
+			"top_n": map[string]any{"type": "integer", "description": "number of matching posts (1-5, default 3)", "default": 3},
+		}, "query"),
+	},
+	{
+		"get_services",
+		"Return the engineering services Neeraj can provide, grounded in his demonstrated experience. Use when asked how he can help, what he offers, consulting services, or engagement areas.",
+		obj(map[string]any{}),
+	},
 }
 
-// ExecuteTool runs a tool and returns (resultText, sourceIDs).
-func ExecuteTool(name string, input map[string]any) (string, []string) {
+// Executor runs tools with access to optional live data sources.
+type Executor struct {
+	blogStore blog.Store
+}
+
+func NewExecutor(blogStore blog.Store) *Executor {
+	return &Executor{blogStore: blogStore}
+}
+
+// Execute runs a tool and returns (resultText, sourceIDs).
+func (executor *Executor) Execute(name string, input map[string]any) (string, []string) {
 	switch name {
 	case "search_profile":
 		q, _ := input["query"].(string)
@@ -191,8 +225,118 @@ Seeking:  Senior / Staff backend or backend+AI roles`, []string{"contact"}
 			lines = append(lines, line)
 		}
 		return strings.Join(lines, "\n"), []string{"github"}
+
+	case "list_blogs":
+		limit := boundedInt(input["limit"], 5, 1, 10)
+		posts, err := executor.publishedBlogs(limit)
+		if err != nil {
+			return "Published blogs are temporarily unavailable.", nil
+		}
+		if len(posts) == 0 {
+			return "No published blog posts are available yet.", nil
+		}
+		return formatBlogs(posts, false)
+
+	case "search_blogs":
+		query, _ := input["query"].(string)
+		limit := boundedInt(input["top_n"], 3, 1, 5)
+		posts, err := executor.publishedBlogs(100)
+		if err != nil {
+			return "Published blogs are temporarily unavailable.", nil
+		}
+		matches := rankBlogs(posts, query, limit)
+		if len(matches) == 0 {
+			return "No published blog posts matched that topic.", nil
+		}
+		return formatBlogs(matches, true)
+
+	case "get_services":
+		return `Engineering services grounded in Neeraj's production experience:
+
+• Go backend architecture — APIs, microservices, gRPC, SDKs, concurrency, and distributed-system design.
+• AI and RAG integration — retrieval pipelines, tool-use agents, semantic search, document processing, and provider integrations.
+• Cloud and delivery — AWS serverless/container deployments, Docker, Kubernetes, Terraform, CI/CD, and observability.
+• Security engineering — JWT/RBAC, PKI/mTLS, entitlement systems, tamper detection, rate limiting, and HTTP hardening.
+• Performance and reliability — MongoDB query design, Redis caching, profiling, pagination, compression, and production stabilization.
+• Technical leadership — architecture reviews, delivery planning, code-review standards, and mentoring backend teams.`, []string{"services", "skills", "leadership", "security", "performance"}
 	}
 	return "Unknown tool.", nil
+}
+
+func (executor *Executor) publishedBlogs(limit int) ([]blog.Post, error) {
+	if executor.blogStore == nil {
+		return nil, errors.New("blog storage is not configured")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	return executor.blogStore.ListPublished(ctx, limit)
+}
+
+func boundedInt(value any, fallback, minimum, maximum int) int {
+	if number, ok := value.(float64); ok && int(number) >= minimum && int(number) <= maximum {
+		return int(number)
+	}
+	return fallback
+}
+
+func rankBlogs(posts []blog.Post, query string, limit int) []blog.Post {
+	tokens := strings.Fields(strings.ToLower(query))
+	type scoredPost struct {
+		post  blog.Post
+		score int
+	}
+	scored := make([]scoredPost, 0, len(posts))
+	for _, post := range posts {
+		title := strings.ToLower(post.Title)
+		body := strings.ToLower(post.Description + " " + strings.Join(post.Tags, " ") + " " + post.ContentMarkdown)
+		score := 0
+		for _, token := range tokens {
+			if strings.Contains(title, token) {
+				score += 3
+			}
+			if strings.Contains(body, token) {
+				score++
+			}
+		}
+		if score > 0 {
+			scored = append(scored, scoredPost{post: post, score: score})
+		}
+	}
+	sort.SliceStable(scored, func(i, j int) bool { return scored[i].score > scored[j].score })
+	if len(scored) > limit {
+		scored = scored[:limit]
+	}
+	result := make([]blog.Post, len(scored))
+	for index, match := range scored {
+		result[index] = match.post
+	}
+	return result
+}
+
+func formatBlogs(posts []blog.Post, includeExcerpt bool) (string, []string) {
+	lines := make([]string, 0, len(posts))
+	sources := make([]string, 0, len(posts))
+	for _, post := range posts {
+		line := fmt.Sprintf("• %s\n  %s", post.Title, post.Description)
+		if len(post.Tags) > 0 {
+			line += "\n  Topics: " + strings.Join(post.Tags, ", ")
+		}
+		if post.PublishedAt != nil {
+			line += "\n  Published: " + post.PublishedAt.Format("2 Jan 2006")
+		}
+		if includeExcerpt {
+			excerptRunes := []rune(strings.TrimSpace(post.ContentMarkdown))
+			if len(excerptRunes) > 700 {
+				excerptRunes = append(excerptRunes[:700], '…')
+			}
+			excerpt := string(excerptRunes)
+			line += "\n  Excerpt: " + excerpt
+		}
+		line += "\n  URL: https://neerajsinghi.com/blogs/" + post.Slug
+		lines = append(lines, line)
+		sources = append(sources, "blog:"+post.Slug)
+	}
+	return strings.Join(lines, "\n\n"), sources
 }
 
 // Project is a featured project shown on the portfolio site.
@@ -248,4 +392,3 @@ var ExperienceSummary = []Experience{
 	{"QA Engineer", "Trignodev Software", "Oct 2013 – Dec 2014",
 		"GUI, functional, and regression test suites for Kareermatrix.com."},
 }
-

@@ -1,4 +1,17 @@
 services:
+  mongodb:
+    image: mongo:7-jammy
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   backend:
     build:
       context: ./backend
@@ -9,7 +22,12 @@ services:
       - ./backend/.env
     environment:
       - PORT=8080
-      - ALLOWED_ORIGIN=http://localhost:3000
+      - ALLOWED_ORIGIN=http://localhost:3000,http://localhost:3200
+      - MONGODB_URI=mongodb://mongodb:27017
+      - MONGODB_DATABASE=neeraj_portfolio
+    depends_on:
+      mongodb:
+        condition: service_healthy
 
   # Frontend is hosted on AWS Amplify in production.
   # This service is optional and only for local development.
@@ -25,3 +43,22 @@ services:
       - NEXT_PUBLIC_API_BASE=http://localhost:8080
     depends_on:
       - backend
+
+  admin-local:
+    profiles:
+      - local-admin
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE: http://localhost:8080
+        NEXT_PUBLIC_COGNITO_DOMAIN: ${COGNITO_DOMAIN:-}
+        NEXT_PUBLIC_COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID:-}
+        NEXT_PUBLIC_COGNITO_REDIRECT_URI: http://localhost:3200/auth/callback
+    ports:
+      - "3200:3200"
+    depends_on:
+      - backend
+
+volumes:
+  mongodb_data:

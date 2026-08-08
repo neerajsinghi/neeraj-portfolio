@@ -12,6 +12,7 @@ root_domain = "neerajsinghi.com"
 frontend_subdomain = ""                               # empty => apex domain neerajsinghi.com
 frontend_enable_www = true
 api_subdomain = "api"
+admin_subdomain = "admin"
 
 github_repo         = "https://github.com/neerajsinghi/neeraj-portfolio"
 github_org_repo     = "neerajsinghi/neeraj-portfolio"
@@ -20,6 +21,7 @@ github_access_token = "ghp_xxxxxxxxxxxxxxxxxxxx"   # GitHub PAT with repo scope
 api_base_url = ""                                    # leave empty when enable_lambda_backend=true
 amplify_branch = "main"
 amplify_frontend_app_root = "frontend"
+admin_frontend_app_root = "admin"
 amplify_enable_auto_build = false                   # true if Amplify should build directly on git pushes
 
 # Used only when infrastructure_mode = "full"
