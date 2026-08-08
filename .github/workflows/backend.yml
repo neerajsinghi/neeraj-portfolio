@@ -81,3 +81,54 @@ jobs:
             --output text
           aws lambda wait function-updated \
             --function-name "$LAMBDA_FUNCTION"
+
+      - name: Configure content import and publishing
+        env:
+          CONTENT_IMPORT_TOKEN: ${{ secrets.CONTENT_IMPORT_TOKEN }}
+          DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_AUTHOR_URN: ${{ vars.LINKEDIN_AUTHOR_URN }}
+          LINKEDIN_VERSION: ${{ vars.LINKEDIN_VERSION }}
+        run: |
+          set -euo pipefail
+          if [ -z "$CONTENT_IMPORT_TOKEN" ]; then
+            echo "::error::Missing GitHub Actions secret CONTENT_IMPORT_TOKEN"
+            exit 1
+          fi
+
+          aws ssm put-parameter \
+            --name "/neeraj-portfolio/content-import-token" \
+            --type SecureString \
+            --value "$CONTENT_IMPORT_TOKEN" \
+            --overwrite \
+            --no-cli-pager \
+            --query 'Version' \
+            --output text >/dev/null
+
+          current=$(aws lambda get-function-configuration \
+            --function-name "$LAMBDA_FUNCTION" \
+            --query 'Environment.Variables' \
+            --output json)
+          updated=$(jq -c \
+            --arg import_token "$CONTENT_IMPORT_TOKEN" \
+            --arg devto "$DEVTO_API_KEY" \
+            --arg linkedin_token "$LINKEDIN_ACCESS_TOKEN" \
+            --arg linkedin_author "$LINKEDIN_AUTHOR_URN" \
+            --arg linkedin_version "$LINKEDIN_VERSION" \
+            '. + {
+              CONTENT_IMPORT_TOKEN: $import_token,
+              DEVTO_API_KEY: $devto,
+              LINKEDIN_ACCESS_TOKEN: $linkedin_token,
+              LINKEDIN_AUTHOR_URN: $linkedin_author,
+              LINKEDIN_VERSION: $linkedin_version
+            }' <<<"$current")
+          jq -n --argjson variables "$updated" '{Variables: $variables}' > "$RUNNER_TEMP/lambda-environment.json"
+          aws lambda update-function-configuration \
+            --function-name "$LAMBDA_FUNCTION" \
+            --environment "file://$RUNNER_TEMP/lambda-environment.json" \
+            --no-cli-pager \
+            --query 'FunctionArn' \
+            --output text >/dev/null
+          aws lambda wait function-updated \
+            --function-name "$LAMBDA_FUNCTION"
+          rm -f "$RUNNER_TEMP/lambda-environment.json"

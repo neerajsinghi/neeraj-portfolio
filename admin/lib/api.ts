@@ -6,6 +6,8 @@ export type BlogPost = {
   title: string;
   description: string;
   content_markdown: string;
+  linkedin_post?: string;
+  social_post?: string;
   tags: string[];
   status: Status;
   version: number;
@@ -14,7 +16,7 @@ export type BlogPost = {
   published_at?: string;
 };
 
-export type BlogInput = Pick<BlogPost, "slug" | "title" | "description" | "content_markdown" | "status" | "version"> & {
+export type BlogInput = Pick<BlogPost, "slug" | "title" | "description" | "content_markdown" | "linkedin_post" | "social_post" | "status" | "version"> & {
   tags: string[];
   scheduled_at?: string;
 };
@@ -50,4 +52,30 @@ export function updatePost(token: string, id: string, input: BlogInput) {
 
 export function deletePost(token: string, id: string) {
   return request<void>(`/api/admin/blogs/${id}`, token, { method: "DELETE" });
+}
+
+export type ExternalPlatform = "devto" | "linkedin";
+
+export type PublishResult = {
+  platform: ExternalPlatform;
+  id?: string;
+  url?: string;
+};
+
+export async function publishExternally(token: string, input: BlogInput, platforms: ExternalPlatform[]) {
+  const response = await request<{ results: PublishResult[] }>("/api/admin/publish", token, {
+    method: "POST",
+    body: JSON.stringify({
+      title: input.title,
+      slug: input.slug,
+      description: input.description,
+      article_markdown: input.content_markdown,
+      linkedin_post: input.linkedin_post || "",
+      social_post: input.social_post || "",
+      tags: input.tags,
+      canonical_url: `https://neerajsinghi.com/blogs/${input.slug}`,
+      platforms,
+    }),
+  });
+  return response.results;
 }

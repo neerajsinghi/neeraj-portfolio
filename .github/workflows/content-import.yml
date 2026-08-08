@@ -1,0 +1,57 @@
+name: Content - Import Approved Draft
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/drafts/**.json"
+  workflow_dispatch:
+    inputs:
+      file:
+        description: "Bundle path, for example content/drafts/2026-08-08.json"
+        required: true
+        type: string
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Import merged bundles as admin drafts
+        env:
+          API_BASE_URL: ${{ vars.API_BASE_URL }}
+          CONTENT_IMPORT_TOKEN: ${{ secrets.CONTENT_IMPORT_TOKEN }}
+          REQUESTED_FILE: ${{ inputs.file }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$API_BASE_URL" || -z "$CONTENT_IMPORT_TOKEN" ]]; then
+            echo "API_BASE_URL variable and CONTENT_IMPORT_TOKEN secret are required" >&2
+            exit 1
+          fi
+
+          if [[ -n "$REQUESTED_FILE" ]]; then
+            files=("$REQUESTED_FILE")
+          else
+            mapfile -t files < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" -- 'content/drafts/*.json')
+          fi
+          if [[ ${#files[@]} -eq 0 ]]; then
+            echo "No content bundles to import"
+            exit 0
+          fi
+
+          for file in "${files[@]}"; do
+            if [[ "$file" != content/drafts/*.json || ! -f "$file" ]]; then
+              echo "Invalid content bundle path: $file" >&2
+              exit 1
+            fi
+            curl --fail-with-body --retry 3 --retry-all-errors \
+              --header "Authorization: Bearer $CONTENT_IMPORT_TOKEN" \
+              --header "Content-Type: application/json" \
+              --data-binary "@$file" \
+              "${API_BASE_URL%/}/api/internal/content/import"
+          done

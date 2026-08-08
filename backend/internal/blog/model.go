@@ -36,6 +36,8 @@ type Post struct {
 	Title           string     `json:"title" bson:"title"`
 	Description     string     `json:"description" bson:"description"`
 	ContentMarkdown string     `json:"content_markdown" bson:"content_markdown"`
+	LinkedInPost    string     `json:"linkedin_post,omitempty" bson:"linkedin_post,omitempty"`
+	SocialPost      string     `json:"social_post,omitempty" bson:"social_post,omitempty"`
 	Tags            []string   `json:"tags" bson:"tags"`
 	Status          Status     `json:"status" bson:"status"`
 	Author          Author     `json:"author" bson:"author"`
@@ -52,6 +54,8 @@ type WriteInput struct {
 	Title           string     `json:"title"`
 	Description     string     `json:"description"`
 	ContentMarkdown string     `json:"content_markdown"`
+	LinkedInPost    string     `json:"linkedin_post,omitempty"`
+	SocialPost      string     `json:"social_post,omitempty"`
 	Tags            []string   `json:"tags"`
 	Status          Status     `json:"status"`
 	Version         int        `json:"version,omitempty"`
@@ -83,6 +87,8 @@ func (input *WriteInput) NormalizeAndValidate() error {
 	input.Title = strings.TrimSpace(input.Title)
 	input.Description = strings.TrimSpace(input.Description)
 	input.ContentMarkdown = strings.TrimSpace(input.ContentMarkdown)
+	input.LinkedInPost = strings.TrimSpace(input.LinkedInPost)
+	input.SocialPost = strings.TrimSpace(input.SocialPost)
 	if input.Status == "" {
 		input.Status = StatusDraft
 	}

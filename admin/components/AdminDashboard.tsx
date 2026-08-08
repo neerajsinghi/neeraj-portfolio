@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Archive, BookOpen, CalendarClock, Check, ExternalLink, FilePlus2, LogIn, LogOut, PanelLeft, Save, Send, Trash2 } from "lucide-react";
+import { Archive, BookOpen, CalendarClock, Check, Download, ExternalLink, FilePlus2, LogIn, LogOut, PanelLeft, Save, Send, Trash2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { createPost, deletePost, listPosts, updatePost, type BlogInput, type BlogPost, type Status } from "../lib/api";
+import { createPost, deletePost, listPosts, publishExternally, updatePost, type BlogInput, type BlogPost, type ExternalPlatform, type Status } from "../lib/api";
 import { beginLogin, getRoles, getSession, logout } from "../lib/auth";
 
-const emptyPost: BlogInput = { slug: "", title: "", description: "", content_markdown: "", tags: [], status: "draft", version: 0, scheduled_at: "" };
+const emptyPost: BlogInput = { slug: "", title: "", description: "", content_markdown: "", linkedin_post: "", social_post: "", tags: [], status: "draft", version: 0, scheduled_at: "" };
 
 export default function AdminDashboard() {
     const [token, setToken] = useState("");
@@ -19,6 +19,7 @@ export default function AdminDashboard() {
     const [message, setMessage] = useState("");
     const [busy, setBusy] = useState(false);
     const [ready, setReady] = useState(false);
+    const [destinations, setDestinations] = useState({ website: true, devto: false, linkedin: false });
     const isAdmin = roles.includes("admin");
     const selected = posts.find((post) => post.id === selectedID);
     const locked = Boolean(selected && selected.status !== "draft" && !isAdmin);
@@ -51,7 +52,8 @@ export default function AdminDashboard() {
         setSelectedID(post.id);
         setDraft({
             slug: post.slug, title: post.title, description: post.description,
-            content_markdown: post.content_markdown, tags: post.tags, status: post.status, version: post.version,
+            content_markdown: post.content_markdown, linkedin_post: post.linkedin_post || "", social_post: post.social_post || "",
+            tags: post.tags, status: post.status, version: post.version,
             scheduled_at: post.scheduled_at || "",
         });
         setMessage("");
@@ -64,8 +66,8 @@ export default function AdminDashboard() {
         setMessage("");
     }
 
-    async function save(status: Status = "draft") {
-        if (!token) return;
+    async function save(status: Status = "draft"): Promise<BlogPost | undefined> {
+        if (!token) return undefined;
         if (status === "scheduled" && !draft.scheduled_at) {
             setMessage("Choose a future publication date and time before scheduling.");
             return;
@@ -78,11 +80,54 @@ export default function AdminDashboard() {
             setPosts((current) => [saved, ...current.filter((post) => post.id !== saved.id)]);
             selectPost(saved);
             setMessage(status === "published" ? "Published successfully." : status === "scheduled" ? `Scheduled for ${formatDateTime(saved.scheduled_at)}.` : status === "archived" ? "Archived." : "Draft saved.");
+            return saved;
         } catch (error) {
             handleError(error);
         } finally {
             setBusy(false);
         }
+        return undefined;
+    }
+
+    async function publishSelected() {
+        if (!token || !isAdmin) return;
+        const external = (["devto", "linkedin"] as ExternalPlatform[]).filter((platform) => destinations[platform]);
+        if (!destinations.website && external.length === 0) {
+            setMessage("Select at least one publishing destination.");
+            return;
+        }
+        if (external.length > 0 && !destinations.website && selected?.status !== "published") {
+            setMessage("Publish on the personal site first so external posts have a canonical URL.");
+            return;
+        }
+        const labels = [destinations.website ? "neerajsinghi.com" : "", ...external.map((platform) => platform === "devto" ? "DEV" : "LinkedIn")].filter(Boolean);
+        if (!window.confirm(`Publish this article to ${labels.join(", ")}? External publishing cannot be undone from this console.`)) return;
+        setBusy(true);
+        setMessage("");
+        try {
+            let publishInput = draft;
+            if (destinations.website) {
+                const saved = await save("published");
+                if (!saved) return;
+                publishInput = { ...draft, version: saved.version, status: saved.status };
+            }
+            const results = external.length > 0 ? await publishExternally(token, publishInput, external) : [];
+            const publishedLabels = [destinations.website ? "neerajsinghi.com" : "", ...results.map((result) => result.platform === "devto" ? "DEV" : "LinkedIn")].filter(Boolean);
+            setMessage(`Published to ${publishedLabels.join(", ")}.`);
+        } catch (error) {
+            handleError(error);
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    function exportForMedium() {
+        const frontmatter = `---\ntitle: "${draft.title.replaceAll('"', '\\"')}"\ndescription: "${draft.description.replaceAll('"', '\\"')}"\ncanonical_url: "https://neerajsinghi.com/blogs/${draft.slug}"\ntags: [${draft.tags.map((tag) => `"${tag}"`).join(", ")}]\n---\n\n`;
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(new Blob([frontmatter + draft.content_markdown], { type: "text/markdown" }));
+        link.download = `${draft.slug || "article"}.md`;
+        link.click();
+        URL.revokeObjectURL(link.href);
     }
 
     async function remove() {
@@ -146,7 +191,7 @@ export default function AdminDashboard() {
                         {selected && isAdmin && selected.status !== "archived" && <button className="command" onClick={() => void save("archived")} disabled={busy}><Archive size={16} /> Archive</button>}
                         <button className="command" onClick={() => void save("draft")} disabled={busy || locked}><Save size={16} /> Save draft</button>
                         {isAdmin && <button className="command schedule" onClick={() => void save("scheduled")} disabled={busy || !draft.scheduled_at}><CalendarClock size={16} /> Schedule</button>}
-                        {isAdmin && <button className="command primary" onClick={() => void save("published")} disabled={busy}><Send size={16} /> Publish</button>}
+                        {isAdmin && <button className="command primary" onClick={() => void publishSelected()} disabled={busy}><Send size={16} /> Publish selected</button>}
                     </div>
                 </div>
 
@@ -163,6 +208,17 @@ export default function AdminDashboard() {
                         {isAdmin && <label className="schedule-field">Publication schedule<input type="datetime-local" value={toLocalDateTime(draft.scheduled_at)} min={toLocalDateTime(new Date(Date.now() + 60_000).toISOString())} onChange={(event) => setDraft({ ...draft, scheduled_at: event.target.value ? new Date(event.target.value).toISOString() : "" })} /><small>Uses your local time and publishes automatically at the selected moment.</small></label>}
                         <label>Description<textarea value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} disabled={locked} rows={3} maxLength={180} /></label>
                         <label className="content-field">Markdown<textarea value={draft.content_markdown} onChange={(event) => setDraft({ ...draft, content_markdown: event.target.value })} disabled={locked} spellCheck /></label>
+                        <div className="field-row social-copy">
+                            <label>LinkedIn post<textarea value={draft.linkedin_post || ""} onChange={(event) => setDraft({ ...draft, linkedin_post: event.target.value })} disabled={locked} rows={8} maxLength={2500} /></label>
+                            <label>Short social post<textarea value={draft.social_post || ""} onChange={(event) => setDraft({ ...draft, social_post: event.target.value })} disabled={locked} rows={8} maxLength={280} /></label>
+                        </div>
+                        {isAdmin && <section className="publish-panel" aria-label="Publishing destinations">
+                            <div><b>Publishing destinations</b><small>External posts use the personal-site article as their canonical URL.</small></div>
+                            <label><input type="checkbox" checked={destinations.website} onChange={(event) => setDestinations({ ...destinations, website: event.target.checked })} /> Personal site</label>
+                            <label><input type="checkbox" checked={destinations.devto} onChange={(event) => setDestinations({ ...destinations, devto: event.target.checked })} /> DEV</label>
+                            <label><input type="checkbox" checked={destinations.linkedin} onChange={(event) => setDestinations({ ...destinations, linkedin: event.target.checked })} /> LinkedIn</label>
+                            <button className="command" type="button" onClick={exportForMedium} disabled={!draft.content_markdown}><Download size={16} /> Export for Medium</button>
+                        </section>}
                     </div>
                 ) : (
                     <article className="preview-pane">

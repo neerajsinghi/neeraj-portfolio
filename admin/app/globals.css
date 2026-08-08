@@ -341,6 +341,51 @@ button:disabled {
     line-height: 1.65;
 }
 
+.social-copy textarea {
+    min-height: 170px;
+    resize: vertical;
+    line-height: 1.55;
+}
+
+.publish-panel {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    background: #f4f7f3;
+}
+
+.publish-panel>div {
+    margin-right: auto;
+}
+
+.publish-panel b,
+.publish-panel small {
+    display: block;
+}
+
+.publish-panel small {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.publish-panel label {
+    flex-direction: row;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.publish-panel input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--green);
+}
+
 .notice {
     display: flex;
     align-items: center;
@@ -502,6 +547,15 @@ button:disabled {
 
     .field-row {
         grid-template-columns: 1fr;
+    }
+
+    .publish-panel {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .publish-panel>div {
+        flex-basis: 100%;
     }
 
     .editor-form {

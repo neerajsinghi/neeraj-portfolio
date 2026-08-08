@@ -15,6 +15,7 @@ import (
 	"neeraj-portfolio/backend/internal/blog"
 	"neeraj-portfolio/backend/internal/github"
 	"neeraj-portfolio/backend/internal/llm"
+	"neeraj-portfolio/backend/internal/publisher"
 )
 
 // NewHandler builds the backend HTTP handler with CORS middleware.
@@ -60,6 +61,8 @@ func NewHandlerWithDependencies(prov llm.Provider, blogStore blog.Store, authent
 	mux.HandleFunc("POST /api/admin/blogs", adminCreateHandler(blogStore, authenticator))
 	mux.HandleFunc("PUT /api/admin/blogs/{id}", adminUpdateHandler(blogStore, authenticator))
 	mux.HandleFunc("DELETE /api/admin/blogs/{id}", adminDeleteHandler(blogStore, authenticator))
+	mux.HandleFunc("POST /api/admin/publish", adminExternalPublishHandler(publisher.NewClient(&http.Client{Timeout: 30*time.Second}), authenticator))
+	mux.HandleFunc("POST /api/internal/content/import", contentImportHandler(blogStore, os.Getenv("CONTENT_IMPORT_TOKEN")))
 	return withCORS(mux)
 }
 

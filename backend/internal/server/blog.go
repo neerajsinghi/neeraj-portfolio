@@ -2,14 +2,19 @@ package server
 
 import (
 	"context"
+	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"neeraj-portfolio/backend/internal/auth"
 	"neeraj-portfolio/backend/internal/blog"
+	"neeraj-portfolio/backend/internal/content"
+	"neeraj-portfolio/backend/internal/publisher"
 )
 
 type publicPost struct {
@@ -109,6 +114,110 @@ func adminCreateHandler(store blog.Store, authenticator auth.Authenticator) http
 			return
 		}
 		writeJSON(writer, http.StatusCreated, post)
+	}
+}
+
+func contentImportHandler(store blog.Store, importToken string) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		providedToken := strings.TrimSpace(strings.TrimPrefix(request.Header.Get("Authorization"), "Bearer "))
+		if importToken == "" || subtle.ConstantTimeCompare([]byte(providedToken), []byte(importToken)) != 1 {
+			writeAPIError(writer, http.StatusUnauthorized, "valid import token required")
+			return
+		}
+		if store == nil {
+			writeAPIError(writer, http.StatusServiceUnavailable, "blog storage is not configured")
+			return
+		}
+
+		var bundle content.Bundle
+		if !decodeJSON(writer, request, &bundle) {
+			return
+		}
+		input := blog.WriteInput{
+			Slug: bundle.Slug, Title: bundle.Title, Description: bundle.Description,
+			ContentMarkdown: bundle.Article, LinkedInPost: bundle.LinkedIn, SocialPost: bundle.Social,
+			Tags: bundle.Tags, Status: blog.StatusDraft,
+		}
+		principal := blog.Principal{
+			Subject: "github-content-import", Email: "github-actions@neerajsinghi.com",
+			Roles: map[blog.Role]bool{blog.RoleEditor: true},
+		}
+		ctx, cancel := context.WithTimeout(request.Context(), 5*time.Second)
+		defer cancel()
+		post, err := store.Create(ctx, input, principal)
+		if errors.Is(err, blog.ErrConflict) {
+			writeJSON(writer, http.StatusOK, map[string]any{"imported": false, "slug": bundle.Slug})
+			return
+		}
+		if writeBlogError(writer, err) {
+			return
+		}
+		writeJSON(writer, http.StatusCreated, map[string]any{"imported": true, "post": post})
+	}
+}
+
+type externalPublisher interface {
+	PublishDEV(context.Context, content.Bundle, string, bool) (publisher.Result, error)
+	PublishLinkedIn(context.Context, content.Bundle, string, string, string) (publisher.Result, error)
+}
+
+type externalPublishRequest struct {
+	content.Bundle
+	Platforms []string `json:"platforms"`
+}
+
+func adminExternalPublishHandler(client externalPublisher, authenticator auth.Authenticator) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		principal, ok := requireEditor(writer, request, authenticator)
+		if !ok {
+			return
+		}
+		if !principal.CanPublish() {
+			writeAPIError(writer, http.StatusForbidden, "admin role required for publishing")
+			return
+		}
+		var input externalPublishRequest
+		if !decodeJSON(writer, request, &input) {
+			return
+		}
+		if len(input.Platforms) == 0 {
+			writeAPIError(writer, http.StatusBadRequest, "select at least one external platform")
+			return
+		}
+		if input.CanonicalURL == "" {
+			input.CanonicalURL = "https://neerajsinghi.com/blogs/" + input.Slug
+		}
+		input.LinkedIn = strings.ReplaceAll(input.LinkedIn, "{{CANONICAL_URL}}", input.CanonicalURL)
+		input.Social = strings.ReplaceAll(input.Social, "{{CANONICAL_URL}}", input.CanonicalURL)
+
+		ctx, cancel := context.WithTimeout(request.Context(), 45*time.Second)
+		defer cancel()
+		results := make([]publisher.Result, 0, len(input.Platforms))
+		seen := make(map[string]bool, len(input.Platforms))
+		for _, platform := range input.Platforms {
+			platform = strings.TrimSpace(strings.ToLower(platform))
+			if seen[platform] {
+				continue
+			}
+			seen[platform] = true
+			var result publisher.Result
+			var err error
+			switch platform {
+			case "devto":
+				result, err = client.PublishDEV(ctx, input.Bundle, os.Getenv("DEVTO_API_KEY"), true)
+			case "linkedin":
+				result, err = client.PublishLinkedIn(ctx, input.Bundle, os.Getenv("LINKEDIN_ACCESS_TOKEN"), os.Getenv("LINKEDIN_AUTHOR_URN"), os.Getenv("LINKEDIN_VERSION"))
+			default:
+				writeAPIError(writer, http.StatusBadRequest, "unsupported publishing platform: "+platform)
+				return
+			}
+			if err != nil {
+				writeAPIError(writer, http.StatusBadGateway, "could not publish to "+platform+": "+err.Error())
+				return
+			}
+			results = append(results, result)
+		}
+		writeJSON(writer, http.StatusOK, map[string]any{"results": results})
 	}
 }
 

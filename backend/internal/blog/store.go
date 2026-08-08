@@ -162,7 +162,8 @@ func (store *MongoStore) Create(ctx context.Context, input WriteInput, principal
 	now := time.Now().UTC()
 	post := Post{
 		Slug: input.Slug, Title: input.Title, Description: input.Description,
-		ContentMarkdown: input.ContentMarkdown, Tags: input.Tags, Status: input.Status,
+		ContentMarkdown: input.ContentMarkdown, LinkedInPost: input.LinkedInPost,
+		SocialPost: input.SocialPost, Tags: input.Tags, Status: input.Status,
 		Author:    Author{Subject: principal.Subject, Email: principal.Email},
 		CreatedAt: now, UpdatedAt: now, SchemaVersion: 1, Version: 1,
 	}
@@ -215,7 +216,8 @@ func (store *MongoStore) Update(ctx context.Context, id string, input WriteInput
 	now := time.Now().UTC()
 	updated := existing.Post
 	updated.Slug, updated.Title, updated.Description = input.Slug, input.Title, input.Description
-	updated.ContentMarkdown, updated.Tags, updated.Status = input.ContentMarkdown, input.Tags, input.Status
+	updated.ContentMarkdown, updated.LinkedInPost, updated.SocialPost = input.ContentMarkdown, input.LinkedInPost, input.SocialPost
+	updated.Tags, updated.Status = input.Tags, input.Status
 	updated.UpdatedAt, updated.Version = now, existing.Version+1
 	updated.ScheduledAt = nil
 	if input.Status == StatusPublished {
