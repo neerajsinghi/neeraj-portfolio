@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CHIPS } from "../lib/profile";
 import { streamChat } from "../lib/api";
+import { trackEvent } from "../lib/analytics";
 import type { ChatItem } from "../types";
 
 function boldify(line: string, keyBase: string) {
@@ -41,6 +42,7 @@ export default function AgentConsole() {
   const streamRef = useRef<HTMLDivElement>(null);
   const histRef = useRef<{ role: string; content: string }[]>([]);
   const botTextRef = useRef("");
+  const streamErrorRef = useRef(false);
 
   useEffect(() => {
     const el = streamRef.current;
@@ -60,22 +62,29 @@ export default function AgentConsole() {
   }
 
   function onEvent(event: string, data: unknown) {
+    const eventData = data as Record<string, unknown>;
+    if (event === "tool") {
+      trackEvent("agent_tool_used", { tool_name: String(eventData.name ?? "unknown") });
+    } else if (event === "text") {
+      botTextRef.current += (botTextRef.current ? "\n\n" : "") + String(eventData.text ?? "");
+    } else if (event === "error") {
+      streamErrorRef.current = true;
+    }
+
     setItems((prev) => {
       const arr = [...prev];
-      const d = data as Record<string, unknown>;
       if (event === "tool") {
-        const input = d.input as Record<string, unknown> | undefined;
+        const input = eventData.input as Record<string, unknown> | undefined;
         const arg = input && Object.keys(input).length ? JSON.stringify(input) : "{}";
-        insertBeforeTyping(arr, { kind: "trace", tool: String(d.name ?? ""), arg });
+        insertBeforeTyping(arr, { kind: "trace", tool: String(eventData.name ?? ""), arg });
       } else if (event === "sources") {
         for (let i = arr.length - 1; i >= 0; i--) {
           if (arr[i].kind === "trace") {
-            arr[i] = { ...(arr[i] as { kind: "trace"; tool: string; arg: string }), sources: (d.sources as string[]) || [] };
+            arr[i] = { ...(arr[i] as { kind: "trace"; tool: string; arg: string }), sources: (eventData.sources as string[]) || [] };
             break;
           }
         }
       } else if (event === "text") {
-        botTextRef.current += (botTextRef.current ? "\n\n" : "") + String(d.text ?? "");
         const bi = arr.findIndex((x) => x.kind === "bot" && (x as { kind: "bot"; running?: boolean }).running);
         if (bi >= 0) arr[bi] = { kind: "bot", text: botTextRef.current, running: true };
         else insertBeforeTyping(arr, { kind: "bot", text: botTextRef.current, running: true });
@@ -83,19 +92,25 @@ export default function AgentConsole() {
         dropTyping(arr);
         insertBeforeTyping(arr, {
           kind: "bot",
-          text: "**The agent hit an error.** " + (String(d.message ?? "unknown")) + "\n\nCheck the Go backend logs and your `ANTHROPIC_API_KEY`.",
+          text: "**The agent hit an error.** " + (String(eventData.message ?? "unknown")) + "\n\nCheck the Go backend logs and your `ANTHROPIC_API_KEY`.",
         });
       }
       return arr;
     });
   }
 
-  async function ask(text: string) {
+  async function ask(text: string, inputMethod: "suggestion" | "typed") {
     const userText = text.trim();
     if (busy || !userText) return;
+    const startedAt = performance.now();
+    trackEvent("agent_question_submit", {
+      input_method: inputMethod,
+      question_length: userText.length,
+    });
     setBusy(true);
     setInput("");
     botTextRef.current = "";
+    streamErrorRef.current = false;
     setItems((p) => [...p, { kind: "user", text: userText }, { kind: "typing" }]);
     histRef.current = [...histRef.current, { role: "user", content: userText }];
 
@@ -104,7 +119,23 @@ export default function AgentConsole() {
       setItems((p) => dropTyping([...p]));
       if (botTextRef.current.trim())
         histRef.current = [...histRef.current, { role: "assistant", content: botTextRef.current }];
+      const duration = Math.round(performance.now() - startedAt);
+      if (streamErrorRef.current) {
+        trackEvent("agent_response_error", { input_method: inputMethod, duration_ms: duration });
+      } else if (botTextRef.current.trim()) {
+        trackEvent("agent_response_success", {
+          input_method: inputMethod,
+          response_length: botTextRef.current.length,
+          duration_ms: duration,
+        });
+      } else {
+        trackEvent("agent_response_empty", { input_method: inputMethod, duration_ms: duration });
+      }
     } catch (err: any) {
+      trackEvent("agent_response_error", {
+        input_method: inputMethod,
+        duration_ms: Math.round(performance.now() - startedAt),
+      });
       setItems((p) =>
         dropTyping([...p]).concat({
           kind: "bot",
@@ -154,7 +185,7 @@ export default function AgentConsole() {
 
       <div className="chips">
         {CHIPS.map((c) => (
-          <button key={c} className="chip" onClick={() => ask(c)} disabled={busy}>
+          <button key={c} className="chip" onClick={() => ask(c, "suggestion")} disabled={busy}>
             {c}
           </button>
         ))}
@@ -165,11 +196,11 @@ export default function AgentConsole() {
           aria-label="Ask Neeraj's portfolio agent"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && ask(input)}
+          onKeyDown={(e) => e.key === "Enter" && ask(input, "typed")}
           placeholder="Ask about Neeraj's experience…"
           autoComplete="off"
         />
-        <button className="send" onClick={() => ask(input)} disabled={busy} title="Send" aria-label="Send question">
+        <button className="send" onClick={() => ask(input, "typed")} disabled={busy} title="Send" aria-label="Send question">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" />
           </svg>
