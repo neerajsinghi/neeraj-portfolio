@@ -47,6 +47,14 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
+      - name: Validate deployment configuration
+        env:
+          APP_ID: ${{ secrets.ADMIN_AMPLIFY_APP_ID }}
+        run: |
+          if [ -z "$APP_ID" ]; then
+            echo "::error::Missing GitHub Actions secret ADMIN_AMPLIFY_APP_ID. Set it from the Terraform admin_amplify_app_id output."
+            exit 1
+          fi
       - name: Start Amplify deployment
         id: start
         run: |
