@@ -32,9 +32,15 @@ func New() *Provider {
 	if model == "" {
 		model = "claude-sonnet-4-6"
 	}
+	timeout := 45 * time.Second
+	if configured := os.Getenv("ANTHROPIC_HTTP_TIMEOUT"); configured != "" {
+		if parsed, err := time.ParseDuration(configured); err == nil && parsed > 0 {
+			timeout = parsed
+		}
+	}
 	return &Provider{
 		model:      model,
-		httpClient: &http.Client{Timeout: 45 * time.Second},
+		httpClient: &http.Client{Timeout: timeout},
 	}
 }
 

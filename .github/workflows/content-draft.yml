@@ -19,6 +19,7 @@ jobs:
     env:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+      ANTHROPIC_HTTP_TIMEOUT: 180s
     steps:
       - uses: actions/checkout@v4
 
@@ -59,7 +60,18 @@ jobs:
           fi
           output="content/drafts/$day.json"
           cd backend
-          go run ./cmd/content generate --topic "$topic" --output "../$output"
+          for attempt in 1 2 3; do
+            if go run ./cmd/content generate --topic "$topic" --output "../$output"; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "Content generation failed after $attempt attempts."
+              exit 1
+            fi
+            delay=$((attempt * 15))
+            echo "Anthropic request failed on attempt $attempt; retrying in ${delay}s."
+            sleep "$delay"
+          done
           echo "day=$day" >> "$GITHUB_OUTPUT"
           echo "output=$output" >> "$GITHUB_OUTPUT"
 
