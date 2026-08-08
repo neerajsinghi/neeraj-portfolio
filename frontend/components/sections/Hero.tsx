@@ -10,9 +10,9 @@ export default function Hero() {
           Neeraj Singhi
           <br />
           <span className="grad">
-            builds the systems
+            Senior Go backend
             <br />
-            behind the product.
+            &amp; AI engineer.
           </span>
         </h1>
         <div className="role">

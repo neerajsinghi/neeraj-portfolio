@@ -162,13 +162,14 @@ export default function AgentConsole() {
 
       <div className="composer">
         <input
+          aria-label="Ask Neeraj's portfolio agent"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && ask(input)}
           placeholder="Ask about Neeraj's experience…"
           autoComplete="off"
         />
-        <button className="send" onClick={() => ask(input)} disabled={busy} title="Send">
+        <button className="send" onClick={() => ask(input)} disabled={busy} title="Send" aria-label="Send question">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" />
           </svg>

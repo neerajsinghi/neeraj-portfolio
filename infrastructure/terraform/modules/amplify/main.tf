@@ -28,9 +28,18 @@ resource "aws_amplify_app" "frontend" {
   EOT
 
   environment_variables = {
-    NEXT_PUBLIC_API_BASE       = var.api_base_url
-    NEXT_TELEMETRY_DISABLED    = "1"
-    AMPLIFY_MONOREPO_APP_ROOT  = var.frontend_app_root
+    NEXT_PUBLIC_API_BASE      = var.api_base_url
+    NEXT_TELEMETRY_DISABLED   = "1"
+    AMPLIFY_MONOREPO_APP_ROOT = var.frontend_app_root
+  }
+
+  dynamic "custom_rule" {
+    for_each = var.enable_custom_domain && var.frontend_enable_www && var.frontend_subdomain == "" ? [1] : []
+    content {
+      source = "https://www.${var.root_domain}"
+      target = "https://${var.root_domain}"
+      status = "301"
+    }
   }
 
   # Ignore changes to access_token after initial creation
@@ -48,9 +57,9 @@ resource "aws_amplify_branch" "main" {
   enable_auto_build = var.enable_auto_build
 
   environment_variables = {
-    NEXT_PUBLIC_API_BASE       = var.api_base_url
-    NEXT_TELEMETRY_DISABLED    = "1"
-    AMPLIFY_MONOREPO_APP_ROOT  = var.frontend_app_root
+    NEXT_PUBLIC_API_BASE      = var.api_base_url
+    NEXT_TELEMETRY_DISABLED   = "1"
+    AMPLIFY_MONOREPO_APP_ROOT = var.frontend_app_root
   }
 }
 
