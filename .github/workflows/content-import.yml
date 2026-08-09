@@ -27,6 +27,7 @@ jobs:
           API_BASE_URL: ${{ vars.API_BASE_URL }}
           CONTENT_IMPORT_TOKEN: ${{ secrets.CONTENT_IMPORT_TOKEN }}
           REQUESTED_FILE: ${{ inputs.file }}
+          BEFORE_SHA: ${{ github.event.before }}
         run: |
           set -euo pipefail
           if [[ -z "$API_BASE_URL" || -z "$CONTENT_IMPORT_TOKEN" ]]; then
@@ -37,11 +38,11 @@ jobs:
           if [[ -n "$REQUESTED_FILE" ]]; then
             files=("$REQUESTED_FILE")
           else
-            mapfile -t files < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" -- 'content/drafts/*.json')
+            mapfile -t files < <(git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA" -- 'content/drafts/*.json')
           fi
           if [[ ${#files[@]} -eq 0 ]]; then
-            echo "No content bundles to import"
-            exit 0
+            echo "No content bundles found in a content-triggered import run" >&2
+            exit 1
           fi
 
           for file in "${files[@]}"; do
