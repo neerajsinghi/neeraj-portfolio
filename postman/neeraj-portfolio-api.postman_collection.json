@@ -1,0 +1,203 @@
+{
+  "info": {
+    "_postman_id": "b7b6b6d0-6e0d-4f1a-9a3b-8e0a6a2f3c11",
+    "name": "Neeraj Portfolio API",
+    "description": "Public, admin, and internal endpoints for the neerajsinghi.com backend. Canonical routes are versioned under /api/v1; the unversioned /api paths remain available as backward-compatible aliases. See docs/system-design.md section 7 for the full contract.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "apiVersion", "value": "v1", "type": "string" },
+    { "key": "adminAccessToken", "value": "", "type": "string" },
+    { "key": "contentImportToken", "value": "", "type": "string" },
+    { "key": "postId", "value": "REPLACE_WITH_POST_ID", "type": "string" },
+    { "key": "postVersion", "value": "1", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "health"]
+            },
+            "description": "Returns ok, model, api_version, blog_configured, admin_auth_configured."
+          }
+        },
+        {
+          "name": "Chat (SSE)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"messages\": [\n    { \"role\": \"user\", \"content\": \"What backend work has Neeraj shipped recently?\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "chat"]
+            },
+            "description": "Streams Server-Sent Events (tool, sources, text, done). Postman renders the raw SSE body rather than a live stream."
+          }
+        },
+        {
+          "name": "GitHub Repos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/github",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "github"]
+            }
+          }
+        },
+        {
+          "name": "List Published Blogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/blogs?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "blogs"],
+              "query": [{ "key": "limit", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Get Blog By Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/blogs/reliable-go-services",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "blogs", "reliable-go-services"]
+            },
+            "description": "Replace the slug segment with a published post's slug."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin (Cognito bearer)",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{adminAccessToken}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "List All Posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/admin/blogs?limit=100",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "admin", "blogs"],
+              "query": [{ "key": "limit", "value": "100" }]
+            }
+          }
+        },
+        {
+          "name": "Create Draft",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"reliable-go-services\",\n  \"title\": \"Reliability patterns for production Go services\",\n  \"description\": \"A practical guide to timeouts, retries, and backpressure in Go backends.\",\n  \"content_markdown\": \"# Reliable Go Services\\n\\nReplace this with the full article body, at least 100 characters long.\",\n  \"linkedin_post\": \"\",\n  \"social_post\": \"\",\n  \"tags\": [\"go\", \"reliability\"],\n  \"status\": \"draft\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/admin/blogs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "admin", "blogs"]
+            },
+            "description": "Requires editor or admin role. Non-draft status additionally requires admin."
+          }
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"reliable-go-services\",\n  \"title\": \"Reliability patterns for production Go services\",\n  \"description\": \"A practical guide to timeouts, retries, and backpressure in Go backends.\",\n  \"content_markdown\": \"# Reliable Go Services\\n\\nUpdated article body, at least 100 characters long.\",\n  \"linkedin_post\": \"\",\n  \"social_post\": \"\",\n  \"tags\": [\"go\", \"reliability\"],\n  \"status\": \"draft\",\n  \"version\": {{postVersion}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/admin/blogs/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "admin", "blogs", "{{postId}}"]
+            },
+            "description": "version must equal the post's current version (optimistic concurrency). Publishing or archiving requires admin."
+          }
+        },
+        {
+          "name": "Delete Post",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/admin/blogs/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "admin", "blogs", "{{postId}}"]
+            },
+            "description": "Requires admin role. Permanently deletes the post."
+          }
+        },
+        {
+          "name": "Publish Externally (DEV/LinkedIn)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Reliability patterns for production Go services\",\n  \"slug\": \"reliable-go-services\",\n  \"description\": \"A practical guide to timeouts, retries, and backpressure in Go backends.\",\n  \"tags\": [\"go\", \"reliability\"],\n  \"article_markdown\": \"# Reliable Go Services\\n\\nFull article body to publish, at least 100 characters long.\",\n  \"linkedin_post\": \"A practical reliability guide: {{CANONICAL_URL}}\",\n  \"social_post\": \"Reliable Go services: {{CANONICAL_URL}}\",\n  \"platforms\": [\"devto\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/admin/publish",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "admin", "publish"]
+            },
+            "description": "Requires admin role. platforms may include devto and/or linkedin. canonical_url defaults to https://neerajsinghi.com/blogs/{slug} when omitted."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Internal (machine-to-machine)",
+      "item": [
+        {
+          "name": "Import Content Bundle",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{contentImportToken}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Reliability patterns for production Go services\",\n  \"slug\": \"reliable-go-services\",\n  \"description\": \"A practical guide to timeouts, retries, and backpressure in Go backends.\",\n  \"tags\": [\"go\", \"reliability\"],\n  \"article_markdown\": \"# Reliable Go Services\\n\\nFull article body, at least 100 characters long.\",\n  \"linkedin_post\": \"A practical reliability guide: {{CANONICAL_URL}}\",\n  \"social_post\": \"Reliable Go services: {{CANONICAL_URL}}\",\n  \"created_at\": \"2026-08-10T00:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/internal/content/import",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "internal", "content", "import"]
+            },
+            "description": "Authenticated with CONTENT_IMPORT_TOKEN, not a Cognito token. Always creates the post as a draft; a duplicate slug returns 200 with imported:false."
+          }
+        }
+      ]
+    }
+  ]
+}

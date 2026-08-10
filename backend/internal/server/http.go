@@ -43,27 +43,58 @@ func NewHandler(prov llm.Provider) http.Handler {
 	return NewHandlerWithDependencies(prov, blogStore, authenticator)
 }
 
+// currentAPIVersion is the canonical, supported API version. Routes are
+// mounted under /api/{currentAPIVersion}/... and also aliased at the
+// legacy unversioned /api/... paths for backward compatibility.
+const currentAPIVersion = "v1"
+
 // NewHandlerWithDependencies builds a handler with injectable blog dependencies for tests.
 func NewHandlerWithDependencies(prov llm.Provider, blogStore blog.Store, authenticator auth.Authenticator) http.Handler {
 	ag := agent.NewWithBlogStore(prov, blogStore)
-	mux := http.NewServeMux()
-	mux.HandleFunc("/api/health", func(w http.ResponseWriter, _ *http.Request) {
+	publishClient := publisher.NewClient(&http.Client{Timeout: 30 * time.Second})
+
+	healthHandler := func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{
-			"ok": true, "model": prov.ModelName(),
+			"ok": true, "model": prov.ModelName(), "api_version": currentAPIVersion,
 			"blog_configured": blogStore != nil, "admin_auth_configured": authenticator != nil,
 		})
+	}
+
+	mux := http.NewServeMux()
+	registerVersioned(mux, "", "/api/health", healthHandler)
+	registerVersioned(mux, "", "/api/chat", chatHandler(ag))
+	registerVersioned(mux, "", "/api/github", reposHandler)
+	registerVersioned(mux, "GET", "/api/blogs", publicListHandler(blogStore))
+	registerVersioned(mux, "GET", "/api/blogs/{slug}", publicDetailHandler(blogStore))
+	registerVersioned(mux, "GET", "/api/admin/blogs", adminListHandler(blogStore, authenticator))
+	registerVersioned(mux, "POST", "/api/admin/blogs", adminCreateHandler(blogStore, authenticator))
+	registerVersioned(mux, "PUT", "/api/admin/blogs/{id}", adminUpdateHandler(blogStore, authenticator))
+	registerVersioned(mux, "DELETE", "/api/admin/blogs/{id}", adminDeleteHandler(blogStore, authenticator))
+	registerVersioned(mux, "POST", "/api/admin/publish", adminExternalPublishHandler(publishClient, authenticator))
+	registerVersioned(mux, "POST", "/api/internal/content/import", contentImportHandler(blogStore, os.Getenv("CONTENT_IMPORT_TOKEN")))
+	return withCORS(withAPIVersionHeader(mux))
+}
+
+// registerVersioned mounts handler at the canonical /api/{currentAPIVersion}/...
+// path and, for backward compatibility, at the equivalent legacy /api/... path.
+// method may be empty to register the pattern for all HTTP methods.
+func registerVersioned(mux *http.ServeMux, method, path string, handler http.HandlerFunc) {
+	versionedPath := "/api/" + currentAPIVersion + strings.TrimPrefix(path, "/api")
+	if method == "" {
+		mux.HandleFunc(path, handler)
+		mux.HandleFunc(versionedPath, handler)
+		return
+	}
+	mux.HandleFunc(method+" "+path, handler)
+	mux.HandleFunc(method+" "+versionedPath, handler)
+}
+
+// withAPIVersionHeader advertises the canonical API version on every response.
+func withAPIVersionHeader(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-API-Version", currentAPIVersion)
+		next.ServeHTTP(w, r)
 	})
-	mux.HandleFunc("/api/chat", chatHandler(ag))
-	mux.HandleFunc("/api/github", reposHandler)
-	mux.HandleFunc("GET /api/blogs", publicListHandler(blogStore))
-	mux.HandleFunc("GET /api/blogs/{slug}", publicDetailHandler(blogStore))
-	mux.HandleFunc("GET /api/admin/blogs", adminListHandler(blogStore, authenticator))
-	mux.HandleFunc("POST /api/admin/blogs", adminCreateHandler(blogStore, authenticator))
-	mux.HandleFunc("PUT /api/admin/blogs/{id}", adminUpdateHandler(blogStore, authenticator))
-	mux.HandleFunc("DELETE /api/admin/blogs/{id}", adminDeleteHandler(blogStore, authenticator))
-	mux.HandleFunc("POST /api/admin/publish", adminExternalPublishHandler(publisher.NewClient(&http.Client{Timeout: 30*time.Second}), authenticator))
-	mux.HandleFunc("POST /api/internal/content/import", contentImportHandler(blogStore, os.Getenv("CONTENT_IMPORT_TOKEN")))
-	return withCORS(mux)
 }
 
 // withCORS allows configured comma-separated frontend origins.

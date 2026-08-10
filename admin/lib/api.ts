@@ -38,20 +38,20 @@ async function request<T>(path: string, token: string, init?: RequestInit): Prom
 }
 
 export async function listPosts(token: string) {
-  const result = await request<{ posts: BlogPost[] }>("/api/admin/blogs?limit=100", token);
+  const result = await request<{ posts: BlogPost[] }>("/api/v1/admin/blogs?limit=100", token);
   return result.posts;
 }
 
 export function createPost(token: string, input: BlogInput) {
-  return request<BlogPost>("/api/admin/blogs", token, { method: "POST", body: JSON.stringify(input) });
+  return request<BlogPost>("/api/v1/admin/blogs", token, { method: "POST", body: JSON.stringify(input) });
 }
 
 export function updatePost(token: string, id: string, input: BlogInput) {
-  return request<BlogPost>(`/api/admin/blogs/${id}`, token, { method: "PUT", body: JSON.stringify(input) });
+  return request<BlogPost>(`/api/v1/admin/blogs/${id}`, token, { method: "PUT", body: JSON.stringify(input) });
 }
 
 export function deletePost(token: string, id: string) {
-  return request<void>(`/api/admin/blogs/${id}`, token, { method: "DELETE" });
+  return request<void>(`/api/v1/admin/blogs/${id}`, token, { method: "DELETE" });
 }
 
 export type ExternalPlatform = "devto" | "linkedin";
@@ -63,7 +63,7 @@ export type PublishResult = {
 };
 
 export async function publishExternally(token: string, input: BlogInput, platforms: ExternalPlatform[]) {
-  const response = await request<{ results: PublishResult[] }>("/api/admin/publish", token, {
+  const response = await request<{ results: PublishResult[] }>("/api/v1/admin/publish", token, {
     method: "POST",
     body: JSON.stringify({
       title: input.title,

@@ -2,7 +2,7 @@ import { API_BASE } from "./profile";
 import type { Repo } from "../types";
 
 export async function fetchGithubRepos(): Promise<{ user: string; repos: Repo[] }> {
-  const res = await fetch(`${API_BASE}/api/github`);
+  const res = await fetch(`${API_BASE}/api/v1/github`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
@@ -11,7 +11,7 @@ export async function streamChat(
   messages: { role: string; content: string }[],
   onEvent: (event: string, data: unknown) => void
 ): Promise<void> {
-  const res = await fetch(`${API_BASE}/api/chat`, {
+  const res = await fetch(`${API_BASE}/api/v1/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ messages }),

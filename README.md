@@ -4,6 +4,10 @@ Personal portfolio for **Neeraj Singhi** — a live site with an AI agent that a
 
 ## Architecture
 
+For the complete as-built architecture, request flows, data model, security boundaries, deployment topology, and failure behavior, see [System Design](docs/system-design.md).
+
+All backend routes are versioned under `/api/v1/...` (see [System Design §7](docs/system-design.md#7-backend-api)). The previous unversioned `/api/...` paths remain available as backward-compatible aliases. A ready-to-import [Postman collection](postman/neeraj-portfolio-api.postman_collection.json) with local/production environments covers every endpoint.
+
 ```
 neeraj-portfolio/
 ├── backend/                   Go 1.24 API
