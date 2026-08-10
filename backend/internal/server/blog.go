@@ -161,6 +161,35 @@ type externalPublisher interface {
 	PublishLinkedIn(context.Context, content.Bundle, string, string, string) (publisher.Result, error)
 }
 
+// scheduledPublishHandler is called by the Atlas Scheduled Trigger instead of
+// letting it mutate MongoDB directly, so due posts go through the same
+// version/revision/audit path as a human-triggered publish.
+func scheduledPublishHandler(store blog.Store, token string) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		providedToken := strings.TrimSpace(strings.TrimPrefix(request.Header.Get("Authorization"), "Bearer "))
+		if token == "" || subtle.ConstantTimeCompare([]byte(providedToken), []byte(token)) != 1 {
+			writeAPIError(writer, http.StatusUnauthorized, "valid scheduled-publish token required")
+			return
+		}
+		if store == nil {
+			writeAPIError(writer, http.StatusServiceUnavailable, "blog storage is not configured")
+			return
+		}
+		ctx, cancel := context.WithTimeout(request.Context(), 15*time.Second)
+		defer cancel()
+		posts, err := store.PublishDue(ctx)
+		if err != nil {
+			writeAPIError(writer, http.StatusInternalServerError, "could not publish due posts")
+			return
+		}
+		slugs := make([]string, 0, len(posts))
+		for _, post := range posts {
+			slugs = append(slugs, post.Slug)
+		}
+		writeJSON(writer, http.StatusOK, map[string]any{"published": len(posts), "slugs": slugs})
+	}
+}
+
 type externalPublishRequest struct {
 	content.Bundle
 	Platforms []string `json:"platforms"`

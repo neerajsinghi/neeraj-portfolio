@@ -25,10 +25,12 @@ func (fake fakeAuthenticator) Authenticate(*http.Request) (blog.Principal, error
 }
 
 type fakeBlogStore struct {
-	posts     []blog.Post
-	created   blog.WriteInput
-	createErr error
-	updateErr error
+	posts           []blog.Post
+	created         blog.WriteInput
+	createErr       error
+	updateErr       error
+	publishDuePosts []blog.Post
+	publishDueErr   error
 }
 
 type fakeExternalPublisher struct {
@@ -62,6 +64,9 @@ func (fake *fakeBlogStore) Update(context.Context, string, blog.WriteInput, blog
 	return blog.Post{}, fake.updateErr
 }
 func (fake *fakeBlogStore) Delete(context.Context, string, blog.Principal) error { return nil }
+func (fake *fakeBlogStore) PublishDue(context.Context) ([]blog.Post, error) {
+	return fake.publishDuePosts, fake.publishDueErr
+}
 
 func TestAdminListRequiresAuthenticationAndRole(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/api/admin/blogs", nil)
@@ -181,5 +186,27 @@ func TestInternalStoreErrorIsNotExposed(t *testing.T) {
 	writeBlogError(response, errors.New("mongodb credential detail"))
 	if response.Code != http.StatusInternalServerError || strings.Contains(response.Body.String(), "credential") {
 		t.Fatalf("unexpected internal error response: status=%d body=%s", response.Code, response.Body.String())
+	}
+}
+
+func TestScheduledPublishRequiresToken(t *testing.T) {
+	request := httptest.NewRequest(http.MethodPost, "/api/internal/scheduled-publish", nil)
+	response := httptest.NewRecorder()
+
+	scheduledPublishHandler(&fakeBlogStore{}, "publish-secret")(response, request)
+	if response.Code != http.StatusUnauthorized {
+		t.Fatalf("status = %d, want 401", response.Code)
+	}
+}
+
+func TestScheduledPublishReturnsPublishedSlugs(t *testing.T) {
+	store := &fakeBlogStore{publishDuePosts: []blog.Post{{Slug: "due-post", Status: blog.StatusPublished}}}
+	request := httptest.NewRequest(http.MethodPost, "/api/internal/scheduled-publish", nil)
+	request.Header.Set("Authorization", "Bearer publish-secret")
+	response := httptest.NewRecorder()
+
+	scheduledPublishHandler(store, "publish-secret")(response, request)
+	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"due-post"`) {
+		t.Fatalf("status = %d, body = %s", response.Code, response.Body.String())
 	}
 }

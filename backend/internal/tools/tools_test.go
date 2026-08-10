@@ -29,6 +29,7 @@ func (fake fakeBlogStore) Update(context.Context, string, blog.WriteInput, blog.
 	return blog.Post{}, nil
 }
 func (fake fakeBlogStore) Delete(context.Context, string, blog.Principal) error { return nil }
+func (fake fakeBlogStore) PublishDue(context.Context) ([]blog.Post, error)      { return nil, nil }
 
 func TestBlogToolsReturnGroundedPostsAndSources(t *testing.T) {
 	now := time.Now().UTC()

@@ -85,6 +85,7 @@ jobs:
       - name: Configure content import and publishing
         env:
           CONTENT_IMPORT_TOKEN: ${{ secrets.CONTENT_IMPORT_TOKEN }}
+          SCHEDULED_PUBLISH_TOKEN: ${{ secrets.SCHEDULED_PUBLISH_TOKEN }}
           DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
           LINKEDIN_AUTHOR_URN: ${{ vars.LINKEDIN_AUTHOR_URN }}
@@ -93,6 +94,10 @@ jobs:
           set -euo pipefail
           if [ -z "$CONTENT_IMPORT_TOKEN" ]; then
             echo "::error::Missing GitHub Actions secret CONTENT_IMPORT_TOKEN"
+            exit 1
+          fi
+          if [ -z "$SCHEDULED_PUBLISH_TOKEN" ]; then
+            echo "::error::Missing GitHub Actions secret SCHEDULED_PUBLISH_TOKEN"
             exit 1
           fi
 
@@ -105,18 +110,29 @@ jobs:
             --query 'Version' \
             --output text >/dev/null
 
+          aws ssm put-parameter \
+            --name "/neeraj-portfolio/scheduled-publish-token" \
+            --type SecureString \
+            --value "$SCHEDULED_PUBLISH_TOKEN" \
+            --overwrite \
+            --no-cli-pager \
+            --query 'Version' \
+            --output text >/dev/null
+
           current=$(aws lambda get-function-configuration \
             --function-name "$LAMBDA_FUNCTION" \
             --query 'Environment.Variables' \
             --output json)
           updated=$(jq -c \
             --arg import_token "$CONTENT_IMPORT_TOKEN" \
+            --arg publish_token "$SCHEDULED_PUBLISH_TOKEN" \
             --arg devto "$DEVTO_API_KEY" \
             --arg linkedin_token "$LINKEDIN_ACCESS_TOKEN" \
             --arg linkedin_author "$LINKEDIN_AUTHOR_URN" \
             --arg linkedin_version "$LINKEDIN_VERSION" \
             '. + {
               CONTENT_IMPORT_TOKEN: $import_token,
+              SCHEDULED_PUBLISH_TOKEN: $publish_token,
               DEVTO_API_KEY: $devto,
               LINKEDIN_ACCESS_TOKEN: $linkedin_token,
               LINKEDIN_AUTHOR_URN: $linkedin_author,

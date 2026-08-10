@@ -25,6 +25,7 @@ type Store interface {
 	Create(context.Context, WriteInput, Principal) (Post, error)
 	Update(context.Context, string, WriteInput, Principal) (Post, error)
 	Delete(context.Context, string, Principal) error
+	PublishDue(context.Context) ([]Post, error)
 }
 
 type MongoStore struct {
@@ -254,6 +255,47 @@ func publicFilter(now time.Time) bson.M {
 		bson.M{"status": StatusPublished},
 		bson.M{"status": StatusScheduled, "scheduled_at": bson.M{"$lte": now}},
 	}}
+}
+
+// PublishDue transitions every scheduled post whose scheduled_at has passed
+// to published through the same version/revision/audit path as a normal
+// edit, instead of a direct status write. A per-document version check keeps
+// this safe against a concurrent admin edit of the same post.
+func (store *MongoStore) PublishDue(ctx context.Context) ([]Post, error) {
+	now := time.Now().UTC()
+	cursor, err := store.posts.Find(ctx, bson.M{"status": StatusScheduled, "scheduled_at": bson.M{"$lte": now}})
+	if err != nil {
+		return nil, err
+	}
+	var due []postDocument
+	err = cursor.All(ctx, &due)
+	cursor.Close(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	actor := Author{Subject: "scheduled-publish", Email: "scheduled-publish@neerajsinghi.com"}
+	published := make([]Post, 0, len(due))
+	for _, document := range due {
+		result, err := store.posts.UpdateOne(ctx,
+			bson.M{"_id": document.MongoID, "version": document.Version},
+			bson.M{"$set": bson.M{"status": StatusPublished, "updated_at": now}, "$inc": bson.M{"version": 1}},
+		)
+		if err != nil || result.MatchedCount == 0 {
+			continue // changed concurrently since the read; a later run will retry it
+		}
+		_, _ = store.revisions.InsertOne(ctx, revisionDocument{
+			PostID: document.MongoID, Version: document.Version, Snapshot: document.Post,
+			ChangedBy: actor, CreatedAt: now,
+		})
+		_ = store.writeAudit(ctx, document.MongoID, "publish", Principal{Subject: actor.Subject, Email: actor.Email})
+
+		updated := document.Post
+		updated.ID = document.MongoID.Hex()
+		updated.Status, updated.UpdatedAt, updated.Version = StatusPublished, now, document.Version+1
+		published = append(published, updated)
+	}
+	return published, nil
 }
 
 func (store *MongoStore) Delete(ctx context.Context, id string, principal Principal) error {
