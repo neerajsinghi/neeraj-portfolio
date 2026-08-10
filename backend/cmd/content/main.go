@@ -75,6 +75,12 @@ func publish(ctx context.Context, args []string) error {
 	if err := json.Unmarshal(raw, &bundle); err != nil {
 		return err
 	}
+	// Matches the server's auto-derivation so drafts don't need canonical_url set manually.
+	if bundle.CanonicalURL == "" && bundle.Slug != "" {
+		bundle.CanonicalURL = "https://neerajsinghi.com/blogs/" + bundle.Slug
+		bundle.LinkedIn = strings.ReplaceAll(bundle.LinkedIn, "{{CANONICAL_URL}}", bundle.CanonicalURL)
+		bundle.Social = strings.ReplaceAll(bundle.Social, "{{CANONICAL_URL}}", bundle.CanonicalURL)
+	}
 
 	client := publisher.NewClient(&http.Client{Timeout: 30 * time.Second})
 	results := make([]publisher.Result, 0)
