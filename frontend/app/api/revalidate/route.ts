@@ -1,4 +1,4 @@
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 
@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
   }
 
   revalidateTag("blogs", "max");
+  revalidatePath("/sitemap.xml");
   return NextResponse.json({ revalidated: true });
 }
 
