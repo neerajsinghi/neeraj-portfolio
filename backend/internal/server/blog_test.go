@@ -25,12 +25,14 @@ func (fake fakeAuthenticator) Authenticate(*http.Request) (blog.Principal, error
 }
 
 type fakeBlogStore struct {
-	posts           []blog.Post
-	created         blog.WriteInput
-	createErr       error
-	updateErr       error
-	publishDuePosts []blog.Post
-	publishDueErr   error
+	posts             []blog.Post
+	created           blog.WriteInput
+	createErr         error
+	updateErr         error
+	publishDuePosts   []blog.Post
+	publishDueErr     error
+	pendingPosts      []blog.Post
+	recordedPublishes []string
 }
 
 type fakeExternalPublisher struct {
@@ -66,6 +68,13 @@ func (fake *fakeBlogStore) Update(context.Context, string, blog.WriteInput, blog
 func (fake *fakeBlogStore) Delete(context.Context, string, blog.Principal) error { return nil }
 func (fake *fakeBlogStore) PublishDue(context.Context) ([]blog.Post, error) {
 	return fake.publishDuePosts, fake.publishDueErr
+}
+func (fake *fakeBlogStore) PendingExternalPublish(context.Context) ([]blog.Post, error) {
+	return fake.pendingPosts, nil
+}
+func (fake *fakeBlogStore) RecordExternalPublish(_ context.Context, id, platform, url string) error {
+	fake.recordedPublishes = append(fake.recordedPublishes, id+":"+platform+":"+url)
+	return nil
 }
 
 func TestAdminListRequiresAuthenticationAndRole(t *testing.T) {
@@ -193,20 +202,70 @@ func TestScheduledPublishRequiresToken(t *testing.T) {
 	request := httptest.NewRequest(http.MethodPost, "/api/internal/scheduled-publish", nil)
 	response := httptest.NewRecorder()
 
-	scheduledPublishHandler(&fakeBlogStore{}, "publish-secret")(response, request)
+	scheduledPublishHandler(&fakeBlogStore{}, &fakeExternalPublisher{}, "publish-secret")(response, request)
 	if response.Code != http.StatusUnauthorized {
 		t.Fatalf("status = %d, want 401", response.Code)
 	}
 }
 
 func TestScheduledPublishReturnsPublishedSlugs(t *testing.T) {
-	store := &fakeBlogStore{publishDuePosts: []blog.Post{{Slug: "due-post", Status: blog.StatusPublished}}}
+	store := &fakeBlogStore{publishDuePosts: []blog.Post{{ID: "1", Slug: "due-post", Status: blog.StatusPublished}}}
 	request := httptest.NewRequest(http.MethodPost, "/api/internal/scheduled-publish", nil)
 	request.Header.Set("Authorization", "Bearer publish-secret")
 	response := httptest.NewRecorder()
 
-	scheduledPublishHandler(store, "publish-secret")(response, request)
+	scheduledPublishHandler(store, &fakeExternalPublisher{}, "publish-secret")(response, request)
 	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"due-post"`) {
 		t.Fatalf("status = %d, body = %s", response.Code, response.Body.String())
+	}
+}
+
+func TestScheduledPublishAutoPublishesOptedInDestinations(t *testing.T) {
+	store := &fakeBlogStore{publishDuePosts: []blog.Post{{
+		ID: "1", Slug: "due-post", Title: "Due post", ContentMarkdown: "Body",
+		PublishToDevTo: true, PublishToLinkedIn: true,
+	}}}
+	client := &fakeExternalPublisher{}
+	request := httptest.NewRequest(http.MethodPost, "/api/internal/scheduled-publish", nil)
+	request.Header.Set("Authorization", "Bearer publish-secret")
+	response := httptest.NewRecorder()
+
+	scheduledPublishHandler(store, client, "publish-secret")(response, request)
+	if response.Code != http.StatusOK || len(client.platforms) != 2 {
+		t.Fatalf("status = %d, platforms = %v; body = %s", response.Code, client.platforms, response.Body.String())
+	}
+	if len(store.recordedPublishes) != 2 {
+		t.Fatalf("recorded publishes = %v, want 2 entries", store.recordedPublishes)
+	}
+}
+
+func TestScheduledPublishSkipsAlreadyPublishedDestinations(t *testing.T) {
+	publishedAt := time.Now().UTC()
+	store := &fakeBlogStore{publishDuePosts: []blog.Post{{
+		ID: "1", Slug: "due-post", PublishToDevTo: true, DevToPublishedAt: &publishedAt,
+	}}}
+	client := &fakeExternalPublisher{}
+	request := httptest.NewRequest(http.MethodPost, "/api/internal/scheduled-publish", nil)
+	request.Header.Set("Authorization", "Bearer publish-secret")
+	response := httptest.NewRecorder()
+
+	scheduledPublishHandler(store, client, "publish-secret")(response, request)
+	if len(client.platforms) != 0 {
+		t.Fatalf("platforms = %v, want none (already published)", client.platforms)
+	}
+}
+
+func TestScheduledPublishRetriesPendingDestinations(t *testing.T) {
+	store := &fakeBlogStore{pendingPosts: []blog.Post{{
+		ID: "2", Slug: "already-live-post", Status: blog.StatusPublished, PublishToLinkedIn: true,
+	}}}
+	client := &fakeExternalPublisher{}
+	request := httptest.NewRequest(http.MethodPost, "/api/internal/scheduled-publish", nil)
+	request.Header.Set("Authorization", "Bearer publish-secret")
+	response := httptest.NewRecorder()
+
+	scheduledPublishHandler(store, client, "publish-secret")(response, request)
+	if len(client.platforms) != 1 || client.platforms[0] != "linkedin" {
+		t.Fatalf("platforms = %v, want [linkedin]", client.platforms)
 	}
 }

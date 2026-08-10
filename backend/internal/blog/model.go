@@ -45,21 +45,33 @@ type Post struct {
 	UpdatedAt       time.Time  `json:"updated_at" bson:"updated_at"`
 	ScheduledAt     *time.Time `json:"scheduled_at,omitempty" bson:"scheduled_at,omitempty"`
 	PublishedAt     *time.Time `json:"published_at,omitempty" bson:"published_at,omitempty"`
-	SchemaVersion   int        `json:"schema_version" bson:"schema_version"`
-	Version         int        `json:"version" bson:"version"`
+	// PublishToDevTo/PublishToLinkedIn are operator intent, set from the admin
+	// console. When true, the scheduled-publish flow auto-publishes to that
+	// platform once the post goes live, recording the *PublishedAt guard below
+	// so a retried run never posts the same article twice.
+	PublishToDevTo      bool       `json:"publish_devto,omitempty" bson:"publish_devto,omitempty"`
+	PublishToLinkedIn   bool       `json:"publish_linkedin,omitempty" bson:"publish_linkedin,omitempty"`
+	DevToURL            string     `json:"devto_url,omitempty" bson:"devto_url,omitempty"`
+	DevToPublishedAt    *time.Time `json:"devto_published_at,omitempty" bson:"devto_published_at,omitempty"`
+	LinkedInURL         string     `json:"linkedin_url,omitempty" bson:"linkedin_url,omitempty"`
+	LinkedInPublishedAt *time.Time `json:"linkedin_published_at,omitempty" bson:"linkedin_published_at,omitempty"`
+	SchemaVersion       int        `json:"schema_version" bson:"schema_version"`
+	Version             int        `json:"version" bson:"version"`
 }
 
 type WriteInput struct {
-	Slug            string     `json:"slug"`
-	Title           string     `json:"title"`
-	Description     string     `json:"description"`
-	ContentMarkdown string     `json:"content_markdown"`
-	LinkedInPost    string     `json:"linkedin_post,omitempty"`
-	SocialPost      string     `json:"social_post,omitempty"`
-	Tags            []string   `json:"tags"`
-	Status          Status     `json:"status"`
-	Version         int        `json:"version,omitempty"`
-	ScheduledAt     *time.Time `json:"scheduled_at,omitempty"`
+	Slug              string     `json:"slug"`
+	Title             string     `json:"title"`
+	Description       string     `json:"description"`
+	ContentMarkdown   string     `json:"content_markdown"`
+	LinkedInPost      string     `json:"linkedin_post,omitempty"`
+	SocialPost        string     `json:"social_post,omitempty"`
+	Tags              []string   `json:"tags"`
+	Status            Status     `json:"status"`
+	Version           int        `json:"version,omitempty"`
+	ScheduledAt       *time.Time `json:"scheduled_at,omitempty"`
+	PublishToDevTo    bool       `json:"publish_devto,omitempty"`
+	PublishToLinkedIn bool       `json:"publish_linkedin,omitempty"`
 }
 
 type Principal struct {

@@ -7,7 +7,7 @@ import remarkGfm from "remark-gfm";
 import { createPost, deletePost, listPosts, publishExternally, updatePost, type BlogInput, type BlogPost, type ExternalPlatform, type Status } from "../lib/api";
 import { beginLogin, getRoles, getSession, logout } from "../lib/auth";
 
-const emptyPost: BlogInput = { slug: "", title: "", description: "", content_markdown: "", linkedin_post: "", social_post: "", tags: [], status: "draft", version: 0, scheduled_at: "" };
+const emptyPost: BlogInput = { slug: "", title: "", description: "", content_markdown: "", linkedin_post: "", social_post: "", tags: [], status: "draft", version: 0, scheduled_at: "", publish_devto: false, publish_linkedin: false };
 
 export default function AdminDashboard() {
     const [token, setToken] = useState("");
@@ -55,6 +55,7 @@ export default function AdminDashboard() {
             content_markdown: post.content_markdown, linkedin_post: post.linkedin_post || "", social_post: post.social_post || "",
             tags: post.tags, status: post.status, version: post.version,
             scheduled_at: post.scheduled_at || "",
+            publish_devto: post.publish_devto || false, publish_linkedin: post.publish_linkedin || false,
         });
         setMessage("");
     }
@@ -188,6 +189,8 @@ export default function AdminDashboard() {
                     <div className="editor-actions">
                         {selected && isAdmin && <button className="icon-button danger" onClick={() => void remove()} title="Delete post" disabled={busy}><Trash2 size={17} /></button>}
                         {selected && (selected.status === "published" || (selected.status === "scheduled" && selected.scheduled_at && new Date(selected.scheduled_at) <= new Date())) && <a className="icon-button" href={`https://neerajsinghi.com/blogs/${selected.slug}`} target="_blank" rel="noreferrer" title="Read published article"><ExternalLink size={17} /></a>}
+                        {selected?.devto_url && <a className="icon-button" href={selected.devto_url} target="_blank" rel="noreferrer" title="View on DEV">DEV</a>}
+                        {selected?.linkedin_url && <a className="icon-button" href={selected.linkedin_url} target="_blank" rel="noreferrer" title="View on LinkedIn">in</a>}
                         {selected && isAdmin && selected.status !== "archived" && <button className="command" onClick={() => void save("archived")} disabled={busy}><Archive size={16} /> Archive</button>}
                         <button className="command" onClick={() => void save("draft")} disabled={busy || locked}><Save size={16} /> Save draft</button>
                         {isAdmin && <button className="command schedule" onClick={() => void save("scheduled")} disabled={busy || !draft.scheduled_at}><CalendarClock size={16} /> Schedule</button>}
@@ -206,6 +209,11 @@ export default function AdminDashboard() {
                             <label>Tags<input value={draft.tags.join(", ")} onChange={(event) => setDraft({ ...draft, tags: event.target.value.split(",").map((tag) => tag.trim()).filter(Boolean) })} disabled={locked} placeholder="go, reliability" /></label>
                         </div>
                         {isAdmin && <label className="schedule-field">Publication schedule<input type="datetime-local" value={toLocalDateTime(draft.scheduled_at)} min={toLocalDateTime(new Date(Date.now() + 60_000).toISOString())} onChange={(event) => setDraft({ ...draft, scheduled_at: event.target.value ? new Date(event.target.value).toISOString() : "" })} /><small>Uses your local time and publishes automatically at the selected moment.</small></label>}
+                        {isAdmin && <div className="auto-publish-field">
+                            <small>When this goes live, also auto-publish to:</small>
+                            <label><input type="checkbox" checked={draft.publish_devto || false} onChange={(event) => setDraft({ ...draft, publish_devto: event.target.checked })} /> DEV</label>
+                            <label><input type="checkbox" checked={draft.publish_linkedin || false} onChange={(event) => setDraft({ ...draft, publish_linkedin: event.target.checked })} /> LinkedIn</label>
+                        </div>}
                         <label>Description<textarea value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} disabled={locked} rows={3} maxLength={180} /></label>
                         <label className="content-field">Markdown<textarea value={draft.content_markdown} onChange={(event) => setDraft({ ...draft, content_markdown: event.target.value })} disabled={locked} spellCheck /></label>
                         <div className="field-row social-copy">

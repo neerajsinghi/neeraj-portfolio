@@ -14,11 +14,19 @@ export type BlogPost = {
   updated_at: string;
   scheduled_at?: string;
   published_at?: string;
+  publish_devto?: boolean;
+  publish_linkedin?: boolean;
+  devto_url?: string;
+  devto_published_at?: string;
+  linkedin_url?: string;
+  linkedin_published_at?: string;
 };
 
 export type BlogInput = Pick<BlogPost, "slug" | "title" | "description" | "content_markdown" | "linkedin_post" | "social_post" | "status" | "version"> & {
   tags: string[];
   scheduled_at?: string;
+  publish_devto?: boolean;
+  publish_linkedin?: boolean;
 };
 
 const apiBase = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080";

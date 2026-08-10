@@ -163,8 +163,11 @@ type externalPublisher interface {
 
 // scheduledPublishHandler is called by the Atlas Scheduled Trigger instead of
 // letting it mutate MongoDB directly, so due posts go through the same
-// version/revision/audit path as a human-triggered publish.
-func scheduledPublishHandler(store blog.Store, token string) http.HandlerFunc {
+// version/revision/audit path as a human-triggered publish. Posts with
+// PublishToDevTo/PublishToLinkedIn set are also auto-published to those
+// platforms, guarded by the *PublishedAt fields so a retried run never
+// double-posts.
+func scheduledPublishHandler(store blog.Store, client externalPublisher, token string) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		providedToken := strings.TrimSpace(strings.TrimPrefix(request.Header.Get("Authorization"), "Bearer "))
 		if token == "" || subtle.ConstantTimeCompare([]byte(providedToken), []byte(token)) != 1 {
@@ -175,19 +178,59 @@ func scheduledPublishHandler(store blog.Store, token string) http.HandlerFunc {
 			writeAPIError(writer, http.StatusServiceUnavailable, "blog storage is not configured")
 			return
 		}
-		ctx, cancel := context.WithTimeout(request.Context(), 15*time.Second)
+		ctx, cancel := context.WithTimeout(request.Context(), 45*time.Second)
 		defer cancel()
-		posts, err := store.PublishDue(ctx)
+
+		due, err := store.PublishDue(ctx)
 		if err != nil {
 			writeAPIError(writer, http.StatusInternalServerError, "could not publish due posts")
 			return
 		}
-		slugs := make([]string, 0, len(posts))
-		for _, post := range posts {
+		slugs := make([]string, 0, len(due))
+		results := make([]map[string]any, 0, len(due))
+		for _, post := range due {
 			slugs = append(slugs, post.Slug)
+			results = append(results, publishExternalDestinations(ctx, store, client, post))
 		}
-		writeJSON(writer, http.StatusOK, map[string]any{"published": len(posts), "slugs": slugs})
+
+		if pending, err := store.PendingExternalPublish(ctx); err == nil {
+			for _, post := range pending {
+				results = append(results, publishExternalDestinations(ctx, store, client, post))
+			}
+		}
+
+		writeJSON(writer, http.StatusOK, map[string]any{"published": len(due), "slugs": slugs, "results": results})
 	}
+}
+
+// publishExternalDestinations attempts any platform the post has opted into
+// and has not already succeeded on, recording the outcome for idempotency.
+func publishExternalDestinations(ctx context.Context, store blog.Store, client externalPublisher, post blog.Post) map[string]any {
+	entry := map[string]any{"slug": post.Slug}
+	canonicalURL := "https://neerajsinghi.com/blogs/" + post.Slug
+	bundle := content.Bundle{
+		Title: post.Title, Slug: post.Slug, Description: post.Description, CanonicalURL: canonicalURL,
+		Tags: post.Tags, Article: post.ContentMarkdown,
+		LinkedIn: strings.ReplaceAll(post.LinkedInPost, "{{CANONICAL_URL}}", canonicalURL),
+		Social:   strings.ReplaceAll(post.SocialPost, "{{CANONICAL_URL}}", canonicalURL),
+	}
+	if post.PublishToDevTo && post.DevToPublishedAt == nil {
+		if result, err := client.PublishDEV(ctx, bundle, os.Getenv("DEVTO_API_KEY"), true); err == nil {
+			_ = store.RecordExternalPublish(ctx, post.ID, "devto", result.URL)
+			entry["devto_url"] = result.URL
+		} else {
+			entry["devto_error"] = err.Error()
+		}
+	}
+	if post.PublishToLinkedIn && post.LinkedInPublishedAt == nil {
+		if result, err := client.PublishLinkedIn(ctx, bundle, os.Getenv("LINKEDIN_ACCESS_TOKEN"), os.Getenv("LINKEDIN_AUTHOR_URN"), os.Getenv("LINKEDIN_VERSION")); err == nil {
+			_ = store.RecordExternalPublish(ctx, post.ID, "linkedin", result.URL)
+			entry["linkedin_url"] = result.URL
+		} else {
+			entry["linkedin_error"] = err.Error()
+		}
+	}
+	return entry
 }
 
 type externalPublishRequest struct {

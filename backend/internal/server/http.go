@@ -72,7 +72,7 @@ func NewHandlerWithDependencies(prov llm.Provider, blogStore blog.Store, authent
 	registerVersioned(mux, "DELETE", "/api/admin/blogs/{id}", adminDeleteHandler(blogStore, authenticator))
 	registerVersioned(mux, "POST", "/api/admin/publish", adminExternalPublishHandler(publishClient, authenticator))
 	registerVersioned(mux, "POST", "/api/internal/content/import", contentImportHandler(blogStore, os.Getenv("CONTENT_IMPORT_TOKEN")))
-	registerVersioned(mux, "POST", "/api/internal/scheduled-publish", scheduledPublishHandler(blogStore, os.Getenv("SCHEDULED_PUBLISH_TOKEN")))
+	registerVersioned(mux, "POST", "/api/internal/scheduled-publish", scheduledPublishHandler(blogStore, publishClient, os.Getenv("SCHEDULED_PUBLISH_TOKEN")))
 	return withCORS(withAPIVersionHeader(mux))
 }
 

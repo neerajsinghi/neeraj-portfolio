@@ -26,6 +26,8 @@ type Store interface {
 	Update(context.Context, string, WriteInput, Principal) (Post, error)
 	Delete(context.Context, string, Principal) error
 	PublishDue(context.Context) ([]Post, error)
+	PendingExternalPublish(context.Context) ([]Post, error)
+	RecordExternalPublish(ctx context.Context, id, platform, url string) error
 }
 
 type MongoStore struct {
@@ -165,6 +167,7 @@ func (store *MongoStore) Create(ctx context.Context, input WriteInput, principal
 		Slug: input.Slug, Title: input.Title, Description: input.Description,
 		ContentMarkdown: input.ContentMarkdown, LinkedInPost: input.LinkedInPost,
 		SocialPost: input.SocialPost, Tags: input.Tags, Status: input.Status,
+		PublishToDevTo: input.PublishToDevTo, PublishToLinkedIn: input.PublishToLinkedIn,
 		Author:    Author{Subject: principal.Subject, Email: principal.Email},
 		CreatedAt: now, UpdatedAt: now, SchemaVersion: 1, Version: 1,
 	}
@@ -219,6 +222,7 @@ func (store *MongoStore) Update(ctx context.Context, id string, input WriteInput
 	updated.Slug, updated.Title, updated.Description = input.Slug, input.Title, input.Description
 	updated.ContentMarkdown, updated.LinkedInPost, updated.SocialPost = input.ContentMarkdown, input.LinkedInPost, input.SocialPost
 	updated.Tags, updated.Status = input.Tags, input.Status
+	updated.PublishToDevTo, updated.PublishToLinkedIn = input.PublishToDevTo, input.PublishToLinkedIn
 	updated.UpdatedAt, updated.Version = now, existing.Version+1
 	updated.ScheduledAt = nil
 	if input.Status == StatusPublished {
@@ -296,6 +300,50 @@ func (store *MongoStore) PublishDue(ctx context.Context) ([]Post, error) {
 		published = append(published, updated)
 	}
 	return published, nil
+}
+
+// PendingExternalPublish returns published posts that still owe an external
+// destination — either the initial due-transition's external call failed, or
+// the operator enabled a destination after the post was already published.
+func (store *MongoStore) PendingExternalPublish(ctx context.Context) ([]Post, error) {
+	filter := bson.M{
+		"status": StatusPublished,
+		"$or": bson.A{
+			bson.M{"publish_devto": true, "devto_published_at": bson.M{"$exists": false}},
+			bson.M{"publish_linkedin": true, "linkedin_published_at": bson.M{"$exists": false}},
+		},
+	}
+	return store.list(ctx, filter, 100, bson.D{{Key: "updated_at", Value: -1}})
+}
+
+// RecordExternalPublish marks a post as published to the given platform so
+// PendingExternalPublish and the scheduled-publish handler never retry it.
+func (store *MongoStore) RecordExternalPublish(ctx context.Context, id, platform, url string) error {
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return ErrNotFound
+	}
+	var urlField, timeField string
+	switch platform {
+	case "devto":
+		urlField, timeField = "devto_url", "devto_published_at"
+	case "linkedin":
+		urlField, timeField = "linkedin_url", "linkedin_published_at"
+	default:
+		return fmt.Errorf("unsupported platform %q", platform)
+	}
+	now := time.Now().UTC()
+	result, err := store.posts.UpdateOne(ctx,
+		bson.M{"_id": objectID},
+		bson.M{"$set": bson.M{urlField: url, timeField: now, "updated_at": now}, "$inc": bson.M{"version": 1}},
+	)
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return ErrNotFound
+	}
+	return store.writeAudit(ctx, objectID, "publish_"+platform, Principal{Subject: "scheduled-publish", Email: "scheduled-publish@neerajsinghi.com"})
 }
 
 func (store *MongoStore) Delete(ctx context.Context, id string, principal Principal) error {
