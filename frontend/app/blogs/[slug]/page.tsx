@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import BlogHeader from "../../../components/BlogHeader";
 import { getBlogPost } from "../../../lib/blogs";
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
 // Without generateStaticParams, a dynamic segment's notFound() result can get
 // cached indefinitely by the Full Route Cache; these force it to respect the
@@ -15,7 +15,8 @@ export const revalidate = 60;
 export const dynamicParams = true;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const post = await getBlogPost(params.slug);
+    const { slug } = await params;
+    const post = await getBlogPost(slug);
     if (!post) return { title: "Blog not found | Neeraj Singhi" };
     return {
         title: `${post.title} | Neeraj Singhi`,
@@ -34,7 +35,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogDetailPage({ params }: Props) {
-    const post = await getBlogPost(params.slug);
+    const { slug } = await params;
+    const post = await getBlogPost(slug);
     if (!post) notFound();
 
     const articleData = {
