@@ -24,6 +24,30 @@ type Client struct {
 	httpClient *http.Client
 }
 
+// LinkedIn's "little" commentary format reserves these characters for mentions/hashtags;
+// unescaped occurrences silently truncate or corrupt the rendered post.
+var littleTextEscaper = strings.NewReplacer(
+	`\`, `\\`,
+	"|", `\|`,
+	"{", `\{`,
+	"}", `\}`,
+	"@", `\@`,
+	"[", `\[`,
+	"]", `\]`,
+	"(", `\(`,
+	")", `\)`,
+	"<", `\<`,
+	">", `\>`,
+	"#", `\#`,
+	"*", `\*`,
+	"_", `\_`,
+	"~", `\~`,
+)
+
+func escapeLittleText(text string) string {
+	return littleTextEscaper.Replace(text)
+}
+
 func NewClient(httpClient *http.Client) *Client {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -68,7 +92,7 @@ func (c *Client) PublishLinkedIn(ctx context.Context, bundle content.Bundle, tok
 		return Result{}, errors.New("linkedin post still contains {{CANONICAL_URL}}; publish the article first or set canonical_url")
 	}
 	payload := map[string]any{
-		"author": authorURN, "commentary": bundle.LinkedIn, "visibility": "PUBLIC",
+		"author": authorURN, "commentary": escapeLittleText(bundle.LinkedIn), "visibility": "PUBLIC",
 		"distribution": map[string]any{"feedDistribution": "MAIN_FEED", "targetEntities": []any{}, "thirdPartyDistributionChannels": []any{}},
 		"lifecycleState": "PUBLISHED", "isReshareDisabledByAuthor": false,
 	}
