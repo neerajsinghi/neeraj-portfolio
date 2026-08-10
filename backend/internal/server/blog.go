@@ -113,6 +113,7 @@ func adminCreateHandler(store blog.Store, authenticator auth.Authenticator) http
 		if writeBlogError(writer, err) {
 			return
 		}
+		notifyFrontendRevalidate()
 		writeJSON(writer, http.StatusCreated, post)
 	}
 }
@@ -199,6 +200,9 @@ func scheduledPublishHandler(store blog.Store, client externalPublisher, token s
 			}
 		}
 
+		if len(due) > 0 {
+			notifyFrontendRevalidate()
+		}
 		writeJSON(writer, http.StatusOK, map[string]any{"published": len(due), "slugs": slugs, "results": results})
 	}
 }
@@ -313,6 +317,7 @@ func adminUpdateHandler(store blog.Store, authenticator auth.Authenticator) http
 		if writeBlogError(writer, err) {
 			return
 		}
+		notifyFrontendRevalidate()
 		writeJSON(writer, http.StatusOK, post)
 	}
 }
@@ -332,6 +337,7 @@ func adminDeleteHandler(store blog.Store, authenticator auth.Authenticator) http
 		if writeBlogError(writer, store.Delete(ctx, request.PathValue("id"), principal)) {
 			return
 		}
+		notifyFrontendRevalidate()
 		writer.WriteHeader(http.StatusNoContent)
 	}
 }

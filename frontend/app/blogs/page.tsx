@@ -9,6 +9,11 @@ export const metadata: Metadata = {
     alternates: { canonical: "/blogs" },
 };
 
+// Forces this route to always respect the 60s window (and on-demand
+// revalidateTag calls) instead of being eligible for indefinite Full Route
+// Cache static optimization.
+export const revalidate = 60;
+
 export default async function BlogsPage() {
     let posts: BlogPost[] = [];
     let unavailable = false;
