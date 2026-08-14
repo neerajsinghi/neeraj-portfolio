@@ -104,7 +104,49 @@ jobs:
           gh secret set FRONTEND_REVALIDATE_TOKEN --body "$new_revalidate_token" -R "${{ github.repository }}"
           echo "scheduled_publish_token=$new_publish_token" >> "$GITHUB_OUTPUT"
           echo "frontend_revalidate_token=$new_revalidate_token" >> "$GITHUB_OUTPUT"
-          echo "::warning::Tokens rotated. You must now manually: (1) paste the new SCHEDULED_PUBLISH_TOKEN into the Atlas Function's secret, and (2) set REVALIDATE_TOKEN in Amplify Console (public app) to the new FRONTEND_REVALIDATE_TOKEN, then redeploy the frontend. Until both are done, scheduled-publish and on-demand revalidation will return 401."
+          echo "::warning::Tokens rotated. You must now manually: (1) set REVALIDATE_TOKEN in Amplify Console (public app) to the new FRONTEND_REVALIDATE_TOKEN and redeploy the frontend (no automation available for Amplify env vars). The Atlas Function secret is updated automatically in the next step, if configured."
+
+      - name: Update Atlas Function secret
+        if: github.event.inputs.rotate_tokens == 'true'
+        env:
+          ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
+          ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
+          ATLAS_GROUP_ID: ${{ vars.ATLAS_GROUP_ID }}
+          ATLAS_APP_ID: ${{ vars.ATLAS_APP_ID }}
+          ATLAS_SECRET_NAME: ${{ vars.ATLAS_SECRET_NAME }}
+          NEW_TOKEN: ${{ steps.rotate.outputs.scheduled_publish_token }}
+        run: |
+          set -euo pipefail
+          if [ -z "$ATLAS_PUBLIC_KEY" ] || [ -z "$ATLAS_GROUP_ID" ] || [ -z "$ATLAS_APP_ID" ]; then
+            echo "::warning::Atlas API credentials not configured (ATLAS_PUBLIC_KEY/ATLAS_PRIVATE_KEY/ATLAS_GROUP_ID/ATLAS_APP_ID). Skipping automatic Atlas Function secret update — paste the new SCHEDULED_PUBLISH_TOKEN into the Atlas Function's secret manually."
+            exit 0
+          fi
+          secret_name="${ATLAS_SECRET_NAME:-SCHEDULED_PUBLISH_TOKEN}"
+          base="https://services.cloud.mongodb.com/api/admin/v3.0"
+
+          access_token="$(curl -sf -X POST "$base/auth/providers/mongodb-cloud/login" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg u "$ATLAS_PUBLIC_KEY" --arg k "$ATLAS_PRIVATE_KEY" '{username:$u, apiKey:$k}')" \
+            | jq -r '.access_token')"
+          if [ -z "$access_token" ] || [ "$access_token" = "null" ]; then
+            echo "::error::Atlas login failed — check ATLAS_PUBLIC_KEY/ATLAS_PRIVATE_KEY and the API key's IP access list."
+            exit 1
+          fi
+
+          secret_id="$(curl -sf "$base/groups/$ATLAS_GROUP_ID/apps/$ATLAS_APP_ID/secrets" \
+            -H "Authorization: Bearer $access_token" \
+            | jq -r --arg name "$secret_name" '.[] | select(.name == $name) | ._id')"
+          if [ -z "$secret_id" ]; then
+            echo "::error::No Atlas secret named '$secret_name' found in app $ATLAS_APP_ID. Set ATLAS_SECRET_NAME to the correct name."
+            exit 1
+          fi
+
+          curl -sf -X PUT "$base/groups/$ATLAS_GROUP_ID/apps/$ATLAS_APP_ID/secrets/$secret_id" \
+            -H "Authorization: Bearer $access_token" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg name "$secret_name" --arg value "$NEW_TOKEN" '{name:$name, value:$value}')" \
+            >/dev/null
+          echo "Atlas Function secret '$secret_name' updated."
 
       - name: Configure content import and publishing
         env:
