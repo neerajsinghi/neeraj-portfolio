@@ -11,6 +11,12 @@ on:
     paths:
       - "backend/**"
   workflow_dispatch:
+    inputs:
+      rotate_tokens:
+        description: "Rotate SCHEDULED_PUBLISH_TOKEN and FRONTEND_REVALIDATE_TOKEN. Requires manually updating the Atlas Function secret and Amplify Console REVALIDATE_TOKEN afterward."
+        required: false
+        type: boolean
+        default: false
 
 env:
   LAMBDA_FUNCTION: neeraj-portfolio-backend-api
@@ -83,11 +89,28 @@ jobs:
           aws lambda wait function-updated \
             --function-name "$LAMBDA_FUNCTION"
 
+      - name: Rotate scheduled-publish/revalidate tokens
+        id: rotate
+        if: github.event.inputs.rotate_tokens == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          set -euo pipefail
+          new_publish_token="$(openssl rand -hex 32)"
+          new_revalidate_token="$(openssl rand -hex 32)"
+          echo "::add-mask::$new_publish_token"
+          echo "::add-mask::$new_revalidate_token"
+          gh secret set SCHEDULED_PUBLISH_TOKEN --body "$new_publish_token" -R "${{ github.repository }}"
+          gh secret set FRONTEND_REVALIDATE_TOKEN --body "$new_revalidate_token" -R "${{ github.repository }}"
+          echo "scheduled_publish_token=$new_publish_token" >> "$GITHUB_OUTPUT"
+          echo "frontend_revalidate_token=$new_revalidate_token" >> "$GITHUB_OUTPUT"
+          echo "::warning::Tokens rotated. You must now manually: (1) paste the new SCHEDULED_PUBLISH_TOKEN into the Atlas Function's secret, and (2) set REVALIDATE_TOKEN in Amplify Console (public app) to the new FRONTEND_REVALIDATE_TOKEN, then redeploy the frontend. Until both are done, scheduled-publish and on-demand revalidation will return 401."
+
       - name: Configure content import and publishing
         env:
           CONTENT_IMPORT_TOKEN: ${{ secrets.CONTENT_IMPORT_TOKEN }}
-          SCHEDULED_PUBLISH_TOKEN: ${{ secrets.SCHEDULED_PUBLISH_TOKEN }}
-          FRONTEND_REVALIDATE_TOKEN: ${{ secrets.FRONTEND_REVALIDATE_TOKEN }}
+          SCHEDULED_PUBLISH_TOKEN: ${{ steps.rotate.outputs.scheduled_publish_token || secrets.SCHEDULED_PUBLISH_TOKEN }}
+          FRONTEND_REVALIDATE_TOKEN: ${{ steps.rotate.outputs.frontend_revalidate_token || secrets.FRONTEND_REVALIDATE_TOKEN }}
           DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
           LINKEDIN_AUTHOR_URN: ${{ vars.LINKEDIN_AUTHOR_URN }}
