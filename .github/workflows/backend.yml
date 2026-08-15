@@ -124,28 +124,45 @@ jobs:
           secret_name="${ATLAS_SECRET_NAME:-SCHEDULED_PUBLISH_TOKEN}"
           base="https://services.cloud.mongodb.com/api/admin/v3.0"
 
-          access_token="$(curl -sf -X POST "$base/auth/providers/mongodb-cloud/login" \
+          # curl -f dies silently under `set -e` before our own diagnostics run, so
+          # capture status+body with -w instead and report the real HTTP response.
+          login_response="$(curl -s -w '\n%{http_code}' -X POST "$base/auth/providers/mongodb-cloud/login" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n --arg u "$ATLAS_PUBLIC_KEY" --arg k "$ATLAS_PRIVATE_KEY" '{username:$u, apiKey:$k}')" \
-            | jq -r '.access_token')"
+            -d "$(jq -n --arg u "$ATLAS_PUBLIC_KEY" --arg k "$ATLAS_PRIVATE_KEY" '{username:$u, apiKey:$k}')")"
+          login_status="${login_response##*$'\n'}"
+          login_body="${login_response%$'\n'*}"
+          if [ "$login_status" != "200" ]; then
+            echo "::error::Atlas login failed (HTTP $login_status): $login_body — check ATLAS_PUBLIC_KEY/ATLAS_PRIVATE_KEY and the API key's IP access list."
+            exit 1
+          fi
+          access_token="$(jq -r '.access_token' <<<"$login_body")"
           if [ -z "$access_token" ] || [ "$access_token" = "null" ]; then
-            echo "::error::Atlas login failed — check ATLAS_PUBLIC_KEY/ATLAS_PRIVATE_KEY and the API key's IP access list."
+            echo "::error::Atlas login response did not include an access_token: $login_body"
             exit 1
           fi
 
-          secret_id="$(curl -sf "$base/groups/$ATLAS_GROUP_ID/apps/$ATLAS_APP_ID/secrets" \
-            -H "Authorization: Bearer $access_token" \
-            | jq -r --arg name "$secret_name" '.[] | select(.name == $name) | ._id')"
+          secrets_response="$(curl -s -w '\n%{http_code}' "$base/groups/$ATLAS_GROUP_ID/apps/$ATLAS_APP_ID/secrets" \
+            -H "Authorization: Bearer $access_token")"
+          secrets_status="${secrets_response##*$'\n'}"
+          secrets_body="${secrets_response%$'\n'*}"
+          if [ "$secrets_status" != "200" ]; then
+            echo "::error::Listing Atlas secrets failed (HTTP $secrets_status): $secrets_body — check ATLAS_GROUP_ID/ATLAS_APP_ID."
+            exit 1
+          fi
+          secret_id="$(jq -r --arg name "$secret_name" '.[] | select(.name == $name) | ._id' <<<"$secrets_body")"
           if [ -z "$secret_id" ]; then
             echo "::error::No Atlas secret named '$secret_name' found in app $ATLAS_APP_ID. Set ATLAS_SECRET_NAME to the correct name."
             exit 1
           fi
 
-          curl -sf -X PUT "$base/groups/$ATLAS_GROUP_ID/apps/$ATLAS_APP_ID/secrets/$secret_id" \
+          update_status="$(curl -s -o /dev/null -w '%{http_code}' -X PUT "$base/groups/$ATLAS_GROUP_ID/apps/$ATLAS_APP_ID/secrets/$secret_id" \
             -H "Authorization: Bearer $access_token" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n --arg name "$secret_name" --arg value "$NEW_TOKEN" '{name:$name, value:$value}')" \
-            >/dev/null
+            -d "$(jq -n --arg name "$secret_name" --arg value "$NEW_TOKEN" '{name:$name, value:$value}')")"
+          if [ "$update_status" != "200" ] && [ "$update_status" != "204" ]; then
+            echo "::error::Updating Atlas secret '$secret_name' failed (HTTP $update_status)."
+            exit 1
+          fi
           echo "Atlas Function secret '$secret_name' updated."
 
       - name: Configure content import and publishing
