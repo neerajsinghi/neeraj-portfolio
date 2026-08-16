@@ -44,16 +44,28 @@ func generate(ctx context.Context, args []string) error {
 	audience := flags.String("audience", "", "target audience")
 	canonicalBase := flags.String("canonical-base", "", "canonical site base URL when the article already exists there")
 	output := flags.String("output", "content/drafts/draft.json", "output JSON path")
+	kind := flags.String("type", "blog", "content type: blog or linkedin")
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
 
-	bundle, err := content.NewGenerator(llmanthropic.New()).Generate(ctx, *topic, *audience, *canonicalBase)
+	generator := content.NewGenerator(llmanthropic.New())
+	var bundle content.Bundle
+	var err error
+	switch *kind {
+	case "blog":
+		bundle, err = generator.Generate(ctx, *topic, *audience, *canonicalBase)
+	case "linkedin":
+		bundle, err = generator.GenerateLinkedInOnly(ctx, *topic, *audience)
+	default:
+		return fmt.Errorf("unsupported --type %q (want blog or linkedin)", *kind)
+	}
 	if err != nil {
 		return err
 	}
 	return writeJSON(*output, bundle)
 }
+
 
 func publish(ctx context.Context, args []string) error {
 	flags := flag.NewFlagSet("publish", flag.ContinueOnError)
@@ -76,7 +88,8 @@ func publish(ctx context.Context, args []string) error {
 		return err
 	}
 	// Matches the server's auto-derivation so drafts don't need canonical_url set manually.
-	if bundle.CanonicalURL == "" && bundle.Slug != "" {
+	// LinkedIn-only bundles have no blog page, so there is no canonical URL to derive.
+	if bundle.Type != "linkedin" && bundle.CanonicalURL == "" && bundle.Slug != "" {
 		bundle.CanonicalURL = "https://neerajsinghi.com/blogs/" + bundle.Slug
 		bundle.LinkedIn = strings.ReplaceAll(bundle.LinkedIn, "{{CANONICAL_URL}}", bundle.CanonicalURL)
 		bundle.Social = strings.ReplaceAll(bundle.Social, "{{CANONICAL_URL}}", bundle.CanonicalURL)
@@ -87,6 +100,10 @@ func publish(ctx context.Context, args []string) error {
 	for _, platform := range strings.Split(*platforms, ",") {
 		switch strings.TrimSpace(platform) {
 		case "devto":
+			if bundle.Type == "linkedin" {
+				fmt.Fprintln(os.Stderr, "content: skipping DEV because this bundle is linkedin-only")
+				continue
+			}
 			result, err := client.PublishDEV(ctx, bundle, os.Getenv("DEVTO_API_KEY"), *approve)
 			if err != nil {
 				return err

@@ -233,19 +233,19 @@ Personal-site publication and external syndication are separate operations. The 
 
 All routes are versioned under `/api/v1/...`. The previous unversioned `/api/...` paths are kept as backward-compatible aliases handled by the same code, so existing integrations continue to work without change. Every response includes an `X-API-Version` header, and `GET /api/v1/health` reports `api_version` in its body.
 
-| Method   | Route                                | Legacy alias                   | Authorization       | Purpose                                              |
-| -------- | ------------------------------------- | ------------------------------- | ------------------- | ---------------------------------------------------- |
-| `GET`    | `/api/v1/health`                      | `/api/health`                   | Public              | Runtime and dependency readiness flags, plus `api_version` |
-| `POST`   | `/api/v1/chat`                        | `/api/chat`                     | Public              | SSE agent conversation                               |
-| `GET`    | `/api/v1/github`                      | `/api/github`                   | Public              | Portfolio repository feed                            |
-| `GET`    | `/api/v1/blogs`                       | `/api/blogs`                    | Public              | Published/scheduled blog summaries                   |
-| `GET`    | `/api/v1/blogs/{slug}`                | `/api/blogs/{slug}`             | Public              | Published/scheduled blog body                        |
-| `GET`    | `/api/v1/admin/blogs`                 | `/api/admin/blogs`              | Editor or admin     | List every post state                                |
-| `POST`   | `/api/v1/admin/blogs`                 | `/api/admin/blogs`              | Editor or admin     | Create a draft; non-draft create requires admin      |
-| `PUT`    | `/api/v1/admin/blogs/{id}`            | `/api/admin/blogs/{id}`         | Editor or admin     | Edit with version check; state changes require admin |
-| `DELETE` | `/api/v1/admin/blogs/{id}`            | `/api/admin/blogs/{id}`         | Admin               | Permanently delete a post                            |
-| `POST`   | `/api/v1/admin/publish`               | `/api/admin/publish`            | Admin               | Publish supplied content to DEV/LinkedIn             |
-| `POST`   | `/api/v1/internal/content/import`     | `/api/internal/content/import`  | Import bearer token | Import a generated bundle as a draft                 |
+| Method   | Route                             | Legacy alias                   | Authorization       | Purpose                                                    |
+| -------- | --------------------------------- | ------------------------------ | ------------------- | ---------------------------------------------------------- |
+| `GET`    | `/api/v1/health`                  | `/api/health`                  | Public              | Runtime and dependency readiness flags, plus `api_version` |
+| `POST`   | `/api/v1/chat`                    | `/api/chat`                    | Public              | SSE agent conversation                                     |
+| `GET`    | `/api/v1/github`                  | `/api/github`                  | Public              | Portfolio repository feed                                  |
+| `GET`    | `/api/v1/blogs`                   | `/api/blogs`                   | Public              | Published/scheduled blog summaries                         |
+| `GET`    | `/api/v1/blogs/{slug}`            | `/api/blogs/{slug}`            | Public              | Published/scheduled blog body                              |
+| `GET`    | `/api/v1/admin/blogs`             | `/api/admin/blogs`             | Editor or admin     | List every post state                                      |
+| `POST`   | `/api/v1/admin/blogs`             | `/api/admin/blogs`             | Editor or admin     | Create a draft; non-draft create requires admin            |
+| `PUT`    | `/api/v1/admin/blogs/{id}`        | `/api/admin/blogs/{id}`        | Editor or admin     | Edit with version check; state changes require admin       |
+| `DELETE` | `/api/v1/admin/blogs/{id}`        | `/api/admin/blogs/{id}`        | Admin               | Permanently delete a post                                  |
+| `POST`   | `/api/v1/admin/publish`           | `/api/admin/publish`           | Admin               | Publish supplied content to DEV/LinkedIn                   |
+| `POST`   | `/api/v1/internal/content/import` | `/api/internal/content/import` | Import bearer token | Import a generated bundle as a draft                       |
 
 All blog handlers use a five-second operation context. External publication has a 45-second aggregate context. Request bodies are limited to 1 MiB and reject unknown JSON fields.
 

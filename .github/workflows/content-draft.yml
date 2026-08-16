@@ -1,4 +1,4 @@
-name: Content - Alternate-Day Draft
+name: Content - Daily Draft
 
 on:
   schedule:
@@ -9,6 +9,12 @@ on:
         description: "Optional specific topic"
         required: false
         type: string
+      type:
+        description: "Optional override: blog or linkedin (default alternates by day)"
+        required: false
+        type: choice
+        options: ["", "blog", "linkedin"]
+        default: ""
 
 jobs:
   draft:
@@ -28,32 +34,26 @@ jobs:
           go-version-file: backend/go.mod
           cache-dependency-path: backend/go.sum
 
-      - name: Check alternate-day schedule
-        id: gate
-        run: |
-          set -euo pipefail
-          if [ -n "${{ inputs.topic }}" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          day_of_year="$(date -u +%j)"
-          if (( (10#$day_of_year) % 2 == 0 )); then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Skipping: drafts are generated every alternate day."
-          else
-            echo "run=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Generate article bundle
         id: draft
-        if: steps.gate.outputs.run == 'true'
         env:
           INPUT_TOPIC: ${{ inputs.topic }}
+          INPUT_TYPE: ${{ inputs.type }}
         run: |
           set -euo pipefail
           day="$(date -u +%F)"
+          day_of_year="$(date -u +%j)"
           topic="${INPUT_TOPIC:-}"
-          if [ -z "$topic" ]; then
+          kind="${INPUT_TYPE:-}"
+          if [ -z "$kind" ]; then
+            if (( (10#$day_of_year) % 2 == 0 )); then
+              kind="linkedin"
+            else
+              kind="blog"
+            fi
+          fi
+
+          if [ -z "$topic" ] && [ "$kind" = "blog" ]; then
             pillars=(
               "Go runtime and internals: scheduler behavior, garbage collection, escape analysis, allocation, memory layout, reflection, or compiler tradeoffs"
               "Production Go concurrency: cancellation, backpressure, worker coordination, ownership, race prevention, goroutine leaks, or bounded parallelism"
@@ -70,15 +70,32 @@ jobs:
               "Security-conscious systems software: pure-Go versus cgo, binary distribution, license enforcement, usage metering, cryptographic integrity, or daemon design"
               "AI backend engineering: RAG pipelines, semantic retrieval, tool execution, evaluation, model gateways, prompt security, observability, or token-cost control"
             )
-            day_of_year="$(date -u +%j)"
-            pillar="${pillars[$(((10#$day_of_year - 1) % ${#pillars[@]}))]}"
+            # Blog days are always odd day-of-year, so (day-1)/2 walks the pillar
+            # list sequentially instead of skipping every other entry.
+            pillar_index=$(( ((10#$day_of_year - 1) / 2) % ${#pillars[@]} ))
+            pillar="${pillars[$pillar_index]}"
             recent_titles="$(find content/drafts -type f -name '*.json' -mtime -90 -exec jq -r '.title' {} + 2>/dev/null | head -40 | tr '\n' '; ' || true)"
             topic="Choose one narrow, advanced, production-focused article thesis within this pillar: $pillar. Ground the angle in Neeraj's background as a senior Go/backend engineer working across microservices, distributed systems, security, performance, MongoDB/Redis, AWS, containers, observability, SDKs, and backend AI integration. At least 70% of the article must be backend mechanics and tradeoffs. Prefer Go examples. Do not write a beginner tutorial, generic technology overview, career post, frontend article, or trend list. Avoid repeating these recent titles or their central thesis: ${recent_titles:-none}. Date context: $day"
+          elif [ -z "$topic" ]; then
+            li_pillars=(
+              "Career growth for backend/Go engineers: leveling up from mid to senior, technical decision-making, mentoring, or growing scope"
+              "Industry commentary: notable engineering trends, tooling shifts, or announcements relevant to backend/cloud/Go engineers"
+              "Engineering culture and team practices: code review culture, technical debt conversations, incident postmortems, or engineering standards"
+              "Personal engineering philosophy: lessons learned building production systems, hard-won lessons, or opinions on tradeoffs"
+              "Hiring and interviewing: what strong backend engineers demonstrate, how teams evaluate system design skills, or interview preparation insights"
+            )
+            # LinkedIn-only days are always even day-of-year; day/2-1 walks the
+            # pool sequentially instead of skipping every other entry.
+            pillar_index=$(( ((10#$day_of_year / 2) - 1) % ${#li_pillars[@]} ))
+            pillar="${li_pillars[$pillar_index]}"
+            recent_titles="$(find content/drafts -type f -name '*.json' -mtime -60 -exec jq -r 'select(.type == "linkedin") | .title' {} + 2>/dev/null | head -20 | tr '\n' '; ' || true)"
+            topic="Write about this theme: $pillar. Avoid repeating these recent post topics: ${recent_titles:-none}. Date context: $day"
           fi
+
           output="content/drafts/$day.json"
           cd backend
           for attempt in 1 2 3; do
-            if go run ./cmd/content generate --topic "$topic" --output "../$output"; then
+            if go run ./cmd/content generate --topic "$topic" --type "$kind" --output "../$output"; then
               break
             fi
             if [ "$attempt" -eq 3 ]; then
@@ -90,13 +107,14 @@ jobs:
             sleep "$delay"
           done
           echo "day=$day" >> "$GITHUB_OUTPUT"
+          echo "kind=$kind" >> "$GITHUB_OUTPUT"
           echo "output=$output" >> "$GITHUB_OUTPUT"
 
       - name: Open review pull request
-        if: steps.gate.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           DAY: ${{ steps.draft.outputs.day }}
+          KIND: ${{ steps.draft.outputs.kind }}
           OUTPUT: ${{ steps.draft.outputs.output }}
         run: |
           set -euo pipefail
@@ -105,6 +123,11 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$branch"
           git add "$OUTPUT"
-          git commit -m "content: add daily draft for $DAY"
+          git commit -m "content: add daily $KIND draft for $DAY"
           git push --set-upstream origin "$branch"
-          gh pr create --title "Content draft: $DAY" --body "Daily article bundle generated for editorial review. Merging does not publish it. Use the Content - Publish Approved workflow after approval." --base main --head "$branch"
+          if [ "$KIND" = "linkedin" ]; then
+            body="LinkedIn-only bundle generated for editorial review. It has no article and must never be published to DEV. Merging does not publish it. Use the Content - Publish Approved workflow with platforms=linkedin after approval."
+          else
+            body="Daily article bundle generated for editorial review. Merging does not publish it. Use the Content - Publish Approved workflow after approval."
+          fi
+          gh pr create --title "Content draft ($KIND): $DAY" --body "$body" --base main --head "$branch"
