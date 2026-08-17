@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -28,12 +29,17 @@ func postRevalidate(client *http.Client, url, token string) {
 	defer cancel()
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost, url, nil)
 	if err != nil {
+		log.Printf("frontend revalidate: build request failed: %v", err)
 		return
 	}
 	request.Header.Set("Authorization", "Bearer "+token)
 	response, err := client.Do(request)
 	if err != nil {
+		log.Printf("frontend revalidate: request failed: %v", err)
 		return
 	}
-	_ = response.Body.Close()
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		log.Printf("frontend revalidate: unexpected status %d", response.StatusCode)
+	}
 }
