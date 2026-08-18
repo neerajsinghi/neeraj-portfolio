@@ -50,6 +50,11 @@ jobs:
               echo "Invalid content bundle path: $file" >&2
               exit 1
             fi
+            bundle_type="$(jq -r '.type // "blog"' "$file")"
+            if [[ "$bundle_type" != "blog" ]]; then
+              echo "Skipping non-blog bundle: $file (type=$bundle_type)"
+              continue
+            fi
             curl --fail-with-body --retry 3 --retry-all-errors \
               --header "Authorization: Bearer $CONTENT_IMPORT_TOKEN" \
               --header "Content-Type: application/json" \
