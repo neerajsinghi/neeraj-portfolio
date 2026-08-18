@@ -1,0 +1,49 @@
+name: Content - Publish LinkedIn
+
+on:
+  workflow_dispatch:
+    inputs:
+      file:
+        description: "Approved LinkedIn-only bundle path, for example content/drafts/2026-08-18.json"
+        required: true
+        type: string
+      approve:
+        description: "I reviewed this bundle and approve posting it to LinkedIn"
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  publish:
+    if: inputs.approve
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+      LINKEDIN_AUTHOR_URN: ${{ vars.LINKEDIN_AUTHOR_URN }}
+      LINKEDIN_VERSION: ${{ vars.LINKEDIN_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify bundle is linkedin-only
+        env:
+          BUNDLE_FILE: ${{ inputs.file }}
+        run: |
+          set -euo pipefail
+          kind="$(jq -r '.type // ""' "$BUNDLE_FILE")"
+          if [ "$kind" != "linkedin" ]; then
+            echo "::error::$BUNDLE_FILE has type '$kind', not 'linkedin'. Use the Content - Publish Approved workflow for blog bundles."
+            exit 1
+          fi
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Publish to LinkedIn
+        working-directory: backend
+        env:
+          BUNDLE_FILE: ${{ inputs.file }}
+        run: go run ./cmd/content publish --file "../$BUNDLE_FILE" --platforms linkedin --approve
