@@ -1,0 +1,16 @@
+{
+  "title": "Mid to Senior Backend Engineer Growth",
+  "slug": "mid-to-senior-backend-engineer-growth",
+  "description": "Practical framing on what actually differentiates mid-level from senior backend engineers beyond technical skill",
+  "tags": [
+    "career growth",
+    "backend engineering",
+    "engineering leadership",
+    "Go"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The jump from mid to senior backend engineer isn't mostly about knowing more Go or writing faster code.\n\nIt's mostly about the quality of your judgment under uncertainty.\n\nMid-level engineers are often evaluated on execution — can you take a well-scoped ticket and ship it correctly? Senior engineers are evaluated on something harder to measure: do you ask the right questions before anything gets built? Do you push back when a proposed design will hurt the team six months from now? Do you know which technical debt is acceptable and which will quietly sink the project?\n\nA few things I've seen actually move the needle for engineers making this transition:\n\n— Stop optimizing only for correctness. Start optimizing for the next engineer who has to maintain what you wrote. Clarity, observability, and failure handling matter more at senior levels than clever abstractions.\n\n— Own the problem, not just the task. When something breaks in production, senior engineers ask why the system allowed that failure mode, not just how to patch it. That shift in framing changes how you design everything.\n\n— Develop an opinion about trade-offs and be willing to defend it. Distributed systems work involves constant trade-offs — consistency vs. availability, latency vs. throughput, simplicity vs. flexibility. Seniors can articulate why they made a specific call, not just that they made one.\n\n— Start mentoring before you feel ready. Teaching forces you to understand your own reasoning at a deeper level. If you can't explain why you'd structure a service boundary a certain way, you probably don't understand it as well as you think.\n\nThe engineers I've seen grow fastest weren't the ones who knew the most. They were the ones who stayed curious, took feedback without defensiveness, and consistently tried to make the people around them more effective.\n\nWhat's one thing that most changed how you thought about your own growth from mid to senior?",
+  "social_post": "Mid to senior backend isn't about knowing more — it's about better judgment under uncertainty. Own the problem, not just the task. Mentor before you feel ready. What changed how you thought about that transition?",
+  "created_at": "2026-08-20T02:48:27Z",
+  "type": "linkedin"
+}
