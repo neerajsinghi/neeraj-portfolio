@@ -1,0 +1,16 @@
+{
+  "title": "Postmortem Culture That Actually Improves Systems",
+  "slug": "engineering-postmortem-culture-that-improves-systems",
+  "description": "Neeraj's take on why incident postmortems fail to drive real change and what effective postmortem culture looks like in mature engineering teams.",
+  "tags": [
+    "engineering culture",
+    "incident management",
+    "backend engineering",
+    "team practices"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Most postmortems are written, filed, and forgotten within a week.\n\nAfter years of building distributed systems and production services, I've watched teams go through the motions: timeline documented, root cause identified, action items assigned. Then the same class of incident repeats three months later. The document existed. The learning didn't.\n\nThe problem usually isn't the format. It's how the team treats the conversation.\n\nPostmortems that actually move the needle tend to share a few characteristics:\n\n→ They separate the immediate fix from the systemic fix. Restarting a service is not a resolution. It's a pause. The real question is why the system allowed that failure mode in the first place.\n\n→ They surface uncomfortable truths about technical debt. Incidents are often debt becoming visible. A good postmortem names that debt explicitly and brings it into planning conversations — not as blame, but as a signal about where investment is overdue.\n\n→ They produce a short list of high-leverage action items, not a long list of low-priority tickets that will never get triaged. Fewer items with clear owners and real deadlines beat comprehensive documentation that no one revisits.\n\n→ They close the loop. Someone checks in on action item progress. That step alone changes behavior more than any template ever will.\n\nThe cultural shift is harder than the process change. Engineers need to feel that being direct about what broke — and why — won't be used against them. Blameless doesn't mean consequence-free. It means the system is under scrutiny, not the individual.\n\nWhen postmortem culture is healthy, incidents become one of the most effective forcing functions for improving reliability, tightening engineering standards, and having honest conversations about what the system can actually tolerate.\n\nWhat's one thing your team does in postmortems that you think other teams get wrong?",
+  "social_post": "Most postmortems are written, filed, and forgotten. The same incident repeats 3 months later.\n\nThe issue isn't the format — it's whether the team actually treats the conversation as a learning event.\n\nWhat does your team do differently that makes postmortems stick?",
+  "created_at": "2026-08-24T02:51:35Z",
+  "type": "linkedin"
+}
