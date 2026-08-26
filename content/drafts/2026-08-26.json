@@ -1,0 +1,16 @@
+{
+  "title": "Hard-Won Production Engineering Philosophy",
+  "slug": "hard-won-production-engineering-philosophy",
+  "description": "Neeraj shares personal engineering principles forged from years of building production distributed systems, focusing on tradeoffs and durability over cleverness.",
+  "tags": [
+    "engineering philosophy",
+    "distributed systems",
+    "backend engineering",
+    "tradeoffs"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The most expensive lessons I've learned didn't come from courses. They came from production.\n\nAfter years of building distributed systems, microservices, and data-intensive backends, a few hard-won opinions have become non-negotiable for me:\n\n**Simplicity is a load-bearing wall, not a starting point you grow out of.**\nEvery time I've added complexity to buy flexibility I wasn't sure I needed, I paid for it later — in debugging time, onboarding friction, and incidents that were harder to reason about than they should have been. The instinct to build for hypothetical scale is real. So is the cost of acting on it too early.\n\n**Reliability is a design decision, not a feature you add after the fact.**\nRetries, idempotency, circuit breaking, graceful degradation — these aren't polish. They're structural. Systems that treat reliability as an afterthought become systems you're afraid to touch.\n\n**The tradeoff that matters most is the one your team can sustain.**\nThe right database, the right architecture, the right language — none of it holds if the team can't reason about it, operate it at 2am, or extend it six months later. Technical correctness and operational reality are not the same axis.\n\n**Documentation is part of the system.**\nA service nobody can safely modify is only half-built. I've inherited undocumented systems and I've left systems better than I found them. The difference in team velocity is not subtle.\n\nNone of this is new. But I find myself returning to these principles every time a project gets complex — not as rules, but as pressure tests.\n\nWhat's one principle that keeps showing up as true for you the longer you build?",
+  "social_post": "The most expensive lessons came from production. Simplicity is load-bearing. Reliability is structural. The best tradeoff is the one your team can actually sustain. What principle keeps proving true the longer you build?",
+  "created_at": "2026-08-26T02:52:59Z",
+  "type": "linkedin"
+}
