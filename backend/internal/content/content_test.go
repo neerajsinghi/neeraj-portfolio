@@ -37,3 +37,11 @@ func TestParseBundleAcceptsUnicodeTitleAtCharacterLimit(t *testing.T) {
 		t.Fatalf("ParseBundle() error = %v", err)
 	}
 }
+
+func TestParseBundleRejectsUnicodeTitlePastCharacterLimit(t *testing.T) {
+	title := strings.Repeat("界", 121)
+	raw := `{"title":"` + title + `","slug":"unicode-title-over-limit","description":"A practical deep dive into rollout sequencing and readiness gates for production Kubernetes workloads.","tags":["kubernetes"],"article_markdown":"This article body is intentionally longer than one hundred characters so ParseBundle catches title-length violations before import jobs fail.","linkedin_post":"LinkedIn copy {{CANONICAL_URL}}","social_post":"Social copy {{CANONICAL_URL}}"}`
+	if _, err := ParseBundle(raw); err == nil {
+		t.Fatal("ParseBundle() expected an error for Unicode title longer than 120 characters")
+	}
+}
