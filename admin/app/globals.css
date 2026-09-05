@@ -123,6 +123,31 @@ button {
     gap: 8px;
 }
 
+.rail-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+}
+
+.rail-filters select {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 6px 8px;
+    font-family: var(--font-code);
+    font-size: 11px;
+    text-transform: none;
+    outline: none;
+}
+
+.rail-filters select:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px var(--green-soft);
+}
+
 .post-list {
     padding: 8px;
 }
