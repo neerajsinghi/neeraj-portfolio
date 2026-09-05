@@ -126,7 +126,7 @@ jobs:
           git commit -m "content: add daily $KIND draft for $DAY"
           git push --set-upstream origin "$branch"
           if [ "$KIND" = "linkedin" ]; then
-            body="LinkedIn-only bundle generated for editorial review. It has no article and must never be published to DEV. Merging does not publish it. Use the Content - Publish Approved workflow with platforms=linkedin after approval."
+            body="LinkedIn-only bundle generated for editorial review. It has no article and must never be published to DEV. Merging this PR approves it: Content - Import Approved Draft will trigger Content - Publish LinkedIn automatically, publishing to LinkedIn right away."
           else
             body="Daily article bundle generated for editorial review. Merging does not publish it. Use the Content - Publish Approved workflow after approval."
           fi

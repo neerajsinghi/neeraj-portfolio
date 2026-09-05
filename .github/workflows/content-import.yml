@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,6 +29,7 @@ jobs:
           CONTENT_IMPORT_TOKEN: ${{ secrets.CONTENT_IMPORT_TOKEN }}
           REQUESTED_FILE: ${{ inputs.file }}
           BEFORE_SHA: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if [[ -z "$API_BASE_URL" || -z "$CONTENT_IMPORT_TOKEN" ]]; then
@@ -51,8 +53,14 @@ jobs:
               exit 1
             fi
             bundle_type="$(jq -r '.type // "blog"' "$file")"
+            if [[ "$bundle_type" == "linkedin" ]]; then
+              # Merging the draft PR is the approval; publish it immediately, no manual dispatch needed.
+              echo "Merged linkedin bundle: $file - triggering Content - Publish LinkedIn"
+              gh workflow run content-publish-linkedin.yml --ref main -f "file=$file" -f approve=true
+              continue
+            fi
             if [[ "$bundle_type" != "blog" ]]; then
-              echo "Skipping non-blog bundle: $file (type=$bundle_type)"
+              echo "Skipping unknown bundle type: $file (type=$bundle_type)"
               continue
             fi
             curl --fail-with-body --retry 3 --retry-all-errors \
