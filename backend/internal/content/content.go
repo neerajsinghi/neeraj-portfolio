@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"neeraj-portfolio/backend/internal/llm"
 )
@@ -125,8 +126,26 @@ func ParseBundle(raw string) (Bundle, error) {
 	if err != nil {
 		return Bundle{}, err
 	}
+	bundle.Title = strings.TrimSpace(bundle.Title)
+	bundle.Slug = strings.TrimSpace(bundle.Slug)
+	bundle.Description = strings.TrimSpace(bundle.Description)
+	bundle.Article = strings.TrimSpace(bundle.Article)
+	bundle.LinkedIn = strings.TrimSpace(bundle.LinkedIn)
+	bundle.Social = strings.TrimSpace(bundle.Social)
 	if bundle.Title == "" || bundle.Slug == "" || bundle.Description == "" || bundle.Article == "" || bundle.LinkedIn == "" || bundle.Social == "" {
 		return Bundle{}, errors.New("generated bundle is missing required fields")
+	}
+	titleLength := utf8.RuneCountInString(bundle.Title)
+	descriptionLength := utf8.RuneCountInString(bundle.Description)
+	articleLength := utf8.RuneCountInString(bundle.Article)
+	if titleLength < 5 || titleLength > 120 {
+		return Bundle{}, errors.New("generated bundle title must contain 5 to 120 characters")
+	}
+	if descriptionLength < 40 || descriptionLength > 180 {
+		return Bundle{}, errors.New("generated bundle description must contain 40 to 180 characters")
+	}
+	if articleLength < 100 {
+		return Bundle{}, errors.New("generated bundle article must contain at least 100 characters")
 	}
 	if len(bundle.Tags) == 0 || len(bundle.Tags) > 4 {
 		return Bundle{}, errors.New("generated bundle must contain 1 to 4 tags")
