@@ -1,0 +1,16 @@
+{
+  "title": "Personal Engineering Philosophy: Hard-Won Production Lessons",
+  "slug": "personal-engineering-philosophy-production-lessons",
+  "description": "Neeraj shares opinionated, hard-won lessons from building production systems across backend, distributed, and cloud engineering work.",
+  "tags": [
+    "backend engineering",
+    "engineering philosophy",
+    "distributed systems",
+    "career growth"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The most expensive lessons I've learned building production systems weren't about the wrong technology choice. They were about the wrong assumptions I held with too much confidence.\n\nA few opinions I've formed over years of shipping Go backends, distributed services, and cloud-native systems:\n\n**Simplicity is a discipline, not a default.** Complex systems don't start complex. They accumulate complexity through reasonable decisions made in isolation. The engineers I respect most are the ones who actively fight for simplicity even when the deadline is real and the clever solution is tempting.\n\n**Premature abstraction is as dangerous as premature optimization.** I've seen more systems hurt by over-engineered interfaces than by tight coupling. Abstract when the pattern has actually repeated — not when you imagine it might.\n\n**Operational cost is a first-class design concern.** How a system fails, how you debug it at 2am, how a new engineer can reason about it six months later — these aren't afterthoughts. They're part of the design surface. If you only evaluate tradeoffs at build time, you're missing half the problem.\n\n**Strong opinions, loosely held — but hold them long enough to learn from them.** Changing your mind when new evidence arrives is good engineering. Abandoning your position every time someone pushes back is something else. The instinct to stand behind a technical decision, learn from its failure, and update your mental model is how judgment actually develops.\n\nNone of this is original. But there's a real difference between knowing these things and having them internalized through systems that broke in production.\n\nWhat's one engineering principle you've had to earn the hard way?",
+  "social_post": "The most expensive lessons from production systems weren't wrong tech choices — they were wrong assumptions held with too much confidence. Simplicity is a discipline. Abstraction earns its place. Operational cost is a design concern. What principle did you have to earn the hard way?",
+  "created_at": "2026-09-05T02:38:43Z",
+  "type": "linkedin"
+}
