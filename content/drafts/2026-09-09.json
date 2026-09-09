@@ -1,0 +1,16 @@
+{
+  "title": "Growing Scope as a Senior Backend Engineer",
+  "slug": "growing-scope-senior-backend-engineer",
+  "description": "Explores how backend engineers expand their impact beyond code when moving from mid to senior level, focusing on ownership, judgment, and influence.",
+  "tags": [
+    "career growth",
+    "backend engineering",
+    "engineering leadership",
+    "Go"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The jump from mid to senior backend engineer isn't about writing more complex code. It's about changing what you're responsible for.\n\nMost engineers I've seen struggle at this transition are technically solid. They write clean Go, they understand concurrency, they can reason about distributed systems. The gap isn't skill — it's scope.\n\nHere's what actually shifts at the senior level:\n\n→ You stop waiting for problems to be handed to you. You spot the fragile integration before it pages someone at 2am.\n→ You form opinions about technical direction and can defend them without being defensive when challenged.\n→ You make tradeoffs explicit — not just for yourself, but so the team understands what was chosen and what was left on the table.\n→ You start thinking about the engineer who joins six months from now and whether your decisions will help or haunt them.\n\nThat last one is underrated. Mentoring isn't a formal program. It shows up in how you write a PR description, how you structure a design doc, how you respond when someone asks a question you think is obvious. Senior engineers make the people around them faster.\n\nGrowing scope also means accepting that your output isn't always a merged PR. Sometimes it's a conversation that redirects three weeks of work. Sometimes it's asking the uncomfortable question in a planning meeting. That kind of contribution is harder to measure and easier to undervalue — but teams feel the absence of it immediately.\n\nIf you're a mid-level engineer trying to level up: pick one area where you currently hand off decisions and own it fully for a quarter. Not just the implementation — the framing, the tradeoffs, the follow-through.\n\nWhat helped you expand your scope when you were making that transition?",
+  "social_post": "The jump from mid to senior isn't about harder code — it's about wider scope. Spotting problems early, making tradeoffs explicit, and making the engineers around you faster. What helped you make that shift?",
+  "created_at": "2026-09-09T02:40:21Z",
+  "type": "linkedin"
+}
