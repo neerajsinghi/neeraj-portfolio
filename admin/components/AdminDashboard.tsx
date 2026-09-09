@@ -20,9 +20,25 @@ export default function AdminDashboard() {
     const [busy, setBusy] = useState(false);
     const [ready, setReady] = useState(false);
     const [destinations, setDestinations] = useState({ website: true, devto: false, linkedin: false });
+    const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
+    const [sortBy, setSortBy] = useState<"updated_desc" | "updated_asc" | "title_asc" | "title_desc">("updated_desc");
     const isAdmin = roles.includes("admin");
     const selected = posts.find((post) => post.id === selectedID);
     const locked = Boolean(selected && selected.status !== "draft" && !isAdmin);
+    const visiblePosts = posts
+        .filter((post) => statusFilter === "all" || post.status === statusFilter)
+        .sort((a, b) => {
+            switch (sortBy) {
+                case "updated_asc":
+                    return new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime();
+                case "title_asc":
+                    return a.title.localeCompare(b.title);
+                case "title_desc":
+                    return b.title.localeCompare(a.title);
+                default:
+                    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+            }
+        });
 
     useEffect(() => {
         const session = getSession();
@@ -57,12 +73,15 @@ export default function AdminDashboard() {
             scheduled_at: post.scheduled_at || "",
             publish_devto: post.publish_devto || false, publish_linkedin: post.publish_linkedin || false,
         });
+        // Approving a post should re-publish externally wherever it was intended but hasn't gone out yet.
+        setDestinations({ website: true, devto: Boolean(post.publish_devto) && !post.devto_url, linkedin: Boolean(post.publish_linkedin) && !post.linkedin_url });
         setMessage("");
     }
 
     function newPost() {
         setSelectedID(null);
         setDraft(emptyPost);
+        setDestinations({ website: true, devto: false, linkedin: false });
         setMode("edit");
         setMessage("");
     }
@@ -169,14 +188,30 @@ export default function AdminDashboard() {
 
             <aside className="post-rail">
                 <div className="rail-head"><span><PanelLeft size={16} /> Posts</span><button className="icon-button" onClick={newPost} title="New post"><FilePlus2 size={18} /></button></div>
+                <div className="rail-filters">
+                    <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as Status | "all")} aria-label="Filter by status">
+                        <option value="all">All statuses</option>
+                        <option value="draft">Draft</option>
+                        <option value="scheduled">Scheduled</option>
+                        <option value="published">Published</option>
+                        <option value="archived">Archived</option>
+                    </select>
+                    <select value={sortBy} onChange={(event) => setSortBy(event.target.value as typeof sortBy)} aria-label="Sort posts">
+                        <option value="updated_desc">Newest updated</option>
+                        <option value="updated_asc">Oldest updated</option>
+                        <option value="title_asc">Title A–Z</option>
+                        <option value="title_desc">Title Z–A</option>
+                    </select>
+                </div>
                 <div className="post-list">
-                    {posts.map((post) => (
+                    {visiblePosts.map((post) => (
                         <button className={`post-row ${selectedID === post.id ? "active" : ""}`} key={post.id} onClick={() => selectPost(post)}>
                             <span className={`status-dot ${post.status}`} />
                             <span><b>{post.title}</b><small>{post.status === "scheduled" ? `scheduled ${formatDateTime(post.scheduled_at)}` : post.status} · v{post.version}</small></span>
                         </button>
                     ))}
                     {posts.length === 0 && <p className="rail-empty">No posts yet.</p>}
+                    {posts.length > 0 && visiblePosts.length === 0 && <p className="rail-empty">No posts match this filter.</p>}
                 </div>
             </aside>
 
