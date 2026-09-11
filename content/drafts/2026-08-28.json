@@ -1,0 +1,16 @@
+{
+  "title": "What Interviewers Actually Notice in Backend Candidates",
+  "slug": "what-interviewers-notice-backend-candidates",
+  "description": "Practical hiring signal insights for senior backend engineers on what evaluation really looks like beyond the obvious technical checklist",
+  "tags": [
+    "hiring",
+    "backend",
+    "interviewing",
+    "engineering"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Most backend engineers prepare for interviews by studying algorithms. Most interviewers are evaluating something else entirely.\n\nAfter years of building and reviewing distributed systems, here's what actually creates signal during a backend or system design interview:\n\n**How you handle ambiguity.** Strong candidates ask clarifying questions before diving in. Not to stall — to scope. They understand that real systems start with requirements, not solutions. Jumping straight to architecture before defining load, consistency needs, or failure tolerance is a red flag, not a sign of confidence.\n\n**Where you place your tradeoffs.** Anyone can draw boxes and arrows. What separates senior engineers is the ability to say \"I'd choose eventual consistency here because...\" and defend it with genuine reasoning — not because it's fashionable. Interviewers with production experience can tell the difference between pattern-matching and actual judgment.\n\n**Whether you think about failure modes.** Candidates who only design for the happy path reveal a gap. Production systems fail. Queues back up. Services time out. Downstream APIs go down. Bringing this up unprompted signals real-world exposure in a way that no amount of textbook prep can fake.\n\n**How you communicate under pressure.** A technical interview is a compressed version of collaboration. If you can't explain a complex idea clearly when slightly stressed, that's a proxy for how you'll operate in an incident or a design review.\n\nNone of this requires a perfect answer. Interviewers with hands-on backend experience aren't looking for flawless recall — they're looking for evidence that you've actually shipped systems, dealt with the consequences, and learned from them.\n\nWhat do you think gets underweighted in backend hiring? I'm curious what patterns others have noticed from either side of the table.",
+  "social_post": "Most backend engineers prep for algorithms. Most interviewers are evaluating something else — ambiguity handling, tradeoff reasoning, failure mode awareness. What do you think gets underweighted in backend hiring?",
+  "created_at": "2026-08-28T05:14:36Z",
+  "type": "linkedin"
+}
