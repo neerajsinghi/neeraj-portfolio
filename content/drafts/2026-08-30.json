@@ -1,0 +1,16 @@
+{
+  "title": "Owning Scope: The Real Leap from Mid to Senior",
+  "slug": "owning-scope-mid-to-senior-backend",
+  "description": "A post on what actually separates mid-level from senior backend engineers beyond technical skill — focusing on scope ownership, judgment, and influence.",
+  "tags": [
+    "career growth",
+    "backend engineering",
+    "engineering leadership",
+    "Go"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The gap between mid and senior isn't mostly technical. It's about who owns the problem when there's no clear answer.\n\nMid-level engineers are strong when the problem is well-defined. They ship good code, handle their tickets, and ask good questions. That matters. But senior engineers do something different — they make the problem well-defined for everyone else. They look at an ambiguous request, figure out what's actually being asked, and shape the work before a line of code is written.\n\nIn backend and distributed systems work specifically, this shows up in a few concrete ways:\n\n— You stop waiting for someone to hand you the design. You draft it, share it, and invite pushback.\n— You treat technical decisions as communication acts. The tradeoff document, the ADR, the Slack thread — these are how you build alignment and trust at scale.\n— You start thinking about what the team needs to be unblocked, not just what you need to finish your task.\n— You accept that mentoring junior engineers is part of your output, not a distraction from it.\n\nNone of this means you stop caring about the craft. The engineers I respect most at the senior level are still deeply invested in how their Go services perform under load, how their APIs will evolve, how their data models will age. The technical depth doesn't go away — it gets applied at wider scope.\n\nWhat I've seen trip people up: waiting for the title before acting like a senior. Scope doesn't always come with a promotion. Sometimes you have to demonstrate it first, consistently, before it's formally recognized.\n\nIf you're somewhere in that mid-to-senior stretch — what's the shift that made the biggest difference for you?",
+  "social_post": "The mid-to-senior gap isn't mostly technical. It's about who makes the problem well-defined when no one else has. Scope, judgment, and influence — before the title. What shift made the biggest difference for you?",
+  "created_at": "2026-08-30T02:39:25Z",
+  "type": "linkedin"
+}
