@@ -1,0 +1,16 @@
+{
+  "title": "Code Review Culture as Engineering Signal",
+  "slug": "code-review-culture-engineering-signal",
+  "description": "How a team's code review habits reveal the real health of its engineering culture",
+  "tags": [
+    "engineering culture",
+    "code review",
+    "technical debt",
+    "team practices"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "How a team does code reviews tells you almost everything about its engineering culture.\n\nNot the tooling. Not the process doc. The actual behavior.\n\nDoes feedback focus on correctness and clarity, or does it devolve into style debates that the author has to win or lose? Are reviewers asking questions to understand intent, or asserting dominance through nitpicks? Is the goal to ship something better, or to prove someone read the diff?\n\nAfter years working on distributed systems and backend services where a bad merge can quietly degrade reliability for weeks, I've come to see code review as a leading indicator — not a lagging one. Teams that review well tend to handle technical debt conversations well. They surface tradeoffs early instead of burying them. They talk about incidents with the same directness they bring to pull requests.\n\nThe teams that struggle with reviews usually struggle in the same pattern:\n— Reviews are either rubber stamps or adversarial gates\n— No shared sense of what \"good enough to merge\" actually means\n— Technical debt gets raised in reviews but never tracked anywhere actionable\n— Senior engineers' comments carry implicit authority that juniors don't push back on\n\nEngineering standards only work when they're lived in review, not just written in a wiki. The moment your review culture separates from your stated standards, the standards become decoration.\n\nIf you're a senior or staff engineer, this is actually your leverage point. You set the tone in reviews more than in any all-hands or RFC. A single well-framed comment that explains the why behind a concern teaches more than a style guide section ever will.\n\nWhat does healthy review culture look like on your team — and what's the one habit that's hardest to get right?",
+  "social_post": "How a team does code reviews tells you almost everything about its engineering culture. Not the process doc — the actual behavior. Senior engineers set the tone in reviews more than in any RFC or all-hands. What's the hardest habit to get right on your team?",
+  "created_at": "2026-09-23T02:42:09Z",
+  "type": "linkedin"
+}
