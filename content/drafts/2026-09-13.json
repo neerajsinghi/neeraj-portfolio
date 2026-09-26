@@ -1,0 +1,16 @@
+{
+  "title": "Code Review Culture as Engineering Signal",
+  "slug": "code-review-culture-engineering-signal",
+  "description": "How a team's code review practices reveal the real health of its engineering culture",
+  "tags": [
+    "engineering culture",
+    "code review",
+    "technical debt",
+    "backend engineering"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "How a team handles code review tells you more about its engineering culture than any values document ever will.\n\nI've seen teams where reviews are rubber stamps — approvals in under two minutes, no questions asked. I've also seen teams where reviews become ego battles, where comments are corrections dressed up as suggestions, and where the goal quietly shifts from improving the code to proving who knows more.\n\nNeither extreme produces good software or strong engineers.\n\nWhat actually works, at least in my experience building distributed systems and high-throughput services:\n\n— Reviews focused on intent, not just syntax. The question isn't just \"does this work\" but \"does this match the system's direction and constraints\"\n— Technical debt gets named honestly in review, not silently absorbed. A comment that says \"this is fine for now but we should track it\" is more valuable than a comment that says nothing\n— Junior and senior engineers are both expected to ask questions. Silence from a junior isn't agreement — it's often confusion that will cost you later\n— Tone is treated as a real engineering concern. Harsh reviews don't just hurt morale; they discourage the kind of clarifying questions that catch real problems\n\nCode review is one of the few places where team knowledge transfer, quality standards, and technical debt conversations all happen at once. When it's done well, it's a compounding investment. When it's done poorly, you get code that merges fast and breaks slow.\n\nThe teams I've seen grow the strongest engineers tend to treat review comments like working documentation — written for the next person who touches that code, not just the person who wrote it.\n\nWhat's one thing your team does in code review that you think most teams get wrong or skip entirely?",
+  "social_post": "Code review culture tells you more about a team's engineering health than any values doc. Rubber stamps and ego battles both produce bad software. The best teams treat review comments like working documentation — written for the next person, not just the author.",
+  "created_at": "2026-09-13T02:40:38Z",
+  "type": "linkedin"
+}
