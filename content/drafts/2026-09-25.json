@@ -1,0 +1,16 @@
+{
+  "title": "The Tradeoffs Nobody Warns You About",
+  "slug": "engineering-tradeoffs-nobody-warns-you-about",
+  "description": "Honest reflection on the silent tradeoffs that shape production systems and engineering judgment over time",
+  "tags": [
+    "backend engineering",
+    "distributed systems",
+    "engineering philosophy",
+    "software craft"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The tradeoffs that haunt you in production are rarely the ones you debated in design review.\n\nAfter years building distributed systems, Go backends, and data-intensive services, the lessons that stuck weren't about choosing the right database or picking the right queue. They were about something quieter: the cost of decisions made under pressure, optimized for the wrong horizon.\n\nA few that reshape how I think about building:\n\n**Operational simplicity is a feature, not a consolation prize.** The elegant distributed solution that requires three runbooks to recover from a partial failure is not elegant. Boring, debuggable, and recoverable beats clever every time at 2am.\n\n**Consistency boundaries are a team contract, not just a technical one.** When you decide where eventual consistency is acceptable, you're making a product decision. Engineers who treat that as purely technical create invisible debt for everyone downstream — support, product, other services.\n\n**The second system you build in a domain is always better. Ship the first one anyway.** Waiting for full clarity is how systems never reach production. Good judgment is knowing when you've learned enough to move.\n\n**Defaults compound.** The timeout you copied from a sample config, the retry policy nobody questioned, the queue depth set arbitrarily — these accumulate into outages. Systems fail at their assumptions, not their intentional choices.\n\nWhat I've found is that senior engineers don't have fewer opinions on tradeoffs. They have more grounded ones. They've felt the consequences of the decisions that looked fine on paper.\n\nThe shift isn't from junior confidence to senior uncertainty. It's from abstract reasoning to informed caution — and knowing which problems deserve which.\n\nWhat's a tradeoff you've made that you'd think about differently now?",
+  "social_post": "The tradeoffs that haunt you in production are rarely the ones you debated in design review. Operational simplicity, consistency boundaries, and default configs — these compound quietly. Senior engineers don't have fewer opinions. They have more grounded ones.",
+  "created_at": "2026-09-25T02:41:05Z",
+  "type": "linkedin"
+}
