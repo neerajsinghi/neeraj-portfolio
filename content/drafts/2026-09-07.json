@@ -1,0 +1,16 @@
+{
+  "title": "What Teams Actually Test in Backend Interviews",
+  "slug": "backend-interview-evaluation-beyond-algorithms",
+  "description": "A practical look at how engineering teams evaluate backend candidates beyond coding rounds, focusing on judgment, tradeoffs, and operational thinking.",
+  "tags": [
+    "hiring",
+    "backend",
+    "systemdesign",
+    "engineering"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Most backend interviews over-index on algorithms and under-test the judgment that actually matters in production.\n\nAfter years of building distributed systems and reviewing how teams evaluate candidates, I've noticed a consistent gap: we spend significant time on DSA rounds but relatively little time probing how someone thinks about failure modes, operational cost, or the tradeoffs baked into a given architecture.\n\nHere's what separates candidates who stand out in backend and systems roles:\n\n→ They don't just answer the design question. They reframe it. They ask what problem the system actually needs to solve before drawing boxes and arrows.\n\n→ They talk about what breaks, not just what works. Consistency tradeoffs, partial failures, retry semantics — these come up naturally, not only when prompted.\n\n→ They have opinions about complexity. They can articulate why a simpler approach is sometimes the right call, and they don't treat distributed systems patterns as defaults.\n\n→ They connect their design to operational reality. Deployment, observability, on-call load — they factor these in without being asked.\n\nThe gap I see most often isn't technical knowledge. It's that candidates haven't practiced reasoning out loud under ambiguity. They know the concepts but haven't built the habit of narrating their thinking, especially when they're uncertain.\n\nFor engineers preparing: treat every mock interview as a communication exercise, not just a technical one. The person across the table wants to understand how you think when you don't have a clear answer yet.\n\nFor teams evaluating: if your process can't distinguish between someone who memorized system design patterns and someone who has genuinely grappled with production constraints, the signal you're getting isn't reliable.\n\nWhat's one thing you think backend interviews consistently get wrong — or right?",
+  "social_post": "Backend interviews often over-test algorithms and under-test judgment. The candidates who stand out reason through failure modes, tradeoffs, and operational reality — not just architecture diagrams. What do you think interviews get wrong?",
+  "created_at": "2026-09-07T02:42:25Z",
+  "type": "linkedin"
+}
