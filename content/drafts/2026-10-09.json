@@ -1,0 +1,16 @@
+{
+  "title": "Technical Decision-Making as a Senior Engineer",
+  "slug": "technical-decision-making-senior-backend-engineer",
+  "description": "Explores how senior backend engineers grow by making defensible technical decisions, not just technically correct ones.",
+  "tags": [
+    "career growth",
+    "backend engineering",
+    "engineering leadership",
+    "Go"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The hardest part of becoming a senior backend engineer isn't learning more technology. It's learning to make decisions that stick.\n\nAt the mid level, the goal is usually to get to the right answer. You research, prototype, benchmark, and present a recommendation. That's solid work. But senior engineers carry something additional: they make decisions that the team can actually execute on, maintain, and revisit when circumstances change.\n\nThere's a real difference between a technically optimal choice and a defensible one. A defensible decision accounts for your team's current skill distribution, your operational maturity, your deployment constraints, and what it costs to reverse course if you're wrong. In distributed systems and Go backends specifically, I've seen technically elegant solutions create quiet, long-term debt because the team couldn't operate them confidently. That's not a win.\n\nWhat actually marks the transition in practice:\n\n→ You stop optimizing solely for the best-case outcome and start accounting for failure modes your team can actually recover from.\n→ You write the design doc knowing someone will read it six months later without context.\n→ You can articulate why you didn't choose the other option, not just why you chose this one.\n→ You treat reversibility as a first-class design constraint, not an afterthought.\n\nMentoring junior and mid-level engineers through this shift is one of the more underrated parts of the senior role. It's less about teaching them the right frameworks and more about helping them slow down enough to see what they're actually trading off. That skill — making tradeoffs legible — transfers across every stack, every cloud provider, every architectural pattern.\n\nSeniority isn't about having more certainty. It's about being comfortable making clear, reasoned calls under uncertainty and owning what comes next.\n\nWhat's a decision-making habit that changed how you work as you grew in your career?",
+  "social_post": "Senior backend engineering isn't about knowing more — it's about making decisions your team can execute, maintain, and revisit. Defensible \u003e optimal. What habit changed how you make technical calls?",
+  "created_at": "2026-10-09T02:53:44Z",
+  "type": "linkedin"
+}
