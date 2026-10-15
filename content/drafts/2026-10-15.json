@@ -1,0 +1,16 @@
+{
+  "title": "Engineering Philosophy: When to Stop Optimizing",
+  "slug": "engineering-philosophy-when-to-stop-optimizing",
+  "description": "A reflection on the hard-won instinct to recognize when good enough is the right engineering call",
+  "tags": [
+    "backend engineering",
+    "engineering philosophy",
+    "distributed systems",
+    "software craft"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The most underrated skill I've built over years of production systems isn't knowing when to optimize. It's knowing when to stop.\n\nEarly on, I treated every system as a puzzle to be perfected. More efficient data structures. Tighter abstractions. Cleaner retry logic. The code got better. The system got harder to reason about, harder to hand off, and occasionally harder to debug at 2am when something upstream changed and nobody remembered why we made that particular tradeoff.\n\nHere's what production actually teaches you over time:\n\n— Complexity you added last quarter is technical debt someone else pays next year.\n— The cleaner solution that takes three weeks rarely beats the boring solution that ships Friday and survives a team turnover.\n— Distributed systems don't reward elegance. They reward observability, predictable failure modes, and operators who can diagnose problems without reading your mind.\n— \"We might need this later\" has a poor track record as an engineering justification.\n\nNone of this means settle for bad design. It means the definition of good design shifts when you've watched enough systems age, get handed off, scale unexpectedly, or quietly degrade under conditions nobody anticipated.\n\nThe engineers I respect most have strong opinions about when not to build something clever. They've earned skepticism about their own instincts through enough production incidents to know that sophisticated and maintainable rarely live at the same address.\n\nThe tradeoff conversation I wish happened earlier in my career wasn't \"performance vs. readability.\" It was \"how much cognitive load am I baking into this system for the next person who has to run it at midnight?\"\n\nWhat's a tradeoff framing that shifted how you think about building production systems?",
+  "social_post": "The most underrated backend skill isn't knowing when to optimize. It's knowing when to stop. Production teaches you that complexity you added last quarter is debt someone else pays next year. What shifted your tradeoff thinking?",
+  "created_at": "2026-10-15T02:43:04Z",
+  "type": "linkedin"
+}
