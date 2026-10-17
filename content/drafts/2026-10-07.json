@@ -1,0 +1,16 @@
+{
+  "title": "Backend Interview Red Flags: What Candidates Miss Beyond System Design",
+  "slug": "backend-interview-red-flags-beyond-system-design",
+  "description": "Explores what hiring teams actually evaluate in senior backend interviews beyond system design diagrams — focusing on reasoning, tradeoffs, and operational maturity.",
+  "tags": [
+    "hiring",
+    "backend",
+    "interviewing",
+    "engineering"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Most senior backend candidates prepare for system design. Far fewer prepare for the conversation that happens after the diagram is drawn.\n\nAfter years of building and reviewing distributed systems in production, I've noticed that the diagram itself is rarely the deciding factor. What separates strong candidates isn't whether they reached the \"right\" architecture. It's how they handle the moment when someone pushes back on a choice they made.\n\nA few things I've seen matter more than most candidates expect:\n\n— Can they articulate *why* they'd choose eventual consistency over strong consistency for a given use case — without defaulting to buzzwords?\n— When they hit an ambiguous requirement, do they ask a clarifying question or just assume and move on?\n— Do they treat operational concerns — observability, failure modes, degradation behavior — as afterthoughts, or as part of the design itself?\n— When a tradeoff has a real cost, can they name it honestly instead of selling their approach like it has no downsides?\n\nThese signals aren't about catching people out. They reflect how engineers actually behave when systems break at 2am, when stakeholders want something that doesn't scale, or when a PR review surfaces a design flaw late.\n\nInterview preparation that focuses only on memorizing distributed systems patterns will get candidates through some screens. But the senior bar usually lives in the reasoning layer — not the pattern layer.\n\nIf you're preparing for senior backend roles right now: spend less time memorizing architectures and more time practicing how you think out loud under mild pressure. That's the muscle that gets tested most.\n\nWhat's one interview signal — as a candidate or interviewer — that you think gets underweighted?",
+  "social_post": "The system design diagram isn't the deciding factor in senior backend interviews. How you reason through tradeoffs — especially under pushback — is. Are you practicing that muscle? #backend #hiring #engineering",
+  "created_at": "2026-10-07T02:53:06Z",
+  "type": "linkedin"
+}
