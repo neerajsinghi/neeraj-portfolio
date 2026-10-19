@@ -1,0 +1,16 @@
+{
+  "title": "Code Review Culture That Actually Works",
+  "slug": "code-review-culture-that-actually-works",
+  "description": "Examines what separates performative code review culture from one that genuinely raises engineering standards and builds team trust.",
+  "tags": [
+    "engineering culture",
+    "code review",
+    "team practices",
+    "backend engineering"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Code review culture reveals more about a team than almost anything else.\n\nNot whether reviews happen — they almost always do. But what actually gets said, how fast feedback lands, and whether people feel safe pushing back on decisions made by someone more senior.\n\nAfter years of working across backend and distributed systems teams, here's what I've noticed separates performative review culture from one that genuinely raises standards:\n\n— Reviews that ask \"why\" more than they flag \"what.\" Pointing out a missing index is easy. Understanding why a data access pattern was chosen in the first place leads to better conversations and better engineers.\n\n— Feedback that separates blocking concerns from preferences. When everything gets the same weight, reviewers lose credibility and authors stop reading carefully. Not all comments are equal. Treat them that way.\n\n— Senior engineers who still get real feedback. If nobody pushes back on staff-level PRs, you don't have a review culture — you have a rubber stamp with extra steps. The best teams I've seen normalize substantive feedback regardless of seniority.\n\n— Technical debt flagged openly, not buried in comments. Review threads aren't the right place to surface systemic problems. Strong teams have a separate, low-friction way to name debt honestly — without it becoming a blame exercise.\n\nThe code review workflow is one of the few team practices where culture is visible every single day. It compounds. A team that does it well gets sharper over time. A team that treats it as overhead gradually loses the habit of thinking critically together.\n\nWhat's one thing your team does — or stopped doing — that made code review actually useful?",
+  "social_post": "Code review culture reveals more about a team than almost anything else. Not whether reviews happen — but what gets said, how fast, and whether anyone pushes back on senior engineers. What made reviews actually useful on your team?",
+  "created_at": "2026-10-03T02:51:59Z",
+  "type": "linkedin"
+}
