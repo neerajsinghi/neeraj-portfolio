@@ -1,0 +1,16 @@
+{
+  "title": "Mentoring as a Senior Go Engineer",
+  "slug": "mentoring-senior-go-engineer",
+  "description": "How senior backend engineers create real impact through mentoring, not just technical output",
+  "tags": [
+    "career-growth",
+    "mentoring",
+    "backend-engineering",
+    "engineering-leadership"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The most underrated skill a senior backend engineer can build isn't distributed systems knowledge. It's knowing how to transfer what you know.\n\nAt some point, you stop being the person who writes the hardest code on the team. You become the person who raises the ceiling for everyone else. That shift is less celebrated, but it's where your real leverage lives.\n\nWhat that actually looks like in practice:\n\n— Reviewing PRs with enough context that the author learns something, not just gets approved or blocked\n— Asking \"what's your thinking here?\" before offering your own, so engineers build reasoning muscles instead of just adopting your patterns\n— Spotting when a mid-level engineer is close to a good decision and giving them space to land it themselves rather than stepping in\n— Naming the tradeoffs in your own decisions out loud, so newer engineers see how experienced thinking actually works — not just the conclusion\n\nIn Go and distributed systems work specifically, there's a lot of tacit knowledge that never gets written down. How you think about retry semantics, why you're skeptical of certain consistency guarantees, when to reach for a queue versus a synchronous call. That knowledge lives in your head. If it stays there, it leaves when you do.\n\nMentoring isn't a soft skill sitting alongside your technical work. For senior engineers, it is the technical work — because the output isn't just code, it's a team that ships better systems over time.\n\nIf you're mid-level right now and eyeing the senior step: the engineers who make that jump cleanly aren't always the most technically brilliant. They're the ones who've started thinking about team output, not just individual output.\n\nWhat changed most in how you think about your impact once you hit senior level?",
+  "social_post": "Senior engineers: your leverage isn't writing the hardest code. It's transferring what you know. Mentoring isn't soft — it's the work. What changed in how you thought about impact once you hit senior level?",
+  "created_at": "2026-10-19T02:45:36Z",
+  "type": "linkedin"
+}
