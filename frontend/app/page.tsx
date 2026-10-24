@@ -5,6 +5,42 @@ import Stack from "../components/sections/Stack";
 import Experience from "../components/sections/Experience";
 import Projects from "../components/sections/Projects";
 import Contact from "../components/sections/Contact";
+import { siteUrl } from "../lib/site";
+
+const profile = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "@id": `${siteUrl}/#profile`,
+  url: siteUrl,
+  name: "Neeraj Singhi - Senior Go Backend & AI Engineer",
+  isPartOf: { "@id": `${siteUrl}/#website` },
+  mainEntity: {
+    "@type": "Person",
+    "@id": `${siteUrl}/#person`,
+    name: "Neeraj Singhi",
+    url: siteUrl,
+    jobTitle: "Senior Go Backend & AI Engineer",
+    email: "mailto:nsinghi2011@gmail.com",
+    homeLocation: {
+      "@type": "Place",
+      name: "Delhi, India",
+    },
+    sameAs: [
+      "https://github.com/neerajsinghi",
+      "https://www.linkedin.com/in/neeraj-singhi-golang",
+    ],
+    knowsAbout: [
+      "Go",
+      "Distributed systems",
+      "Backend engineering",
+      "Amazon Web Services",
+      "Retrieval-augmented generation",
+      "AI agents",
+      "Kubernetes",
+      "Terraform",
+    ],
+  },
+};
 
 export default function Page() {
   return (
@@ -47,6 +83,10 @@ export default function Page() {
           <span>Go backend · RAG + tool-use (MCP pattern) · Next.js</span>
         </div>
       </footer>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(profile).replace(/</g, "\\u003c") }}
+      />
     </>
   );
 }

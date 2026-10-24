@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import BlogHeader from "../../../components/BlogHeader";
 import { getBlogPost } from "../../../lib/blogs";
+import { siteUrl } from "../../../lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -21,15 +22,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
         title: `${post.title} | Neeraj Singhi`,
         description: post.description,
+        keywords: post.tags,
+        authors: [{ name: "Neeraj Singhi", url: siteUrl }],
         alternates: { canonical: `/blogs/${post.slug}` },
         openGraph: {
             type: "article",
             url: `/blogs/${post.slug}`,
+            siteName: "Neeraj Singhi",
+            locale: "en_IN",
             title: post.title,
             description: post.description,
             publishedTime: post.published_at,
             modifiedTime: post.updated_at,
+            authors: [siteUrl],
             tags: post.tags,
+        },
+        // Set explicitly so posts don't inherit the homepage's Twitter card.
+        twitter: {
+            card: "summary_large_image",
+            title: post.title,
+            description: post.description,
         },
     };
 }
@@ -39,15 +51,35 @@ export default async function BlogDetailPage({ params }: Props) {
     const post = await getBlogPost(slug);
     if (!post) notFound();
 
+    const postUrl = `${siteUrl}/blogs/${post.slug}`;
     const articleData = {
         "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: post.title,
-        description: post.description,
-        datePublished: post.published_at,
-        dateModified: post.updated_at,
-        mainEntityOfPage: `https://neerajsinghi.com/blogs/${post.slug}`,
-        author: { "@type": "Person", name: "Neeraj Singhi", url: "https://neerajsinghi.com" },
+        "@graph": [
+            {
+                "@type": "BlogPosting",
+                "@id": `${postUrl}#article`,
+                url: postUrl,
+                headline: post.title,
+                description: post.description,
+                image: `${postUrl}/opengraph-image`,
+                datePublished: post.published_at || post.updated_at,
+                dateModified: post.updated_at,
+                inLanguage: "en",
+                keywords: post.tags.join(", "),
+                mainEntityOfPage: postUrl,
+                isPartOf: { "@id": `${siteUrl}/#website` },
+                author: { "@type": "Person", "@id": `${siteUrl}/#person`, name: "Neeraj Singhi", url: siteUrl },
+                publisher: { "@type": "Person", "@id": `${siteUrl}/#person`, name: "Neeraj Singhi", url: siteUrl },
+            },
+            {
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+                    { "@type": "ListItem", position: 2, name: "Blogs", item: `${siteUrl}/blogs` },
+                    { "@type": "ListItem", position: 3, name: post.title, item: postUrl },
+                ],
+            },
+        ],
     };
 
     return (
