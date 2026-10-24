@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import AnalyticsTracker from "../components/AnalyticsTracker";
+import { siteUrl } from "../lib/site";
 import "./globals.css";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const disp = Space_Grotesk({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-disp" });
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
-const siteUrl = "https://neerajsinghi.com";
 const googleAnalyticsId = "G-6N1XEY3L6R";
 
 export const metadata: Metadata = {
@@ -46,38 +46,15 @@ export const metadata: Metadata = {
   },
 };
 
-const structuredData = {
+const website = {
   "@context": "https://schema.org",
-  "@type": "ProfilePage",
-  "@id": `${siteUrl}/#profile`,
+  "@type": "WebSite",
+  "@id": `${siteUrl}/#website`,
   url: siteUrl,
-  name: "Neeraj Singhi - Senior Go Backend & AI Engineer",
-  mainEntity: {
-    "@type": "Person",
-    "@id": `${siteUrl}/#person`,
-    name: "Neeraj Singhi",
-    url: siteUrl,
-    jobTitle: "Senior Go Backend & AI Engineer",
-    email: "mailto:nsinghi2011@gmail.com",
-    homeLocation: {
-      "@type": "Place",
-      name: "Delhi, India",
-    },
-    sameAs: [
-      "https://github.com/neerajsinghi",
-      "https://www.linkedin.com/in/neeraj-singhi-golang",
-    ],
-    knowsAbout: [
-      "Go",
-      "Distributed systems",
-      "Backend engineering",
-      "Amazon Web Services",
-      "Retrieval-augmented generation",
-      "AI agents",
-      "Kubernetes",
-      "Terraform",
-    ],
-  },
+  name: "Neeraj Singhi",
+  alternateName: "neerajsinghi.com",
+  inLanguage: "en",
+  publisher: { "@type": "Person", "@id": `${siteUrl}/#person`, name: "Neeraj Singhi", url: siteUrl },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -100,7 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(website).replace(/</g, "\\u003c") }}
         />
       </body>
     </html>

@@ -2,11 +2,32 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import BlogHeader from "../../components/BlogHeader";
 import { getBlogPosts, type BlogPost } from "../../lib/blogs";
+import { siteUrl } from "../../lib/site";
 
+const title = "Engineering Blogs | Neeraj Singhi";
+const description = "Practical writing about Go, backend systems, AWS, distributed architecture, and applied AI.";
+
+// openGraph/twitter are set explicitly so this page doesn't inherit the
+// homepage's og:url, og:type and titles from the root layout.
 export const metadata: Metadata = {
-    title: "Engineering Blogs | Neeraj Singhi",
-    description: "Practical writing about Go, backend systems, AWS, distributed architecture, and applied AI.",
+    title,
+    description,
     alternates: { canonical: "/blogs" },
+    openGraph: {
+        type: "website",
+        url: "/blogs",
+        siteName: "Neeraj Singhi",
+        locale: "en_IN",
+        title,
+        description,
+        images: ["/opengraph-image"],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: ["/opengraph-image"],
+    },
 };
 
 // Forces this route to always respect the 60s window (and on-demand
@@ -54,9 +75,32 @@ export default async function BlogsPage() {
                         </div>
                     )}
                 </div>
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogData(posts)).replace(/</g, "\\u003c") }} />
             </main>
         </>
     );
+}
+
+function blogData(posts: BlogPost[]) {
+    return {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "@id": `${siteUrl}/blogs#blog`,
+        url: `${siteUrl}/blogs`,
+        name: "Engineering Blogs by Neeraj Singhi",
+        description,
+        inLanguage: "en",
+        isPartOf: { "@id": `${siteUrl}/#website` },
+        author: { "@id": `${siteUrl}/#person` },
+        blogPost: posts.map((post) => ({
+            "@type": "BlogPosting",
+            "@id": `${siteUrl}/blogs/${post.slug}#article`,
+            url: `${siteUrl}/blogs/${post.slug}`,
+            headline: post.title,
+            datePublished: post.published_at || post.updated_at,
+            dateModified: post.updated_at,
+        })),
+    };
 }
 
 function formatDate(value: string) {
