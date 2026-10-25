@@ -216,6 +216,24 @@ jobs:
             --query 'Version' \
             --output text >/dev/null
 
+          # Terraform reads the Lambda env from SSM, so mirror the LinkedIn values
+          # there too; otherwise the next terraform apply would blank them.
+          put_optional() {
+            [ -n "$2" ] || return 0
+            aws ssm put-parameter \
+              --name "/neeraj-portfolio/$1" \
+              --type SecureString \
+              --value "$2" \
+              --overwrite \
+              --no-cli-pager \
+              --query 'Version' \
+              --output text >/dev/null
+          }
+          put_optional "devto-api-key" "$DEVTO_API_KEY"
+          put_optional "linkedin-access-token" "$LINKEDIN_ACCESS_TOKEN"
+          put_optional "linkedin-author-urn" "$LINKEDIN_AUTHOR_URN"
+          put_optional "linkedin-version" "$LINKEDIN_VERSION"
+
           current=$(aws lambda get-function-configuration \
             --function-name "$LAMBDA_FUNCTION" \
             --query 'Environment.Variables' \

@@ -16,6 +16,7 @@
 #   export ALLOWED_ORIGIN=https://neerajsinghi.com,https://admin.neerajsinghi.com
 #   export MONGODB_URI='mongodb+srv://...'
 #   export MONGODB_DATABASE=neeraj_portfolio
+#   export LINKEDIN_ACCESS_TOKEN=... LINKEDIN_AUTHOR_URN=urn:li:person:... LINKEDIN_VERSION=YYYYMM  # optional
 #
 #   ./scripts/bootstrap-secrets.sh [--region ap-south-1] [--no-overwrite]
 #
@@ -95,6 +96,17 @@ if [[ -n "${GITHUB_TOKEN:-}" ]]; then
 else
   echo "  • Skipping /github-token (not set)"
 fi
+
+# Optional LinkedIn publishing config. Terraform sets the Lambda env from these,
+# so an unset value here means LinkedIn publishing is disabled after an apply.
+for var in LINKEDIN_ACCESS_TOKEN LINKEDIN_AUTHOR_URN LINKEDIN_VERSION; do
+  name="$(tr 'A-Z_' 'a-z-' <<<"$var")"
+  if [[ -n "${!var:-}" ]]; then
+    put_param "$name" "${!var}"
+  else
+    echo "  • Skipping /$name (not set)"
+  fi
+done
 
 echo "---"
 echo "All parameters stored. Verifying (names only):"

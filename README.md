@@ -195,7 +195,7 @@ cd infrastructure/terraform
 cp terraform.tfvars.example terraform.tfvars   # fill in values
 terraform init
 cd ../..
-./scripts/build-lambda.sh
+./scripts/build-lambda.sh      # only the first apply deploys this zip; CI deploys code after that
 cd infrastructure/terraform
 terraform apply
 
@@ -246,6 +246,18 @@ SSM Parameter Store (path prefix: `/neeraj-portfolio`):
 - `allowed-origin` (used when `enable_custom_domains=false`; auto-derived in terraform otherwise)
 - `mongodb-uri`
 - `mongodb-database`
+- `content-import-token`, `scheduled-publish-token`, `frontend-revalidate-token`, `devto-api-key` (written by `backend.yml`)
+- `linkedin-access-token`, `linkedin-author-urn`, `linkedin-version` (optional; written by `backend.yml`)
+
+Terraform builds the Lambda's whole environment from these parameters on every apply, so a variable set only on the function (console, CLI) is reset to the SSM value, or removed if the parameter is missing. To keep a value that was set by hand, copy it into SSM first:
+
+```bash
+AWS_PROFILE=portfolio ./scripts/import-lambda-env-to-ssm.sh   # LinkedIn vars by default
+```
+
+### Lambda code deploys
+
+CI owns the backend code: `backend.yml` builds the zip and runs `aws lambda update-function-code` on every push to `main`. Terraform ignores `filename` and `source_code_hash` after the function exists (`lifecycle.ignore_changes` in `modules/lambda_api`), so `terraform apply` never redeploys a local `lambda.zip` over newer CI code, and you don't need to run `scripts/build-lambda.sh` before a routine plan or apply. You still need a zip at `lambda_zip_path` because the provider reads the file (and it's used when the function is first created). To deploy code by hand, use `update-function-code` or the workflow, not Terraform.
 
 Terraform variables (`terraform.tfvars`):
 
