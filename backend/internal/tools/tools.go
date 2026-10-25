@@ -371,6 +371,12 @@ var Projects = []Project{
 		URL:   "https://github.com/neerajsinghi/mcp-gateway",
 	},
 	{
+		Name:  "system-design-patterns-go (open source)",
+		Desc:  "Catalog of 48 system design patterns, each a small tested Go implementation with a runnable simulation and a write-up of trade-offs, across reliability, data and storage, distributed coordination, and architecture.",
+		Stack: "Go (standard library only), distributed systems, storage engines",
+		URL:   "https://github.com/neerajsinghi/system-design-patterns-go",
+	},
+	{
 		Name:  "go-license (open source)",
 		Desc:  "Offline Ed25519-signed license keys with feature gating, seat limits, clock-rollback detection and a tamper-evident hash-chained usage log, plus a golicense CLI.",
 		Stack: "Go, Ed25519, HMAC-SHA256, CLI",

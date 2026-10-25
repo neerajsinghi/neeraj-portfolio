@@ -109,6 +109,13 @@ export const PROJECTS: { tag: string; name: string; desc: string; stack: string[
     repo: "https://github.com/neerajsinghi/mcp-gateway",
   },
   {
+    tag: "Open Source · System Design",
+    name: "system-design-patterns-go",
+    desc: "48 system design patterns as small, tested, runnable Go examples: circuit breakers, sagas, consistent hashing, LSM trees, quorums, fencing tokens and more.",
+    stack: ["Go", "Distributed systems", "Reliability", "Storage engines"],
+    repo: "https://github.com/neerajsinghi/system-design-patterns-go",
+  },
+  {
     tag: "Open Source · Security",
     name: "go-license",
     desc: "Offline Ed25519 license keys with feature gating, clock-rollback detection and a tamper-evident, hash-chained usage log, plus a CLI.",
