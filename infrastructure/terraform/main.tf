@@ -13,6 +13,8 @@ module "cognito" {
   aws_region   = var.aws_region
   callback_url = var.enable_custom_domains ? "https://${local.admin_fqdn}/auth/callback" : var.admin_callback_url
   logout_url   = var.enable_custom_domains ? "https://${local.admin_fqdn}" : var.admin_logout_url
+
+  passkey_satisfies_mfa = var.passkey_satisfies_mfa
 }
 
 module "lambda_api" {
