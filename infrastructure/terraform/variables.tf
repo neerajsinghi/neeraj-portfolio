@@ -179,7 +179,7 @@ variable "github_org_repo" {
 }
 
 variable "passkey_satisfies_mfa" {
-  description = "Let a user-verified admin passkey satisfy required MFA (set via AWS CLI during apply; false keeps TOTP after passkey sign-in)"
+  description = "Allow admin passkey sign-in, with a user-verified passkey satisfying required MFA (set via AWS CLI during apply; false disables passkey sign-in)"
   type        = bool
   default     = true
 }
