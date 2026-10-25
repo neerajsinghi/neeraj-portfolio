@@ -177,3 +177,9 @@ variable "github_org_repo" {
   description = "GitHub org/repo slug for the OIDC trust policy (e.g. neerajsinghi/neeraj-portfolio)"
   type        = string
 }
+
+variable "passkey_satisfies_mfa" {
+  description = "Let a user-verified admin passkey satisfy required MFA (set via AWS CLI during apply; false keeps TOTP after passkey sign-in)"
+  type        = bool
+  default     = true
+}
