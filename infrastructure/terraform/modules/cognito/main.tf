@@ -4,6 +4,10 @@ locals {
   domain_prefix = "${var.project}-${data.aws_caller_identity.current.account_id}"
   # Passkeys are bound to the domain that hosts managed login.
   relying_party_id = "${local.domain_prefix}.auth.${var.aws_region}.amazoncognito.com"
+  # Cognito rejects WEB_AUTHN as a first factor while MFA is required unless the
+  # passkey itself counts as MFA, so the two settings always move together.
+  passkey_factor = var.passkey_satisfies_mfa ? "MULTI_FACTOR_WITH_USER_VERIFICATION" : "SINGLE_FACTOR"
+  first_factors  = var.passkey_satisfies_mfa ? ["PASSWORD", "WEB_AUTHN"] : ["PASSWORD"]
 }
 
 resource "aws_cognito_user_pool" "admin" {
@@ -19,7 +23,7 @@ resource "aws_cognito_user_pool" "admin" {
   }
 
   sign_in_policy {
-    allowed_first_auth_factors = ["PASSWORD", "WEB_AUTHN"]
+    allowed_first_auth_factors = local.first_factors
   }
 
   web_authn_configuration {
@@ -45,6 +49,14 @@ resource "aws_cognito_user_pool" "admin" {
 
   admin_create_user_config {
     allow_admin_create_user_only = true
+  }
+
+  # After creation, terraform_data.mfa_config owns the MFA settings. When any of
+  # these change the provider calls SetUserPoolMfaConfig without
+  # FactorConfiguration, which resets it to SINGLE_FACTOR and then fails (or
+  # breaks passkey sign-in) because WEB_AUTHN is still an allowed first factor.
+  lifecycle {
+    ignore_changes = [mfa_configuration, software_token_mfa_configuration, web_authn_configuration]
   }
 }
 
@@ -86,19 +98,15 @@ resource "aws_cognito_managed_login_branding" "admin" {
   use_cognito_provided_values = true
 }
 
-# The AWS provider does not expose WebAuthnConfiguration.FactorConfiguration yet.
-# Without it a passkey is only a first factor and TOTP is still prompted; with it,
-# a passkey that verifies the user (biometric/PIN) satisfies the required MFA.
-# The provider rewrites the MFA config whenever these inputs change, so rerun then.
-resource "terraform_data" "passkey_mfa" {
-  count = var.passkey_satisfies_mfa ? 1 : 0
-
+# The AWS provider does not expose WebAuthnConfiguration.FactorConfiguration
+# yet, so the whole MFA config is set here in one call: MFA required, TOTP as
+# the fallback, and a user-verified passkey (biometric/PIN) counting as MFA.
+# It reruns whenever any of these inputs change.
+resource "terraform_data" "mfa_config" {
   triggers_replace = [
     aws_cognito_user_pool.admin.id,
-    aws_cognito_user_pool.admin.mfa_configuration,
-    aws_cognito_user_pool.admin.software_token_mfa_configuration,
-    aws_cognito_user_pool.admin.web_authn_configuration,
-    aws_cognito_user_pool.admin.user_pool_tier,
+    local.relying_party_id,
+    local.passkey_factor,
   ]
 
   provisioner "local-exec" {
@@ -108,9 +116,16 @@ resource "terraform_data" "passkey_mfa" {
         --user-pool-id ${aws_cognito_user_pool.admin.id} \
         --mfa-configuration ON \
         --software-token-mfa-configuration Enabled=true \
-        --web-authn-configuration RelyingPartyId=${local.relying_party_id},UserVerification=required,FactorConfiguration=MULTI_FACTOR_WITH_USER_VERIFICATION
+        --web-authn-configuration RelyingPartyId=${local.relying_party_id},UserVerification=required,FactorConfiguration=${local.passkey_factor} \
+        --query 'WebAuthnConfiguration.FactorConfiguration' \
+        --output text
     EOT
   }
+}
+
+moved {
+  from = terraform_data.passkey_mfa[0]
+  to   = terraform_data.mfa_config
 }
 
 resource "aws_cognito_user_group" "admin" {

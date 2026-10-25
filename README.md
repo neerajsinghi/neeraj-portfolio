@@ -176,7 +176,8 @@ When enabled:
 - Backend CORS `ALLOWED_ORIGIN` is auto-derived from the frontend host.
 - Admin is deployed as a separate Amplify app at `admin.neerajsinghi.com`.
 - Cognito uses authorization code + PKCE, mandatory MFA (TOTP or a user-verified passkey), managed login on the Essentials tier, token revocation, and groups named `admin` and `editor`.
-- Admins can add a passkey from the managed login page after signing in with password + TOTP. A passkey that checks a biometric or device PIN satisfies MFA on its own; TOTP stays enabled as the fallback. That one setting (`FactorConfiguration`) isn't in the AWS provider yet, so `terraform apply` sets it with the AWS CLI. Set `passkey_satisfies_mfa = false` to skip that step and keep TOTP after passkey sign-in.
+- Admins can add a passkey from the managed login page after signing in with password + TOTP. A passkey that checks a biometric or device PIN satisfies MFA on its own; TOTP stays enabled as the fallback. That one setting (`FactorConfiguration`) isn't in the AWS provider yet, so `terraform apply` sets the whole MFA config with the AWS CLI (`terraform_data.mfa_config` in `modules/cognito`). The user pool resource ignores its MFA fields after creation: if the provider updated them it would reset `FactorConfiguration`, and Cognito then rejects passkey sign-in while MFA is required. Change MFA or passkey settings in the `mfa_config` command, not on the pool. Set `passkey_satisfies_mfa = false` to turn passkey sign-in off.
+- To turn `passkey_satisfies_mfa` back on after it was off, first run the module's `set-user-pool-mfa-config` command by hand with `FactorConfiguration=MULTI_FACTOR_WITH_USER_VERIFICATION`, then `terraform apply`. Otherwise Terraform re-adds passkey sign-in to the pool before its CLI step runs, and Cognito rejects that.
 
 ### First-time setup
 
