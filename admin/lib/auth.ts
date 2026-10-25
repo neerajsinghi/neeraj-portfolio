@@ -86,6 +86,7 @@ export function getRoles(accessToken: string): string[] {
 export function logout() {
   const { domain, clientID, redirectURI } = config();
   sessionStorage.removeItem(storageKey);
-  const query = new URLSearchParams({ client_id: clientID, logout_uri: new URL("/", redirectURI).toString() });
+  // Must match the client's LogoutURLs exactly; Terraform registers the bare origin (no trailing slash).
+  const query = new URLSearchParams({ client_id: clientID, logout_uri: new URL(redirectURI).origin });
   window.location.assign(`${domain}/logout?${query}`);
 }
