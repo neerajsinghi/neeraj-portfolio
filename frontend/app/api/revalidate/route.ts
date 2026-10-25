@@ -1,6 +1,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
+import { notifyIndexNow } from "../../../lib/indexnow";
 
 // Called by the backend right after a publish-affecting change (create,
 // update, delete, or the scheduled-publish cron) so the blog list/detail
@@ -14,6 +15,10 @@ export async function POST(request: NextRequest) {
 
   revalidateTag("blogs", "max");
   revalidatePath("/sitemap.xml");
+  revalidatePath("/llms.txt");
+  // Runs after the response so the backend's 5s client timeout isn't spent
+  // waiting on a third-party API.
+  after(notifyIndexNow);
   return NextResponse.json({ revalidated: true });
 }
 

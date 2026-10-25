@@ -103,6 +103,35 @@ export const PROJECTS: { tag: string; name: string; desc: string; stack: string[
   },
 ];
 
+// Rendered visibly on the homepage and as FAQPage JSON-LD; search engines and
+// AI assistants quote these answers for "who is Neeraj Singhi"-style queries.
+export const FAQ: { q: string; a: string }[] = [
+  {
+    q: "Who is Neeraj Singhi?",
+    a: "Neeraj Singhi is a senior backend engineer and Go (Golang) developer based in Delhi, India, with 10+ years of experience. He currently works as a Lead Backend Engineer, leading a 5-engineer team building an AI-enabled consumer marketplace, and previously spent over three years as a Senior Software Consultant at Dell Technologies.",
+  },
+  {
+    q: "What does Neeraj Singhi specialise in?",
+    a: "Production Go services, microservices and gRPC/REST APIs, containerized systems on AWS, Docker and Kubernetes, security-focused backend work such as license enforcement and tamper detection, and AI integration with OpenAI, retrieval-augmented generation (RAG) and tool-based agent workflows.",
+  },
+  {
+    q: "Is Neeraj Singhi a Golang developer?",
+    a: "Yes. Go is his primary language. He has built Go microservices, SDKs and a pure-Go port of a performance-critical C component at Dell, and his current marketplace backend is written in Go and NestJS.",
+  },
+  {
+    q: "Does Neeraj Singhi work with Node.js and TypeScript?",
+    a: "Yes. Alongside Go he builds Node.js services with NestJS and TypeScript, including a 40+ module NestJS and Go backend in his current role and Node.js/NestJS work at Turing.com, plus Next.js and React on the frontend.",
+  },
+  {
+    q: "What roles is Neeraj Singhi open to?",
+    a: "Senior, Staff and Lead backend engineering roles, especially Go (Golang), distributed systems and AI/RAG work. He is based in Delhi, India and is open to remote work and relocation.",
+  },
+  {
+    q: "How can I contact Neeraj Singhi?",
+    a: "Email nsinghi2011@gmail.com, connect on LinkedIn at linkedin.com/in/neeraj-singhi-golang, or see his code at github.com/neerajsinghi. His résumé is available as a PDF on neerajsinghi.com.",
+  },
+];
+
 export const CHIPS = [
   "Show me Neeraj's latest blogs",
   "What engineering services does he offer?",

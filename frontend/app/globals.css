@@ -763,6 +763,64 @@ section {
   padding: 3px 7px
 }
 
+.faq {
+  display: flex;
+  flex-direction: column;
+  gap: 10px
+}
+
+.faq-item {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--bg2), rgba(16, 23, 42, .6));
+  transition: border-color .22s
+}
+
+.faq-item[open],
+.faq-item:hover {
+  border-color: var(--line2)
+}
+
+.faq-item summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none
+}
+
+.faq-item summary::after {
+  content: "+";
+  font-family: var(--mono);
+  color: var(--teal);
+  font-size: 18px;
+  flex-shrink: 0
+}
+
+.faq-item[open] summary::after {
+  content: "−"
+}
+
+.faq-item h3 {
+  font-family: var(--disp);
+  font-weight: 600;
+  font-size: 17px;
+  margin: 0
+}
+
+.faq-item p {
+  color: #c8d0e4;
+  font-size: 15.5px;
+  margin: 0;
+  padding: 0 22px 20px
+}
+
 .blog-page {
   min-height: calc(100vh - 62px);
   background: linear-gradient(180deg, rgba(16, 23, 42, .42), transparent 360px)

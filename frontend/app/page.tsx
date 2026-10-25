@@ -5,7 +5,9 @@ import About from "../components/sections/About";
 import Stack from "../components/sections/Stack";
 import Experience from "../components/sections/Experience";
 import Projects from "../components/sections/Projects";
+import FAQ from "../components/sections/FAQ";
 import Contact from "../components/sections/Contact";
+import { FAQ as FAQ_ITEMS } from "../lib/profile";
 import { siteUrl } from "../lib/site";
 
 // Google ignores the keywords meta tag, but Bing and some job/people search
@@ -66,6 +68,7 @@ const profile = {
     sameAs: [
       "https://github.com/neerajsinghi",
       "https://www.linkedin.com/in/neeraj-singhi-golang",
+      "https://tal.club/meet/neeraj-singhi",
     ],
     hasOccupation: {
       "@type": "Occupation",
@@ -95,6 +98,18 @@ const profile = {
       "Technical leadership",
     ],
   },
+};
+
+const faqData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": `${siteUrl}/#faq`,
+  about: { "@id": `${siteUrl}/#person` },
+  mainEntity: FAQ_ITEMS.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
 };
 
 export default function Page() {
@@ -129,6 +144,7 @@ export default function Page() {
         <Stack />
         <Experience />
         <Projects />
+        <FAQ />
         <Contact />
       </main>
 
@@ -141,6 +157,10 @@ export default function Page() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(profile).replace(/</g, "\\u003c") }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqData).replace(/</g, "\\u003c") }}
       />
     </>
   );

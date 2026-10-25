@@ -4,7 +4,7 @@ export default function Contact() {
   return (
     <section className="wrap" id="contact">
       <div className="sec-head">
-        <span className="sec-no">05</span>
+        <span className="sec-no">06</span>
         <h2>Get in touch</h2>
       </div>
       <div className="contact-grid">
