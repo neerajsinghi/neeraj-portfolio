@@ -126,6 +126,13 @@ resource "aws_lambda_function" "backend" {
       COGNITO_CLIENT_ID         = var.cognito_client_id
     }
   }
+
+  # CI (.github/workflows/backend.yml) owns the code: it deploys every push to
+  # main with update-function-code. The zip is only needed to create the
+  # function, so a stale local build never rolls back the deployed code.
+  lifecycle {
+    ignore_changes = [filename, source_code_hash]
+  }
 }
 
 resource "aws_apigatewayv2_api" "backend" {
