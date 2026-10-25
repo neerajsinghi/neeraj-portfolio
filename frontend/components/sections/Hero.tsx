@@ -5,20 +5,20 @@ export default function Hero() {
   return (
     <section className="wrap hero" id="top">
       <div>
-        <div className="eyebrow">Backend · Distributed Systems · AI</div>
+        <div className="eyebrow">Go (Golang) · Node.js · TypeScript · AI</div>
         <h1>
           Neeraj Singhi
           <br />
           <span className="grad">
-            Senior Go backend
+            Senior Golang developer
             <br />
-            &amp; AI engineer.
+            &amp; backend lead.
           </span>
         </h1>
         <div className="role">
-          Senior backend engineer · <b>10+ years</b> shipping production <b>Go</b> services,
+          Senior / lead backend engineer · <b>10+ years</b> shipping production <b>Go</b> services,
           <br />
-          SDKs &amp; containerized systems on <b>AWS</b> — now leading <b>AI / RAG</b> work.
+          <b>Node.js / TypeScript</b> APIs &amp; containerized systems on <b>AWS</b> — now leading <b>AI / RAG</b> work.
         </div>
         <p className="lede">
           From license-enforcement and tamper detection at Dell to an AI-enabled marketplace today. Ask the agent

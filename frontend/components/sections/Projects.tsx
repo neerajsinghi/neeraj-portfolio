@@ -12,7 +12,15 @@ export default function Projects() {
         {PROJECTS.map((p) => (
           <div className="card" key={p.name}>
             <div className="ptag">{p.tag}</div>
-            <h3>{p.name}</h3>
+            <h3>
+              {p.repo ? (
+                <a href={p.repo} target="_blank" rel="noopener noreferrer">
+                  {p.name} ↗
+                </a>
+              ) : (
+                p.name
+              )}
+            </h3>
             <p>{p.desc}</p>
             <div className="st">
               {p.stack.map((s) => (

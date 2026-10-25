@@ -2,11 +2,12 @@
 
 export const FACTS: [string, string][] = [
   ["experience", "10+ years"],
-  ["core", "Go · gRPC · microservices"],
+  ["core", "Go (Golang) · gRPC · microservices"],
+  ["also", "Node.js · NestJS · TypeScript"],
   ["cloud", "AWS · Docker · K8s"],
   ["focus now", "AI · RAG · agents"],
   ["based in", "Delhi, India"],
-  ["open to", "Senior / Staff · open to relocation"],
+  ["open to", "Senior / Staff / Lead · open to relocation"],
 ];
 
 export const STACK: { title: string; tags: string[] }[] = [
@@ -87,7 +88,7 @@ export const EXPERIENCE: Job[] = [
   },
 ];
 
-export const PROJECTS: { tag: string; name: string; desc: string; stack: string[] }[] = [
+export const PROJECTS: { tag: string; name: string; desc: string; stack: string[]; repo?: string }[] = [
   {
     tag: "AI · Marketplace",
     name: "Consumer Marketplace Platform",
@@ -99,6 +100,91 @@ export const PROJECTS: { tag: string; name: string; desc: string; stack: string[
     name: "Medical News Platform",
     desc: "Curated medical-news platform built as Go microservices with a Flutter mobile client, deployed on Docker and Kubernetes.",
     stack: ["Go", "Flutter", "Docker", "Kubernetes"],
+  },
+  {
+    tag: "Open Source · AI Security",
+    name: "mcp-gateway",
+    desc: "Security gateway for MCP servers: API-key and JWT auth, per-tool allowlists that also filter tools/list, rate limits, audit logs and OpenTelemetry.",
+    stack: ["Go", "MCP", "JWT", "OpenTelemetry", "Docker"],
+    repo: "https://github.com/neerajsinghi/mcp-gateway",
+  },
+  {
+    tag: "Open Source · Security",
+    name: "go-license",
+    desc: "Offline Ed25519 license keys with feature gating, clock-rollback detection and a tamper-evident, hash-chained usage log, plus a CLI.",
+    stack: ["Go", "Ed25519", "HMAC", "CLI"],
+    repo: "https://github.com/neerajsinghi/go-license",
+  },
+  {
+    tag: "Open Source · AI / RAG",
+    name: "go-rag-kit",
+    desc: "Production-minded RAG toolkit in pure Go: chunking, embeddings, pgvector and Atlas stores, BM25 + vector hybrid retrieval, and a recall/MRR eval harness.",
+    stack: ["Go", "RAG", "BM25", "pgvector", "MongoDB Atlas"],
+    repo: "https://github.com/neerajsinghi/go-rag-kit",
+  },
+  {
+    tag: "Open Source · Observability",
+    name: "llm-otel-go",
+    desc: "OpenTelemetry tracing, token metrics and cost tracking for OpenAI and Anthropic calls in Go, including streaming, with a Grafana dashboard.",
+    stack: ["Go", "OpenTelemetry", "Prometheus", "Grafana"],
+    repo: "https://github.com/neerajsinghi/llm-otel-go",
+  },
+  {
+    tag: "Open Source · Distributed",
+    name: "ratelimit",
+    desc: "Distributed rate limiting on Redis (GCRA and sliding window) for Go and NestJS, sharing the same Lua scripts so both behave identically.",
+    stack: ["Go", "NestJS", "TypeScript", "Redis", "Lua"],
+    repo: "https://github.com/neerajsinghi/ratelimit",
+  },
+  {
+    tag: "Open Source · Microservices",
+    name: "go-outbox",
+    desc: "Transactional outbox relay and Idempotency-Key middleware for Go microservices, with leases, retries and dead-lettering on PostgreSQL, MySQL and SQLite.",
+    stack: ["Go", "SQL", "Outbox pattern", "Idempotency"],
+    repo: "https://github.com/neerajsinghi/go-outbox",
+  },
+  {
+    tag: "Open Source · Performance",
+    name: "cgo-to-pure-go",
+    desc: "Case study on replacing a cgo dependency with pure Go: golden vectors, differential fuzzing, real benchmarks and a build-tag migration path.",
+    stack: ["Go", "cgo", "C", "Fuzzing", "Benchmarks"],
+    repo: "https://github.com/neerajsinghi/cgo-to-pure-go",
+  },
+  {
+    tag: "Open Source · Template",
+    name: "portfolio-rag-template",
+    desc: "This site as a reusable GitHub template: a Next.js portfolio with a Go RAG agent that answers visitors' questions about you.",
+    stack: ["Go", "Next.js", "RAG", "Docker"],
+    repo: "https://github.com/neerajsinghi/portfolio-rag-template",
+  },
+];
+
+// Rendered visibly on the homepage and as FAQPage JSON-LD; search engines and
+// AI assistants quote these answers for "who is Neeraj Singhi"-style queries.
+export const FAQ: { q: string; a: string }[] = [
+  {
+    q: "Who is Neeraj Singhi?",
+    a: "Neeraj Singhi is a senior backend engineer and Go (Golang) developer based in Delhi, India, with 10+ years of experience. He currently works as a Lead Backend Engineer, leading a 5-engineer team building an AI-enabled consumer marketplace, and previously spent over three years as a Senior Software Consultant at Dell Technologies.",
+  },
+  {
+    q: "What does Neeraj Singhi specialise in?",
+    a: "Production Go services, microservices and gRPC/REST APIs, containerized systems on AWS, Docker and Kubernetes, security-focused backend work such as license enforcement and tamper detection, and AI integration with OpenAI, retrieval-augmented generation (RAG) and tool-based agent workflows.",
+  },
+  {
+    q: "Is Neeraj Singhi a Golang developer?",
+    a: "Yes. Go is his primary language. He has built Go microservices, SDKs and a pure-Go port of a performance-critical C component at Dell, and his current marketplace backend is written in Go and NestJS.",
+  },
+  {
+    q: "Does Neeraj Singhi work with Node.js and TypeScript?",
+    a: "Yes. Alongside Go he builds Node.js services with NestJS and TypeScript, including a 40+ module NestJS and Go backend in his current role and Node.js/NestJS work at Turing.com, plus Next.js and React on the frontend.",
+  },
+  {
+    q: "What roles is Neeraj Singhi open to?",
+    a: "Senior, Staff and Lead backend engineering roles, especially Go (Golang), distributed systems and AI/RAG work. He is based in Delhi, India and is open to remote work and relocation.",
+  },
+  {
+    q: "How can I contact Neeraj Singhi?",
+    a: "Email nsinghi2011@gmail.com, connect on LinkedIn at linkedin.com/in/neeraj-singhi-golang, or see his code at github.com/neerajsinghi. His résumé is available as a PDF on neerajsinghi.com.",
   },
 ];
 

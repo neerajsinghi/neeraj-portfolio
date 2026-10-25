@@ -10,8 +10,9 @@ export default function About() {
       <div className="about-grid">
         <div className="about">
           <p>
-            I'm a senior backend engineer with over a decade building production systems that hold up under real
-            load — distributed services, SDKs, and the infrastructure around them.
+            I'm a senior backend engineer and Go (Golang) developer with over a decade building production systems
+            that hold up under real load — distributed services, SDKs, and the infrastructure around them. Go is my
+            primary language; I also ship Node.js / NestJS services and TypeScript across the stack.
           </p>
           <p>
             My work tends to sit where backend depth meets reliability and security: at Dell I built core parts of
@@ -23,7 +24,8 @@ export default function About() {
           <p>
             Today I lead a small team delivering an AI-enabled consumer marketplace, owning architecture and
             technical direction end to end. I care about the team as much as the code: setting standards, mentoring,
-            and turning vague requirements into shipped systems.
+            and turning vague requirements into shipped systems. I'm open to Senior, Staff, and Lead backend
+            engineering roles.
           </p>
         </div>
         <div className="facts">
