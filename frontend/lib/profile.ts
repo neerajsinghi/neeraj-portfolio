@@ -2,11 +2,12 @@
 
 export const FACTS: [string, string][] = [
   ["experience", "10+ years"],
-  ["core", "Go · gRPC · microservices"],
+  ["core", "Go (Golang) · gRPC · microservices"],
+  ["also", "Node.js · NestJS · TypeScript"],
   ["cloud", "AWS · Docker · K8s"],
   ["focus now", "AI · RAG · agents"],
   ["based in", "Delhi, India"],
-  ["open to", "Senior / Staff · open to relocation"],
+  ["open to", "Senior / Staff / Lead · open to relocation"],
 ];
 
 export const STACK: { title: string; tags: string[] }[] = [

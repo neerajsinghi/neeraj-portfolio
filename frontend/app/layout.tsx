@@ -12,26 +12,26 @@ const googleAnalyticsId = "G-6N1XEY3L6R";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Senior Go Backend & AI Engineer | Neeraj Singhi",
+  title: "Neeraj Singhi | Senior Go (Golang) Developer & Backend Lead",
   description:
-    "Neeraj Singhi is a senior Go backend and AI engineer with 10+ years building distributed systems, AWS platforms, RAG applications, and secure services.",
+    "Neeraj Singhi: senior Golang developer and backend lead. 10+ years of Go, Node.js and TypeScript microservices on AWS, plus AI/RAG. Open to Staff and Lead roles.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "profile",
     url: siteUrl,
-    title: "Senior Go Backend & AI Engineer | Neeraj Singhi",
+    title: "Neeraj Singhi | Senior Go (Golang) Developer & Backend Lead",
     description:
-      "10+ years building distributed systems, AWS platforms, secure Go services, and AI/RAG applications.",
+      "Senior Go (Golang) developer and backend lead: 10+ years of Go, Node.js and TypeScript microservices, AWS, and AI/RAG systems.",
     siteName: "Neeraj Singhi",
     locale: "en_IN",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Senior Go Backend & AI Engineer | Neeraj Singhi",
+    title: "Neeraj Singhi | Senior Go (Golang) Developer & Backend Lead",
     description:
-      "10+ years building distributed systems, AWS platforms, secure Go services, and AI/RAG applications.",
+      "Senior Go (Golang) developer and backend lead: 10+ years of Go, Node.js and TypeScript microservices, AWS, and AI/RAG systems.",
   },
   robots: {
     index: true,
@@ -52,7 +52,7 @@ const website = {
   "@id": `${siteUrl}/#website`,
   url: siteUrl,
   name: "Neeraj Singhi",
-  alternateName: "neerajsinghi.com",
+  alternateName: ["neerajsinghi", "neerajsinghi.com", "Neeraj Singhi Portfolio"],
   inLanguage: "en",
   publisher: { "@type": "Person", "@id": `${siteUrl}/#person`, name: "Neeraj Singhi", url: siteUrl },
 };

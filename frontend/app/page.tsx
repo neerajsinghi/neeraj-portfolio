@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Topology from "../components/Topology";
 import Hero from "../components/sections/Hero";
 import About from "../components/sections/About";
@@ -7,37 +8,91 @@ import Projects from "../components/sections/Projects";
 import Contact from "../components/sections/Contact";
 import { siteUrl } from "../lib/site";
 
+// Google ignores the keywords meta tag, but Bing and some job/people search
+// tools still read it. Ranking itself comes from the visible copy and schema.
+export const metadata: Metadata = {
+  keywords: [
+    "Neeraj Singhi",
+    "Neeraj",
+    "neerajsinghi",
+    "Go developer",
+    "Golang developer",
+    "Golang engineer",
+    "Senior Golang developer",
+    "Go backend engineer",
+    "Backend developer",
+    "Node.js developer",
+    "NestJS developer",
+    "TypeScript developer",
+    "Senior software engineer",
+    "Staff software engineer",
+    "Lead backend engineer",
+    "Tech lead",
+    "Microservices engineer",
+    "AWS backend engineer",
+    "AI engineer",
+    "RAG engineer",
+    "Freelance Golang developer",
+    "Golang developer India",
+    "Golang developer Delhi",
+  ],
+};
+
 const profile = {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
   "@id": `${siteUrl}/#profile`,
   url: siteUrl,
-  name: "Neeraj Singhi - Senior Go Backend & AI Engineer",
+  name: "Neeraj Singhi - Senior Go (Golang) Developer & Backend Lead",
   isPartOf: { "@id": `${siteUrl}/#website` },
   mainEntity: {
     "@type": "Person",
     "@id": `${siteUrl}/#person`,
     name: "Neeraj Singhi",
+    givenName: "Neeraj",
+    familyName: "Singhi",
+    alternateName: ["Neeraj", "neerajsinghi"],
     url: siteUrl,
-    jobTitle: "Senior Go Backend & AI Engineer",
+    image: `${siteUrl}/opengraph-image`,
+    jobTitle: ["Lead Backend Engineer", "Senior Software Engineer", "Senior Go (Golang) Developer"],
+    description:
+      "Senior Go (Golang) developer and lead backend engineer with 10+ years of Go, Node.js and TypeScript, building microservices, AWS platforms and AI/RAG systems.",
     email: "mailto:nsinghi2011@gmail.com",
     homeLocation: {
       "@type": "Place",
       name: "Delhi, India",
     },
+    nationality: { "@type": "Country", name: "India" },
     sameAs: [
       "https://github.com/neerajsinghi",
       "https://www.linkedin.com/in/neeraj-singhi-golang",
     ],
+    hasOccupation: {
+      "@type": "Occupation",
+      name: "Senior Backend Software Engineer",
+      alternateName: ["Golang Developer", "Go Backend Engineer", "Node.js Developer", "Staff Software Engineer", "Tech Lead"],
+      occupationLocation: { "@type": "Country", name: "India" },
+      skills: "Go, Golang, Node.js, NestJS, TypeScript, JavaScript, gRPC, REST, microservices, AWS, Docker, Kubernetes, Terraform, MongoDB, MySQL, Redis, OpenAI, RAG, AI agents",
+    },
     knowsAbout: [
       "Go",
+      "Golang",
+      "Node.js",
+      "NestJS",
+      "TypeScript",
       "Distributed systems",
+      "Microservices",
+      "gRPC",
       "Backend engineering",
       "Amazon Web Services",
-      "Retrieval-augmented generation",
-      "AI agents",
+      "Docker",
       "Kubernetes",
       "Terraform",
+      "MongoDB",
+      "Redis",
+      "Retrieval-augmented generation",
+      "AI agents",
+      "Technical leadership",
     ],
   },
 };
@@ -62,7 +117,7 @@ export default function Page() {
             <a href="#agent">Ask AI</a>
             <span className="pill">
               <span className="dot" />
-              Open to Senior / Staff roles
+              Open to Senior / Staff / Lead roles
             </span>
           </nav>
         </div>
@@ -80,7 +135,7 @@ export default function Page() {
       <footer>
         <div className="wrap">
           <span>© {new Date().getFullYear()} Neeraj Singhi · Delhi, India</span>
-          <span>Go backend · RAG + tool-use (MCP pattern) · Next.js</span>
+          <span>Golang developer · Node.js · TypeScript · RAG + tool-use (MCP pattern) · Next.js</span>
         </div>
       </footer>
       <script
