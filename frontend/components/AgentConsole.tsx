@@ -1,28 +1,30 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { CHIPS } from "../lib/profile";
 import { streamChat } from "../lib/api";
 import { trackEvent } from "../lib/analytics";
 import type { ChatItem } from "../types";
 
-function Rich({ text }: { text: string }) {
-  return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={{
-        a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>,
-      }}
-    >
-      {text}
-    </ReactMarkdown>
-  );
-}
+// The markdown stack (react-markdown + remark-gfm + micromark) is ~80 KB of JS
+// and only needed once the agent replies, so keep it off the first-load path.
+const loadMarkdown = () => import("./Markdown");
+const Rich = dynamic(loadMarkdown, { loading: () => null });
 
 const GREETING =
   "Hi — I'm **Neeraj's portfolio agent**. I answer from his résumé, experience, GitHub, and live published blogs using retrieval + tools. Ask about his work, read his latest writing, or explore the engineering services he offers.";
+
+// Static render of GREETING so the hero paints without the markdown bundle.
+function Greeting() {
+  return (
+    <p>
+      Hi — I&apos;m <strong>Neeraj&apos;s portfolio agent</strong>. I answer from his résumé, experience, GitHub, and
+      live published blogs using retrieval + tools. Ask about his work, read his latest writing, or explore the
+      engineering services he offers.
+    </p>
+  );
+}
 
 export default function AgentConsole() {
   const [items, setItems] = useState<ChatItem[]>([{ kind: "bot", text: GREETING }]);
@@ -32,6 +34,12 @@ export default function AgentConsole() {
   const histRef = useRef<{ role: string; content: string }[]>([]);
   const botTextRef = useRef("");
   const streamErrorRef = useRef(false);
+
+  useEffect(() => {
+    // Warm the markdown chunk once the page is idle so the first reply renders instantly.
+    const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 2000));
+    idle(() => void loadMarkdown());
+  }, []);
 
   useEffect(() => {
     const el = streamRef.current;
@@ -153,7 +161,7 @@ export default function AgentConsole() {
       <div className="stream" ref={streamRef}>
         {items.map((it, i) => {
           if (it.kind === "user") return <div key={i} className="msg user">{it.text}</div>;
-          if (it.kind === "bot") return <div key={i} className="msg bot"><Rich text={it.text} /></div>;
+          if (it.kind === "bot") return <div key={i} className="msg bot">{it.text === GREETING ? <Greeting /> : <Rich text={it.text} />}</div>;
           if (it.kind === "typing")
             return (
               <div key={i} className="typing"><i /><i /><i /></div>
