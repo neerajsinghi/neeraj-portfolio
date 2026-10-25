@@ -88,7 +88,7 @@ export const EXPERIENCE: Job[] = [
   },
 ];
 
-export const PROJECTS: { tag: string; name: string; desc: string; stack: string[] }[] = [
+export const PROJECTS: { tag: string; name: string; desc: string; stack: string[]; repo?: string }[] = [
   {
     tag: "AI · Marketplace",
     name: "Consumer Marketplace Platform",
@@ -100,6 +100,62 @@ export const PROJECTS: { tag: string; name: string; desc: string; stack: string[
     name: "Medical News Platform",
     desc: "Curated medical-news platform built as Go microservices with a Flutter mobile client, deployed on Docker and Kubernetes.",
     stack: ["Go", "Flutter", "Docker", "Kubernetes"],
+  },
+  {
+    tag: "Open Source · AI Security",
+    name: "mcp-gateway",
+    desc: "Security gateway for MCP servers: API-key and JWT auth, per-tool allowlists that also filter tools/list, rate limits, audit logs and OpenTelemetry.",
+    stack: ["Go", "MCP", "JWT", "OpenTelemetry", "Docker"],
+    repo: "https://github.com/neerajsinghi/mcp-gateway",
+  },
+  {
+    tag: "Open Source · Security",
+    name: "go-license",
+    desc: "Offline Ed25519 license keys with feature gating, clock-rollback detection and a tamper-evident, hash-chained usage log, plus a CLI.",
+    stack: ["Go", "Ed25519", "HMAC", "CLI"],
+    repo: "https://github.com/neerajsinghi/go-license",
+  },
+  {
+    tag: "Open Source · AI / RAG",
+    name: "go-rag-kit",
+    desc: "Production-minded RAG toolkit in pure Go: chunking, embeddings, pgvector and Atlas stores, BM25 + vector hybrid retrieval, and a recall/MRR eval harness.",
+    stack: ["Go", "RAG", "BM25", "pgvector", "MongoDB Atlas"],
+    repo: "https://github.com/neerajsinghi/go-rag-kit",
+  },
+  {
+    tag: "Open Source · Observability",
+    name: "llm-otel-go",
+    desc: "OpenTelemetry tracing, token metrics and cost tracking for OpenAI and Anthropic calls in Go, including streaming, with a Grafana dashboard.",
+    stack: ["Go", "OpenTelemetry", "Prometheus", "Grafana"],
+    repo: "https://github.com/neerajsinghi/llm-otel-go",
+  },
+  {
+    tag: "Open Source · Distributed",
+    name: "ratelimit",
+    desc: "Distributed rate limiting on Redis (GCRA and sliding window) for Go and NestJS, sharing the same Lua scripts so both behave identically.",
+    stack: ["Go", "NestJS", "TypeScript", "Redis", "Lua"],
+    repo: "https://github.com/neerajsinghi/ratelimit",
+  },
+  {
+    tag: "Open Source · Microservices",
+    name: "go-outbox",
+    desc: "Transactional outbox relay and Idempotency-Key middleware for Go microservices, with leases, retries and dead-lettering on PostgreSQL, MySQL and SQLite.",
+    stack: ["Go", "SQL", "Outbox pattern", "Idempotency"],
+    repo: "https://github.com/neerajsinghi/go-outbox",
+  },
+  {
+    tag: "Open Source · Performance",
+    name: "cgo-to-pure-go",
+    desc: "Case study on replacing a cgo dependency with pure Go: golden vectors, differential fuzzing, real benchmarks and a build-tag migration path.",
+    stack: ["Go", "cgo", "C", "Fuzzing", "Benchmarks"],
+    repo: "https://github.com/neerajsinghi/cgo-to-pure-go",
+  },
+  {
+    tag: "Open Source · Template",
+    name: "portfolio-rag-template",
+    desc: "This site as a reusable GitHub template: a Next.js portfolio with a Go RAG agent that answers visitors' questions about you.",
+    stack: ["Go", "Next.js", "RAG", "Docker"],
+    repo: "https://github.com/neerajsinghi/portfolio-rag-template",
   },
 ];
 

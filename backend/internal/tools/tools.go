@@ -364,6 +364,54 @@ var Projects = []Project{
 		Stack: "Go, Anthropic/OpenAI/Grok/Gemini, RAG, TF-IDF, Next.js, SSE, Docker",
 		URL:   "https://github.com/neerajsinghi",
 	},
+	{
+		Name:  "mcp-gateway (open source)",
+		Desc:  "Security gateway for MCP servers: API-key and JWT auth, per-tool allow/deny policies that also filter tools/list, per-identity and per-tool rate limits, structured audit logs and OpenTelemetry tracing.",
+		Stack: "Go, MCP, JSON-RPC, JWT, OpenTelemetry, Docker",
+		URL:   "https://github.com/neerajsinghi/mcp-gateway",
+	},
+	{
+		Name:  "go-license (open source)",
+		Desc:  "Offline Ed25519-signed license keys with feature gating, seat limits, clock-rollback detection and a tamper-evident hash-chained usage log, plus a golicense CLI.",
+		Stack: "Go, Ed25519, HMAC-SHA256, CLI",
+		URL:   "https://github.com/neerajsinghi/go-license",
+	},
+	{
+		Name:  "go-rag-kit (open source)",
+		Desc:  "Production-minded RAG toolkit in pure Go: markdown-aware chunking, OpenAI embeddings, in-memory/pgvector/MongoDB Atlas stores, BM25 + vector hybrid retrieval with RRF, and a recall@k/MRR eval CLI.",
+		Stack: "Go, RAG, BM25, pgvector, MongoDB Atlas Vector Search",
+		URL:   "https://github.com/neerajsinghi/go-rag-kit",
+	},
+	{
+		Name:  "llm-otel-go (open source)",
+		Desc:  "OpenTelemetry tracing, token metrics and cost tracking for OpenAI and Anthropic API calls in Go (including streaming), following the GenAI semantic conventions, with a Grafana dashboard.",
+		Stack: "Go, OpenTelemetry, Prometheus, Jaeger, Grafana",
+		URL:   "https://github.com/neerajsinghi/llm-otel-go",
+	},
+	{
+		Name:  "ratelimit (open source)",
+		Desc:  "Distributed rate limiting on Redis (GCRA and sliding window) for Go and NestJS, sharing the same atomic Lua scripts so both behave identically.",
+		Stack: "Go, NestJS, TypeScript, Redis, Lua",
+		URL:   "https://github.com/neerajsinghi/ratelimit",
+	},
+	{
+		Name:  "go-outbox (open source)",
+		Desc:  "Transactional outbox relay and Idempotency-Key HTTP middleware for Go microservices, with leases, backoff retries and dead-lettering on PostgreSQL, MySQL and SQLite.",
+		Stack: "Go, database/sql, PostgreSQL, MySQL, SQLite",
+		URL:   "https://github.com/neerajsinghi/go-outbox",
+	},
+	{
+		Name:  "cgo-to-pure-go (open source)",
+		Desc:  "Case study on replacing a cgo dependency with pure Go: golden vectors, differential fuzzing, measured benchmarks and a build-tag migration path.",
+		Stack: "Go, cgo, C, fuzzing, benchmarks",
+		URL:   "https://github.com/neerajsinghi/cgo-to-pure-go",
+	},
+	{
+		Name:  "portfolio-rag-template (open source)",
+		Desc:  "This site as a reusable GitHub template: a Next.js portfolio with a Go RAG agent that answers visitors' questions about its owner.",
+		Stack: "Go, Next.js, RAG, Docker",
+		URL:   "https://github.com/neerajsinghi/portfolio-rag-template",
+	},
 }
 
 // ExperienceSummary is the structured work history used by get_experience_summary.
