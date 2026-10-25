@@ -28,7 +28,8 @@ export default function Topology() {
     }
     function size() {
       w = c!.width = innerWidth;
-      h = c!.height = Math.max(innerHeight, document.body.scrollHeight);
+      // The canvas is position: fixed, so it only ever needs to cover the viewport.
+      h = c!.height = innerHeight;
       init();
     }
     function frame() {
@@ -63,17 +64,35 @@ export default function Topology() {
       if (!reduce) raf = requestAnimationFrame(frame);
     }
 
-    size();
-    frame();
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      size();
+      frame();
+    };
+    // Decorative only: wait until the page is idle so it never competes with first paint.
+    const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1500));
+    const idleId = idle(start);
+
     const onResize = () => {
+      if (!started) return;
       cancelAnimationFrame(raf);
       size();
       frame();
     };
+    const onVisibility = () => {
+      if (!started || reduce) return;
+      cancelAnimationFrame(raf);
+      if (!document.hidden) raf = requestAnimationFrame(frame);
+    };
     addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
+      (window.cancelIdleCallback ?? window.clearTimeout)(idleId);
       cancelAnimationFrame(raf);
       removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
 
