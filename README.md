@@ -226,6 +226,7 @@ Add these under **Settings → Secrets and variables → Actions**:
 | `XAI_API_KEY`          | Secret   | Your xAI key                                        |
 | `GEMINI_API_KEY`       | Secret   | Your Gemini key                                     |
 | `ALLOWED_ORIGIN`       | Secret   | Your Amplify frontend URL                           |
+| `PROFILE_GITHUB_TOKEN` | Secret   | Optional read-only PAT, stored as SSM `github-token` |
 | `AWS_REGION`           | Variable | e.g. `ap-south-1`                                   |
 
 ### Environment matrix
