@@ -118,3 +118,31 @@ jobs:
             fi
             sleep $INTERVAL
           done
+
+      # Tells Bing/Yandex/Seznam (and, via Bing, ChatGPT search and Copilot)
+      # that every sitemap URL may have changed. Blog-only changes are already
+      # submitted by /api/revalidate; this covers layout and page changes.
+      # Best effort: an IndexNow outage never fails the deploy.
+      - name: Submit sitemap URLs to IndexNow
+        continue-on-error: true
+        env:
+          SITE_URL: https://neerajsinghi.com
+          INDEXNOW_KEY: aa1f87905476d04fba78bdb170e832c8
+        run: |
+          URLS=$(curl -fsS "$SITE_URL/sitemap.xml" | grep -o '<loc>[^<]*</loc>' | sed 's/<[^>]*>//g')
+          if [ -z "$URLS" ]; then
+            echo "::warning::No URLs found in $SITE_URL/sitemap.xml; skipping IndexNow."
+            exit 0
+          fi
+          BODY=$(jq -n \
+            --arg host "${SITE_URL#https://}" \
+            --arg key "$INDEXNOW_KEY" \
+            --arg keyLocation "$SITE_URL/$INDEXNOW_KEY.txt" \
+            --arg urls "$URLS" \
+            '{host: $host, key: $key, keyLocation: $keyLocation, urlList: ($urls | split("\n") | map(select(length > 0)))}')
+          STATUS=$(curl -sS -o /dev/null -w '%{http_code}' -X POST https://api.indexnow.org/indexnow \
+            -H 'Content-Type: application/json; charset=utf-8' -d "$BODY")
+          echo "Submitted $(echo "$URLS" | wc -l | tr -d ' ') URLs to IndexNow: HTTP $STATUS"
+          if [ "$STATUS" != "200" ] && [ "$STATUS" != "202" ]; then
+            echo "::warning::IndexNow returned HTTP $STATUS"
+          fi
