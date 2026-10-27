@@ -1,0 +1,16 @@
+{
+  "title": "Interview Red Flags in Backend Hiring",
+  "slug": "interview-red-flags-backend-hiring",
+  "description": "What backend hiring panels actually watch for beyond technical correctness — and what separates candidates who pass from those who get offers.",
+  "tags": [
+    "hiring",
+    "backend engineering",
+    "system design",
+    "career growth"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The backend candidate who gets the offer rarely has the most technically correct answers. They have the most honest ones.\n\nAfter sitting on enough hiring panels for senior backend and distributed systems roles, a pattern becomes clear. The candidates who stand out aren't the ones who never hesitate — they're the ones who hesitate deliberately. They say 'that tradeoff depends on write volume and consistency requirements' instead of jumping straight to a solution. That pause signals actual production thinking, not memorized answers.\n\nA few things that actually shift evaluations:\n\n— Candidates who ask clarifying questions before whiteboarding earn more trust than those who assume. Real systems have constraints. Good engineers surface them first.\n\n— Walking through a failure path — 'here's what breaks under this approach' — carries more weight than only describing the happy path. Interviewers who build production systems know the failure paths are the real design.\n\n— When asked about past technical decisions, candidates who own the context ('given what we knew at the time, we chose X, and here's what we'd do differently') show more seniority than those who either over-defend or casually blame the codebase.\n\n— On Go, distributed systems, or cloud infra specifically: knowing what you'd reach for matters less than knowing why you'd reach for it over the alternatives.\n\nWhat I've seen trip up otherwise strong engineers: treating system design as an exam to pass rather than a conversation to have. Hiring teams for senior roles aren't looking for you to perform expertise. They're trying to figure out if they'd trust your judgment on a hard call at 2am when something is degrading in production.\n\nThat trust is built in how you think out loud — not just in whether the final design holds up.\n\nWhat's one interview pattern — as a candidate or a panelist — that you think gets underweighted in backend hiring?",
+  "social_post": "The backend candidate who gets the offer rarely has the most technically correct answers. They have the most honest ones — owning tradeoffs, naming failure paths, and thinking out loud. That's what senior hiring panels are actually watching for.",
+  "created_at": "2026-10-27T02:45:50Z",
+  "type": "linkedin"
+}
