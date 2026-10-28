@@ -148,11 +148,11 @@ jobs:
           fi
 
       # Bing's URL Submission API is separate from IndexNow and shows up on
-      # the "URL Submission" page in Bing Webmaster Tools. Quota is tight
-      # (100/day, 400/month), so this sends only the homepage, /blogs and
-      # posts whose sitemap lastmod is within the last 2 days, capped at the
-      # remaining daily quota. Skipped when BING_WEBMASTER_API_KEY is unset.
-      - name: Submit changed URLs to Bing URL Submission API
+      # the "URL Submission" page in Bing Webmaster Tools. Sends every sitemap
+      # URL, capped at the remaining daily/monthly quota (100/day, 400/month),
+      # so frequent deploys can exhaust the month. Skipped when
+      # BING_WEBMASTER_API_KEY is unset.
+      - name: Submit sitemap URLs to Bing URL Submission API
         continue-on-error: true
         env:
           SITE_URL: https://neerajsinghi.com
@@ -164,16 +164,11 @@ jobs:
           fi
           API=https://ssl.bing.com/webmaster/api.svc/json
           SITE_PARAM=$(jq -rn --arg s "$SITE_URL" '$s|@uri')
-          CUTOFF=$(date -u -d '2 days ago' +%Y-%m-%dT%H:%M:%S)
-          URLS=$(curl -fsS "$SITE_URL/sitemap.xml" | awk -v RS='</url>' -v site="$SITE_URL" -v cutoff="$CUTOFF" '
-            match($0, /<loc>[^<]*<\/loc>/) {
-              loc = substr($0, RSTART + 5, RLENGTH - 11)
-              lastmod = match($0, /<lastmod>[^<]*<\/lastmod>/) ? substr($0, RSTART + 9, 19) : ""
-              if (loc == site || loc == site "/blogs" || lastmod >= cutoff) print loc
-            }')
-          QUOTA=$(curl -fsS "$API/GetUrlSubmissionQuota?siteUrl=$SITE_PARAM&apikey=$BING_API_KEY" | jq -r '.d.DailyQuota // 0')
+          URLS=$(curl -fsS "$SITE_URL/sitemap.xml" | grep -o '<loc>[^<]*</loc>' | sed 's/<[^>]*>//g')
+          QUOTA=$(curl -fsS "$API/GetUrlSubmissionQuota?siteUrl=$SITE_PARAM&apikey=$BING_API_KEY" \
+            | jq -r '[.d.DailyQuota // 0, .d.MonthlyQuota // 0] | min')
           if [ "$QUOTA" -le 0 ]; then
-            echo "::warning::Bing daily URL submission quota is used up; skipping."
+            echo "::warning::Bing URL submission quota is used up; skipping."
             exit 0
           fi
           URLS=$(echo "$URLS" | head -n "$QUOTA")
