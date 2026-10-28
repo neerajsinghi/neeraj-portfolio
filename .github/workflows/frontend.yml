@@ -146,3 +146,42 @@ jobs:
           if [ "$STATUS" != "200" ] && [ "$STATUS" != "202" ]; then
             echo "::warning::IndexNow returned HTTP $STATUS"
           fi
+
+      # Bing's URL Submission API is separate from IndexNow and shows up on
+      # the "URL Submission" page in Bing Webmaster Tools. Quota is tight
+      # (100/day, 400/month), so this sends only the homepage, /blogs and
+      # posts whose sitemap lastmod is within the last 2 days, capped at the
+      # remaining daily quota. Skipped when BING_WEBMASTER_API_KEY is unset.
+      - name: Submit changed URLs to Bing URL Submission API
+        continue-on-error: true
+        env:
+          SITE_URL: https://neerajsinghi.com
+          BING_API_KEY: ${{ secrets.BING_WEBMASTER_API_KEY }}
+        run: |
+          if [ -z "$BING_API_KEY" ]; then
+            echo "::warning::BING_WEBMASTER_API_KEY is not set; skipping Bing URL Submission."
+            exit 0
+          fi
+          API=https://ssl.bing.com/webmaster/api.svc/json
+          SITE_PARAM=$(jq -rn --arg s "$SITE_URL" '$s|@uri')
+          CUTOFF=$(date -u -d '2 days ago' +%Y-%m-%dT%H:%M:%S)
+          URLS=$(curl -fsS "$SITE_URL/sitemap.xml" | awk -v RS='</url>' -v site="$SITE_URL" -v cutoff="$CUTOFF" '
+            match($0, /<loc>[^<]*<\/loc>/) {
+              loc = substr($0, RSTART + 5, RLENGTH - 11)
+              lastmod = match($0, /<lastmod>[^<]*<\/lastmod>/) ? substr($0, RSTART + 9, 19) : ""
+              if (loc == site || loc == site "/blogs" || lastmod >= cutoff) print loc
+            }')
+          QUOTA=$(curl -fsS "$API/GetUrlSubmissionQuota?siteUrl=$SITE_PARAM&apikey=$BING_API_KEY" | jq -r '.d.DailyQuota // 0')
+          if [ "$QUOTA" -le 0 ]; then
+            echo "::warning::Bing daily URL submission quota is used up; skipping."
+            exit 0
+          fi
+          URLS=$(echo "$URLS" | head -n "$QUOTA")
+          BODY=$(jq -n --arg siteUrl "$SITE_URL" --arg urls "$URLS" \
+            '{siteUrl: $siteUrl, urlList: ($urls | split("\n") | map(select(length > 0)))}')
+          STATUS=$(curl -sS -o /tmp/bing.json -w '%{http_code}' -X POST "$API/SubmitUrlbatch?apikey=$BING_API_KEY" \
+            -H 'Content-Type: application/json; charset=utf-8' -d "$BODY")
+          echo "Submitted $(echo "$URLS" | wc -l | tr -d ' ') URLs to Bing (quota left before submit: $QUOTA): HTTP $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "::warning::Bing URL Submission returned HTTP $STATUS: $(cat /tmp/bing.json)"
+          fi
