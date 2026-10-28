@@ -377,6 +377,12 @@ var Projects = []Project{
 		URL:   "https://github.com/neerajsinghi/system-design-patterns-go",
 	},
 	{
+		Name:  "dsa-interview-go (open source)",
+		Desc:  "A 21-module data structures and algorithms course for coding interviews: a lesson per pattern plus 150+ interview problems, each with brute-force and optimal Go solutions verified by table-driven and randomized tests.",
+		Stack: "Go (standard library only), algorithms, data structures",
+		URL:   "https://github.com/neerajsinghi/dsa-interview-go",
+	},
+	{
 		Name:  "go-license (open source)",
 		Desc:  "Offline Ed25519-signed license keys with feature gating, seat limits, clock-rollback detection and a tamper-evident hash-chained usage log, plus a golicense CLI.",
 		Stack: "Go, Ed25519, HMAC-SHA256, CLI",

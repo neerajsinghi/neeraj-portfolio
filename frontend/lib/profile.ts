@@ -116,6 +116,13 @@ export const PROJECTS: { tag: string; name: string; desc: string; stack: string[
     repo: "https://github.com/neerajsinghi/system-design-patterns-go",
   },
   {
+    tag: "Open Source · DSA Course",
+    name: "dsa-interview-go",
+    desc: "A 21-module coding-interview course in Go: a lesson per pattern and 150+ interview problems, each with brute-force and optimal solutions checked by randomized tests.",
+    stack: ["Go", "Algorithms", "Data structures", "Dynamic programming"],
+    repo: "https://github.com/neerajsinghi/dsa-interview-go",
+  },
+  {
     tag: "Open Source · Security",
     name: "go-license",
     desc: "Offline Ed25519 license keys with feature gating, clock-rollback detection and a tamper-evident, hash-chained usage log, plus a CLI.",
