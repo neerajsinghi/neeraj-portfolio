@@ -372,7 +372,7 @@ var Projects = []Project{
 	},
 	{
 		Name:  "system-design-patterns-go (open source)",
-		Desc:  "Catalog of 48 system design patterns, each a small tested Go implementation with a runnable simulation and a write-up of trade-offs, across reliability, data and storage, distributed coordination, and architecture.",
+		Desc:  "Catalog of 78 system design patterns, each a small tested Go implementation with a runnable simulation and a write-up of trade-offs, across reliability, data and storage, distributed coordination, architecture, and AI serving, plus 20 interview-style incident scenarios that run a broken design and a fixed one side by side.",
 		Stack: "Go (standard library only), distributed systems, storage engines",
 		URL:   "https://github.com/neerajsinghi/system-design-patterns-go",
 	},

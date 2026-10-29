@@ -111,7 +111,7 @@ export const PROJECTS: { tag: string; name: string; desc: string; stack: string[
   {
     tag: "Open Source · System Design",
     name: "system-design-patterns-go",
-    desc: "48 system design patterns as small, tested, runnable Go examples: circuit breakers, sagas, consistent hashing, LSM trees, quorums, fencing tokens and more.",
+    desc: "78 system design patterns as small, tested, runnable Go examples (circuit breakers, sagas, consistent hashing, WebSockets, RAG retrieval and more), plus 20 production incidents reproduced as broken-vs-fixed simulations.",
     stack: ["Go", "Distributed systems", "Reliability", "Storage engines"],
     repo: "https://github.com/neerajsinghi/system-design-patterns-go",
   },
