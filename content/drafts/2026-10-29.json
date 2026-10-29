@@ -1,0 +1,16 @@
+{
+  "title": "Growing as a Senior Engineer: The Invisible Work",
+  "slug": "senior-engineer-invisible-work-growth",
+  "description": "Explores the underrated, non-technical skills that define senior backend engineers — particularly the work that happens before code is written.",
+  "tags": [
+    "career growth",
+    "backend engineering",
+    "engineering leadership",
+    "Go"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The most valuable work senior backend engineers do is often the work nobody sees.\n\nNot the architecture diagram. Not the PR. Not even the production incident response.\n\nIt's the conversation that happens before any of that — where a senior engineer asks the question that reframes what the team is actually building.\n\nI've noticed a consistent pattern across engineers who grow well past the senior threshold: they develop a sharp instinct for upstream clarification. Before touching a design, they're asking whether the problem is correctly scoped. Before estimating, they're asking whether the right tradeoffs are on the table. This sounds simple. It is not easy.\n\nMid-level engineers often feel pressure to move fast, to show output, to close tickets. That pressure is real and sometimes appropriate. But it can quietly train engineers to optimize for delivery over direction. Senior engineers learn — usually through a few painful lessons — that building the wrong thing faster is still building the wrong thing.\n\nA few things that actually separate senior backend engineers in practice:\n\n— They slow down the room at the right moment, not every moment\n— They make disagreement safe by separating the technical concern from the personal one\n— They carry context across quarters, not just sprints\n— They know which shortcuts are acceptable debt and which ones compound dangerously\n\nNone of this shows up cleanly on a resume. And yet teams feel the absence of it immediately when it's gone.\n\nIf you're working toward senior or trying to grow past it: the technical bar matters, but it's often not the constraint. The constraint is usually influence without authority — learning to move technical decisions without owning every room.\n\nWhat's the skill you wish someone had named for you earlier in your engineering career?",
+  "social_post": "The most valuable work senior backend engineers do is often invisible — upstream clarification, reframing problems, slowing the room at the right moment. Technical skill matters, but influence without authority is usually the real constraint. What skill do you wish someone named for you earlier?",
+  "created_at": "2026-10-29T02:35:47Z",
+  "type": "linkedin"
+}
