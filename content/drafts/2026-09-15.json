@@ -1,0 +1,16 @@
+{
+  "title": "Engineering Tradeoffs Nobody Warns You About",
+  "slug": "engineering-tradeoffs-nobody-warns-you-about",
+  "description": "A candid take on the production engineering philosophy lessons that only emerge after years of real system tradeoffs.",
+  "tags": [
+    "backend engineering",
+    "distributed systems",
+    "engineering philosophy",
+    "career growth"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The tradeoffs that matter most in production systems are rarely the ones you debated in the design doc.\n\nAfter years building distributed backends and data-intensive services, I've noticed a consistent pattern: engineers spend the most energy optimizing for what they can measure at design time — latency, throughput, cost. But the decisions that actually age poorly are the ones made around operability, ownership clarity, and what I'd call \"failure legibility\" — how obvious it is when something goes wrong and why.\n\nA few things I've had to learn the hard way:\n\n— Clever is expensive. Code that takes 10 minutes to write and 2 hours to explain in a 3am incident is a liability, not an asset.\n\n— Abstractions accrue interest. Every layer you add to simplify today borrows complexity from your future team. Some loans are worth it. Most aren't re-examined often enough.\n\n— The best distributed systems I've worked on weren't the most elegant. They were the most boring in the right places — predictable failure modes, obvious retry behavior, clear ownership at every boundary.\n\n— Configuration is code, until it isn't. The moment a config value drives branching logic in production, you've moved the problem without solving it.\n\nNone of this is original thinking. These ideas live in incident reports, architecture reviews, and late-night Slack threads across thousands of engineering teams. The difference between junior and senior isn't knowing these tradeoffs exist — it's developing the instinct for which tradeoff is the right call given your specific constraints, team, and moment in the product lifecycle.\n\nThat instinct doesn't come from blog posts. It comes from shipping, breaking, fixing, and shipping again.\n\nWhat's a tradeoff you made early in your career that you'd weigh differently today?",
+  "social_post": "The tradeoffs that age worst in production aren't about latency or cost — they're about failure legibility and ownership clarity. Clever is expensive. Boring in the right places is a feature. What would you weigh differently today?",
+  "created_at": "2026-09-15T02:42:13Z",
+  "type": "linkedin"
+}
