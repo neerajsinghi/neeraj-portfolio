@@ -1,0 +1,16 @@
+{
+  "title": "What Backend Hiring Panels Miss",
+  "slug": "what-backend-hiring-panels-miss",
+  "description": "A candid look at where backend engineering interviews fall short and what evaluation approaches actually predict strong hires.",
+  "tags": [
+    "hiring",
+    "backend engineering",
+    "system design",
+    "engineering leadership"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Most backend hiring panels are optimizing for the wrong signals.\n\nThey test whether a candidate can recite a canonical architecture under time pressure. That tells you almost nothing about how someone will behave when a service degrades at 2am, when requirements shift mid-sprint, or when they have to push back on a product decision to protect system integrity.\n\nThe signals that actually predict strong backend hires:\n\n→ How they talk about past tradeoffs — not which choice they made, but whether they can explain what they gave up and why it was worth it.\n→ How they respond when you poke holes in their design. Defensiveness is a red flag. Curiosity about the gap is a green one.\n→ Whether they distinguish between constraints that are fixed and constraints that are assumed. Many candidates treat every assumption as a hard requirement.\n→ How they handle partial information. Real production problems never come with a clean prompt. Candidates who ask clarifying questions before jumping to solutions are worth paying attention to.\n\nThe interview process itself is also a signal to candidates. Panels that feel adversarial, that never explain what they're evaluating, or that skip the conversation about actual engineering challenges on the team — those panels tell strong candidates something real about the culture they'd be joining.\n\nIf your team is hiring senior backend engineers and you're still running interview loops that feel like trivia tests, you're probably filtering out some of your best options and selecting for a different set of skills than you think you are.\n\nWorth stepping back and asking: does our process actually reflect how we want engineers to work here?\n\nWhat's one thing you've changed about how your team evaluates backend candidates — and did it improve the quality of hires?",
+  "social_post": "Most backend interview loops test the wrong signals. Reciting a canonical architecture under pressure ≠ good engineer. What actually predicts strong hires: how candidates handle tradeoffs, ambiguity, and pushback. Is your process reflecting how you actually work?",
+  "created_at": "2026-09-17T02:41:38Z",
+  "type": "linkedin"
+}
