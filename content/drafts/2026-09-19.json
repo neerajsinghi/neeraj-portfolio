@@ -1,0 +1,16 @@
+{
+  "title": "The Quiet Skills That Separate Senior Go Engineers",
+  "slug": "quiet-skills-senior-go-engineers",
+  "description": "Explores the less-discussed capabilities that distinguish senior backend engineers from mid-level: judgment, communication, and shaping technical direction.",
+  "tags": [
+    "career-growth",
+    "backend-engineering",
+    "engineering-leadership",
+    "go"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The gap between mid and senior isn't about knowing more Go APIs.\n\nAfter years of building production backends and distributed systems, I've noticed that the engineers who level up fastest share a pattern — and it's rarely about raw technical depth. It's about how they operate around uncertainty.\n\nA few things that actually mark the transition:\n\n**Comfort with ambiguous tradeoffs.** Mid-level engineers often want a clear right answer. Senior engineers have internalized that most architectural decisions are tradeoffs between competing constraints — latency vs. consistency, simplicity vs. flexibility, velocity vs. reliability. They can articulate those tradeoffs clearly to both engineers and stakeholders.\n\n**Making technical decisions that age well.** It's easy to solve today's problem. It takes more judgment to design something that won't become someone else's emergency in 18 months. That judgment comes from shipping things, watching them break, and being honest about why.\n\n**Multiplying others without losing output.** The best senior engineers I've worked alongside don't hoard context. They write down decisions, unblock teammates proactively, and make the whole team faster — without treating mentoring as a separate job from engineering. It's the same work.\n\n**Shaping scope, not just executing it.** At some point, the expectation shifts. You're not just building what's spec'd — you're expected to notice what's missing from the spec, flag it early, and sometimes redefine the problem entirely.\n\nNone of this shows up cleanly in a tech screen. It surfaces in how someone talks through a past decision, how they describe disagreement with a team call, or how they explain why a simpler solution was the right one.\n\nIf you're a mid-level backend engineer thinking about the next step — what's the tradeoff you're most unsure how to navigate right now?",
+  "social_post": "The gap from mid to senior backend isn't about knowing more APIs. It's about navigating ambiguous tradeoffs, making decisions that age well, and multiplying your team. What's the tradeoff you're most unsure how to navigate right now?",
+  "created_at": "2026-09-19T02:39:33Z",
+  "type": "linkedin"
+}
