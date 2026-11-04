@@ -1,0 +1,16 @@
+{
+  "title": "On Building Systems That Outlast Your Assumptions",
+  "slug": "building-systems-that-outlast-assumptions",
+  "description": "Neeraj reflects on how the most durable production systems are built on honest constraint-awareness, not optimism.",
+  "tags": [
+    "engineering philosophy",
+    "backend engineering",
+    "distributed systems",
+    "production systems"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The systems that aged best weren't the most elegant ones. They were the ones built by engineers who stayed honest about what they didn't know yet.\n\nAfter years building production backends, distributed services, and cloud delivery systems, the clearest pattern I've noticed is this: systems fail not because engineers made wrong decisions, but because engineers made confident decisions in places that deserved humility.\n\nA few things I've come to actually believe:\n\n— Complexity you introduce to handle future scale usually costs more than the scale problem itself. Build for the load you have. Add headroom. Stop there.\n\n— The seams between services are where your assumptions live. Those seams are also where things break. Invest there disproportionately.\n\n— Operational visibility is not a nice-to-have you add before launch. It's the thing that tells you whether your design decisions held in production or just held in review.\n\n— The right abstraction isn't the cleverest one. It's the one the next engineer can reason about at 2am without full context.\n\nNone of these feel like insights when you read them. They feel obvious. But the gap between knowing them and building against them is where most production pain actually lives.\n\nWhat I've learned is that good engineering judgment isn't about knowing the right answers early. It's about recognizing which questions you haven't asked yet — and slowing down long enough to ask them before the system is in production answering them for you.\n\nWhat's one principle that production taught you that documentation never could?",
+  "social_post": "The systems that aged best weren't the most elegant. They were built by engineers who stayed honest about what they didn't know yet. Production teaches what documentation never can. What's one principle you learned the hard way?",
+  "created_at": "2026-11-04T02:33:36Z",
+  "type": "linkedin"
+}
