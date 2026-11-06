@@ -1,0 +1,16 @@
+{
+  "title": "What Backend Interviews Rarely Surface",
+  "slug": "what-backend-interviews-rarely-surface",
+  "description": "A candid look at the operational instincts and judgment calls that backend interviews often miss—and what strong candidates actually need to demonstrate.",
+  "tags": [
+    "backend",
+    "hiring",
+    "systemdesign",
+    "engineering"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Most backend interviews test whether you can design a system. Fewer test whether you understand what happens after it ships.\n\nThere's a category of engineering judgment that's genuinely hard to evaluate in a 45-minute system design session: how a candidate thinks about operational reality. Not just capacity and throughput, but what breaks at 2am, what degrades gracefully, what's impossible to debug six months later when the original author is gone.\n\nStrong backend candidates tend to surface this naturally. They'll propose a simpler approach and explain why the complex one isn't worth the maintenance overhead. They'll flag that a caching layer solves the problem today but creates a consistency issue they'd want to revisit. They talk about their design as something that will live in production, not something that needs to pass the interview.\n\nWhat's harder to find—and what most panels don't explicitly screen for—is how a candidate handles the moment their design gets challenged. Do they defend the original idea reflexively? Do they fold immediately to seem agreeable? Or do they actually reason through the tradeoff out loud, update their thinking, and explain what changed?\n\nThat last behavior is what separates engineers who grow quickly once hired from those who struggle in ambiguous environments. The willingness to revise under pressure, with clarity, is a signal worth paying attention to.\n\nIf you're preparing for backend interviews: spend less time memorizing patterns and more time practicing how you narrate your reasoning when something doesn't go the way you planned. That's usually what interviewers remember.\n\nWhat's the most underrated signal you've noticed—either as a candidate or on a hiring panel?",
+  "social_post": "Most backend interviews test if you can design a system. Fewer test if you understand what happens after it ships. Operational instincts and how you reason under pressure matter more than pattern memorization.",
+  "created_at": "2026-11-06T02:33:24Z",
+  "type": "linkedin"
+}
