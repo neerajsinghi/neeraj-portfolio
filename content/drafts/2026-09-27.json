@@ -1,0 +1,16 @@
+{
+  "title": "Backend Interview Red Flags and Green Flags",
+  "slug": "backend-interview-red-flags-green-flags",
+  "description": "Practical observations on what separates strong backend candidates from average ones during the interview process, beyond system design diagrams.",
+  "tags": [
+    "hiring",
+    "backend",
+    "interviewing",
+    "engineering"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The gap between a candidate who passes a system design interview and one who actually thrives in production is wider than most hiring processes catch.\n\nAfter being on both sides of backend interviews for years, here's what I've noticed separates the candidates who stand out:\n\n→ They reason about failure modes before they finish drawing the happy path. They don't need to be prompted to ask \"what happens when this queue backs up\" or \"how does this behave under partial failure.\"\n\n→ They treat constraints as real. Not as obstacles to dismiss, but as design inputs. Budget, team size, existing infrastructure — strong candidates factor these in without being asked.\n\n→ They're honest about trade-offs instead of selling their design. The moment someone says \"this approach has no real downside\" I start paying closer attention to everything else they say.\n\n→ They know what they'd validate first. Not a full rollout plan, just a sense of: here's the riskiest assumption, and here's how I'd test it early.\n\nWhat I rarely see evaluated well: how a candidate handles being wrong in real time. Introduce a constraint mid-conversation, push back on an assumption, and watch what happens. Do they defend the original design reflexively? Or do they update their thinking without losing their footing?\n\nThat's the muscle that matters in distributed systems work. Plans change. Requirements arrive late. Production surprises you. A backend engineer who can reason clearly under shifting conditions is worth far more than one who gives a polished answer to a static prompt.\n\nIf you're preparing for senior backend roles: spend less time memorizing architectures and more time practicing the narration of your reasoning out loud. The thinking process is what experienced interviewers are actually evaluating.\n\nWhat's the most useful signal you've found — either as a candidate or an interviewer?",
+  "social_post": "Strong backend candidates don't just design systems — they reason about failure modes, own trade-offs honestly, and update their thinking mid-conversation. That last one is the real signal. What do you look for?",
+  "created_at": "2026-09-27T02:46:05Z",
+  "type": "linkedin"
+}
