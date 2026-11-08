@@ -1,0 +1,16 @@
+{
+  "title": "Technical Decision-Making as a Senior Engineer",
+  "slug": "technical-decision-making-senior-backend-engineer",
+  "description": "How senior backend engineers develop judgment around technical decisions, not just technical skills",
+  "tags": [
+    "career growth",
+    "backend engineering",
+    "engineering leadership",
+    "Go"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The hardest skill to teach a backend engineer isn't distributed systems or concurrency. It's knowing when not to build something.\n\nMost mid-level engineers I've worked with are technically sharp. They can design a service, reason about tradeoffs, and ship reliable code. What separates them from senior isn't another layer of technical depth. It's the quality of their judgment under ambiguity.\n\nHere's what that actually looks like in practice:\n\n→ They ask \"what problem are we solving\" before \"how should we build this\"\n→ They push back on requirements with data, not just opinion\n→ They default to boring solutions and explain why exotic ones aren't worth the operational cost\n→ They make a call when the team is stuck, then document why, so the next person doesn't relitigate it\n→ They treat reversibility as a first-class design constraint\n\nIn Go backends and distributed systems specifically, this matters a lot. The ecosystem rewards simplicity. But simplicity is a judgment call, not a technical one. Knowing when a message queue is overkill, when a single service boundary is cleaner than splitting, when to delay a database schema change — these aren't things you learn from a design pattern. You develop them by making decisions, being wrong sometimes, and staying close enough to production to feel the consequences.\n\nMentoring junior and mid-level engineers is where this gets clarified for me. When I try to explain a technical decision, I quickly find out whether I made it on instinct or on reasoning. The ones I can't articulate clearly are usually the ones I should revisit.\n\nIf you're moving from mid to senior: your next growth area probably isn't a new framework or cloud service. It's building the habit of making explicit, documented decisions and owning what happens after.\n\nWhat's the technical decision you made recently that you're most glad you slowed down on?",
+  "social_post": "The gap between mid and senior backend engineers isn't technical depth. It's judgment under ambiguity — knowing when not to build, when to push back, and owning what happens after the decision. What decision are you glad you slowed down on?",
+  "created_at": "2026-09-29T02:44:24Z",
+  "type": "linkedin"
+}
