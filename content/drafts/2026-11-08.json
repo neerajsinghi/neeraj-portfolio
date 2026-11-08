@@ -1,0 +1,16 @@
+{
+  "title": "Mentoring as Engineering Leverage",
+  "slug": "mentoring-as-engineering-leverage",
+  "description": "How senior backend engineers multiply their impact through deliberate mentoring rather than individual output",
+  "tags": [
+    "career growth",
+    "mentoring",
+    "backend engineering",
+    "engineering leadership"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The engineers who plateau at senior are often the ones who never made the mental shift: your output is no longer just your code.\n\nMentoring gets framed as something generous you do when you have spare cycles. It isn't. It's one of the highest-leverage engineering activities available to you once you reach senior level — and most engineers treat it as optional.\n\nHere's what I've seen separate engineers who grow beyond senior from those who stay stuck:\n\n— They give feedback that transfers reasoning, not just corrections. \"Change this to X\" teaches nothing. \"Here's why X fits our consistency patterns and what breaks if we don't\" compounds over time.\n\n— They involve mid-level engineers in scoping conversations early, not just execution. If someone only sees finished decisions handed down, they never learn how decisions get made.\n\n— They let junior engineers struggle with ambiguity long enough to develop instinct, then step in with structure — not answers.\n\n— They treat their own debugging and design process as visible work, not private work. Narrating your thinking while solving a hard problem is free mentoring.\n\nIn Go and distributed backend work specifically, the judgment gaps between mid and senior aren't usually syntax or even architecture patterns. They're about what to care about under uncertainty — what to defer, what to harden, what to leave simple. That kind of judgment doesn't transfer through documentation. It transfers through proximity to someone who has it.\n\nIf you're a senior engineer and you're not deliberately creating that proximity, you're leaving your team's growth on the table.\n\nWhat's the most useful thing a senior engineer did for your development — and did they know they were doing it?",
+  "social_post": "Your output isn't just your code anymore. Senior engineers who plateau often never made that shift. Mentoring isn't optional — it's your highest-leverage activity. What's the most useful thing a senior engineer did for your development?",
+  "created_at": "2026-11-08T02:33:43Z",
+  "type": "linkedin"
+}
