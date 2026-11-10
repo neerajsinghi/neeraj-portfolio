@@ -1,0 +1,16 @@
+{
+  "title": "Early 2027 Backend and Cloud Engineering Shifts",
+  "slug": "early-2027-backend-cloud-engineering-shifts",
+  "description": "Industry commentary on notable trends and tooling shifts relevant to backend, cloud, and Go engineers heading into early 2027.",
+  "tags": [
+    "backend",
+    "cloud",
+    "Go",
+    "engineering"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "A few quiet shifts in the backend and cloud space worth paying attention to as we close out 2026.\n\nGo's standard library keeps getting quietly better. The improvements around structured logging, improved type inference, and iterators have reduced the friction that used to push teams toward third-party dependencies for basic infrastructure code. Less dependency surface for the same outcome is a real win in production systems. Teams that haven't revisited their internal tooling assumptions in the last 12 months may find they're carrying weight they no longer need to.\n\nOn the cloud side, the conversation around egress costs has matured. It's no longer just a finance team complaint — it's shaping architecture decisions upfront. More teams are thinking about data locality, regional affinity, and service placement earlier in design, not as an afterthought during cost reviews. This is a healthy shift. Cost-aware design and performance-aware design often point in the same direction.\n\nThe AI-assisted coding tools conversation has also settled into something more honest. The engineers getting real value from them are the ones who treat them as a fast junior collaborator — useful for boilerplate, unreliable for correctness, and no substitute for understanding what the code actually needs to do. The engineers frustrated by them are often expecting something closer to delegation than assistance.\n\nAnd observability tooling continues to consolidate. OpenTelemetry adoption has reached the point where betting against it in a new system is a hard position to defend. The question now isn't whether to use it — it's how well your team actually understands the data it's producing.\n\nWhat trends are you watching heading into early 2027? Anything surprising you in your stack or your team's decisions?",
+  "social_post": "A few backend/cloud shifts worth watching as 2026 closes: Go's stdlib keeps reducing third-party dependency needs, egress cost is shaping architecture earlier, AI coding tools work best as fast junior collaborators, and OTel is table stakes. What's surprising you in your stack?",
+  "created_at": "2026-11-10T02:33:02Z",
+  "type": "linkedin"
+}
