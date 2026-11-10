@@ -1,0 +1,16 @@
+{
+  "title": "Engineering Judgment Over Engineering Rules",
+  "slug": "engineering-judgment-over-rules",
+  "description": "A philosophy post on why good engineers develop judgment about tradeoffs rather than following fixed rules.",
+  "tags": [
+    "backend engineering",
+    "engineering philosophy",
+    "distributed systems",
+    "career growth"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The most dangerous phrase I've heard in production engineering is 'we always do it this way.'\n\nRules feel safe. Judgment is harder. But production systems don't care about your rules — they care about outcomes under pressure, at scale, with incomplete information.\n\nAfter years building distributed systems, Go backends, and cloud delivery infrastructure, a few beliefs have stuck:\n\n**Consistency beats cleverness.** The elegant solution that only two people on the team can reason about is a liability. Boring, predictable code survives oncall rotations, team turnover, and 2am incidents. Every time.\n\n**The right abstraction is the one you can delete.** Early in a system's life, premature abstraction locks you into assumptions you haven't validated yet. Build thin. Add layers when the pain is real, not when it feels tidy.\n\n**Operational visibility is a first-class feature.** Observability isn't something you bolt on before launch. If you can't explain what your service is doing right now — not in theory, but from actual signals — you don't fully own it yet.\n\n**Tradeoffs don't disappear. They just move.** Every architectural decision shifts cost somewhere: to latency, to operational complexity, to developer experience, to failure blast radius. The job isn't to eliminate tradeoffs. It's to make them explicit and own them deliberately.\n\nNone of these are rules. They're lenses. The difference matters — because a lens you apply with judgment compounds over time, while a rule you follow blindly eventually fails in a situation it wasn't designed for.\n\nSenior engineers aren't the ones who know the most patterns. They're the ones who know which pattern to reach for, when to break from it, and how to explain why.\n\nWhat's a belief about production systems that you've had to earn the hard way?",
+  "social_post": "Rules feel safe. Judgment is harder. The most valuable thing years in production engineering builds isn't a list of best practices — it's knowing when to break them and why. What belief did you have to earn the hard way?",
+  "created_at": "2026-10-05T02:56:45Z",
+  "type": "linkedin"
+}
