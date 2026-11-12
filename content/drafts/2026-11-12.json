@@ -1,0 +1,16 @@
+{
+  "title": "Engineering Standards That Stick",
+  "slug": "engineering-standards-that-stick",
+  "description": "Why engineering standards only matter when teams understand the reasoning behind them, not just the rules themselves.",
+  "tags": [
+    "engineering culture",
+    "team practices",
+    "backend engineering",
+    "technical leadership"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The engineering standards nobody follows aren't bad rules. They're rules without context.\n\nMost teams have standards documents. Linting configs, service templates, deployment checklists, naming conventions. And most teams have an unspoken acknowledgment that half of it gets quietly ignored under deadline pressure. That's not a discipline problem — it's a communication problem.\n\nStandards erode when engineers don't understand what they're protecting against. A rule that says \"always add circuit breakers to downstream calls\" lands differently when the team has lived through a cascading failure caused by a downstream timeout. Without that context, it reads as bureaucracy. With it, it reads as institutional memory.\n\nWhat actually makes standards stick:\n— Tie each standard to the failure mode or tradeoff it addresses\n— Let standards evolve through real code review conversations, not top-down edits\n— Distinguish between standards that are load-bearing (don't skip these) and defaults (use judgment)\n— When someone deviates, ask why before correcting — sometimes they've found a better path\n\nThe strongest engineering cultures I've seen treat their standards as living documentation of collective hard lessons. Not a rulebook. A record of what the team has learned the expensive way.\n\nThe moment a standard becomes \"we've always done it this way\" without anyone knowing why, it's already becoming technical debt — just the cultural kind.\n\nWhat's one engineering standard your team holds firmly, and does everyone on the team know the actual reason behind it?",
+  "social_post": "Engineering standards erode when teams follow rules without understanding what failure they're preventing. Standards that stick are living records of hard lessons — not top-down rules. Does your team know the *why* behind what they enforce?",
+  "created_at": "2026-11-12T02:33:16Z",
+  "type": "linkedin"
+}
