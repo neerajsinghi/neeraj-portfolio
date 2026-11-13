@@ -1,0 +1,16 @@
+{
+  "title": "Code Review Culture That Actually Raises the Bar",
+  "slug": "code-review-culture-engineering-standards",
+  "description": "Explores what separates performative code review from review that genuinely improves engineering standards and team growth.",
+  "tags": [
+    "engineering culture",
+    "code review",
+    "backend engineering",
+    "team practices"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Most code review processes look the same on the surface. PRs opened, comments left, approvals given. But the quality gap between teams often lives entirely in how review actually happens.\n\nThere's a version of review that's just gatekeeping. Someone senior checks for obvious mistakes, approves, moves on. It ships code without bugs but doesn't transfer judgment. Junior engineers learn what passed, not why. The bar stays where it is.\n\nThen there's review that treats every PR as a small coaching surface. Not every comment needs to be a lecture. But occasionally calling out a design tradeoff, naming a pattern, or asking \"what happens when this dependency is slow\" starts building shared reasoning across the team. Over time that accumulates into something real — engineers who make better calls before the review even happens.\n\nA few things that separate the two:\n\n— Comments explain the why, not just the what\n— The tone separates the code from the person\n— Senior engineers invite pushback, not just compliance\n— Technical debt gets named explicitly, not buried in approval\n— Review is treated as async mentorship, not a bottleneck to clear\n\nThe last one matters more than people admit. How you handle technical debt in review shapes whether engineers feel safe naming it later in design conversations, incident postmortems, and planning. Culture around honesty in code review bleeds into culture around honesty everywhere else.\n\nEngineering standards don't come from a doc in Confluence nobody reads. They come from what gets approved, what gets questioned, and what gets praised — week after week.\n\nCurious what's made code review actually useful on teams you've been part of. What changed the culture?",
+  "social_post": "Code review that just gates bugs doesn't raise the bar. The teams that grow fastest treat PRs as async mentorship — naming tradeoffs, not just mistakes. Culture around honesty in review bleeds into everything else.",
+  "created_at": "2026-10-13T02:58:47Z",
+  "type": "linkedin"
+}
