@@ -1,0 +1,16 @@
+{
+  "title": "On Building Systems That Last",
+  "slug": "on-building-systems-that-last",
+  "description": "Hard-won production philosophy around building durable backend systems, focusing on sustainability over cleverness.",
+  "tags": [
+    "backend engineering",
+    "production systems",
+    "engineering philosophy",
+    "distributed systems"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The systems that aged best weren't the most clever ones. They were the most honest ones.\n\nAfter years of building production backends — distributed systems, data-intensive services, cloud infrastructure — the pattern that keeps surfacing is this: the code that causes the most pain later is usually code that was optimistic about the future. Optimistic that load would stay predictable. Optimistic that dependencies would behave. Optimistic that the next engineer would have the same context you had on the day you wrote it.\n\nA few things I've come to actually believe, not just repeat:\n\n— Complexity that isn't visible is more dangerous than complexity that is. A system with rough edges you can see beats a polished one hiding assumptions you can't.\n\n— Operational cost is a real design constraint. If you can't explain how something behaves under failure at 2am, it's not done yet.\n\n— The temptation to over-engineer early is strongest when the problem is genuinely interesting. That's exactly when discipline matters most.\n\n— Reversibility is underrated. The decisions worth spending extra time on are the ones that are hard to undo — not the ones that feel hard right now.\n\nNone of this is original. Senior engineers across every stack have landed in the same place. What's interesting is how long it takes to actually internalize it — to feel it in real decisions rather than just nod at it in a post.\n\nThe gap between knowing a principle and trusting it under pressure is where most of the actual growth happens.\n\nWhat's a production lesson that took longer than expected to fully land for you?",
+  "social_post": "The systems that aged best weren't the most clever — they were the most honest. Reversibility, visible complexity, and operational cost are real design constraints. The gap between knowing a principle and trusting it under pressure is where growth actually happens.",
+  "created_at": "2026-11-14T02:33:11Z",
+  "type": "linkedin"
+}
