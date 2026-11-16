@@ -1,0 +1,16 @@
+{
+  "title": "Late 2026 Backend \u0026 Cloud Engineering Shifts",
+  "slug": "late-2026-backend-cloud-engineering-shifts",
+  "description": "Commentary on notable tooling and architectural trends relevant to backend, cloud, and Go engineers in late 2026",
+  "tags": [
+    "backend",
+    "cloud",
+    "Go",
+    "engineering"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The backend and cloud landscape in late 2026 feels quieter on the surface — but the underlying shifts are significant if you're paying attention.\n\nA few things I'm watching closely:\n\n**Go's continued rise as the default for platform engineering.** It was already dominant in infrastructure tooling. Now it's becoming the obvious first choice for internal developer platforms, control planes, and data-intensive services — not just because of performance, but because teams are tired of runtime surprises in production.\n\n**The eBPF moment is actually here.** What was experimental two years ago is now showing up in production observability, networking, and security tooling at companies of real scale. If you're building backend systems on AWS or Kubernetes and haven't seriously evaluated eBPF-based tooling yet, that gap is starting to matter.\n\n**LLM inference is reshaping cloud cost thinking.** Teams are renegotiating their entire cloud spend strategy around GPU availability, spot instance reliability, and inference latency. This is bleeding into how backend engineers think about architecture — not just the AI teams.\n\n**Event-driven patterns are getting a second look.** After years of Kafka-for-everything enthusiasm, I'm seeing more teams ask harder questions about operational complexity before committing. The pendulum isn't swinging back to REST — but the default is getting more deliberate.\n\nNone of these are entirely new. But the combination — more mature Go ecosystems, eBPF in production, AI reshaping infrastructure economics, and more disciplined distributed architecture decisions — is changing what strong backend engineers are expected to know and have opinions about.\n\nWhat shifts are you seeing on your teams right now? Curious what's surfacing in late 2026 for others building at scale.",
+  "social_post": "Late 2026 backend shifts worth watching: Go becoming the default for platform engineering, eBPF moving into real production use, LLM inference reshaping cloud cost thinking, and more deliberate event-driven architecture decisions. What are you seeing?",
+  "created_at": "2026-10-21T02:43:58Z",
+  "type": "linkedin"
+}
