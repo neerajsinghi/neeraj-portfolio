@@ -1,0 +1,16 @@
+{
+  "title": "Backend Interview Preparation Insights for Senior Engineers",
+  "slug": "backend-interview-preparation-senior-engineers",
+  "description": "Practical framing for how senior backend engineers should approach interview preparation, beyond grinding LeetCode.",
+  "tags": [
+    "backend",
+    "hiring",
+    "interviewing",
+    "careeradvice"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Most senior backend engineers prepare for interviews the wrong way.\n\nThey grind algorithms they haven't touched in years and rehearse system design frameworks they found on YouTube. Then they walk into a panel and get tripped up not on the technical questions, but on the judgment questions sitting quietly underneath them.\n\nHere's what actually trips up strong engineers at the senior level:\n\n— Explaining a past architecture without acknowledging what it got wrong. Panels aren't looking for perfection. They're looking for calibration.\n\n— Jumping to a solution before establishing constraints. In production, the first question is always \"what problem are we actually solving?\" Interviewers notice when candidates skip that step.\n\n— Treating scalability as the default goal. Saying \"we'd want to handle millions of requests\" without being asked signals that you optimize for impressiveness, not for fit. Strong engineers ask about current load before proposing distributed caches.\n\n— Describing technical decisions without describing what you gave up. Every real architectural choice involves a tradeoff. If your answer has no cost, it doesn't sound like experience — it sounds like a textbook.\n\nThe shift that makes senior interview prep more effective: stop rehearsing answers and start rehearsing your reasoning process out loud. Record yourself walking through a past decision — not the outcome, but the moment you were uncertain and how you resolved it. That's the material panels are actually trying to surface.\n\nThe engineers who do well at senior backend interviews aren't necessarily the ones who've prepared the most. They're the ones who've thought carefully about why they made the calls they made and can communicate that clearly under pressure.\n\nWhat's one thing you wish you'd approached differently when preparing for a senior engineering role?",
+  "social_post": "Most senior backend engineers prep for interviews wrong — grinding algorithms instead of sharpening their reasoning. Panels aren't testing perfection. They're testing calibration, tradeoff awareness, and judgment under uncertainty. That's what to prepare.",
+  "created_at": "2026-11-16T02:34:38Z",
+  "type": "linkedin"
+}
