@@ -1,0 +1,16 @@
+{
+  "title": "Code Review Culture as Engineering Signal",
+  "slug": "code-review-culture-engineering-signal",
+  "description": "How a team's code review habits reveal the real health of its engineering culture",
+  "tags": [
+    "engineering culture",
+    "code review",
+    "technical debt",
+    "team practices"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The way a team does code reviews tells you almost everything about its engineering culture.\n\nNot the tool. Not the checklist. The behavior.\n\nDoes feedback focus only on correctness, or does it also surface readability, maintainability, and implicit assumptions? Do reviewers ask clarifying questions, or just approve to keep the queue moving? Is there psychological safety to push back on a senior engineer's PR?\n\nIn distributed systems and backend work especially, these habits compound fast. A culture where reviews are treated as a rubber stamp is also usually a culture where technical debt accumulates silently — until it doesn't. Until the incident. Until the migration that takes three quarters instead of one.\n\nA few things I've observed that separate healthy review cultures from performative ones:\n\n— Reviews happen at the design level, not just the diff level. Big changes get a conversation before a PR exists.\n— Feedback distinguishes between blocking issues and preferences. Engineers learn the difference between \"this will cause problems\" and \"I would have done this differently.\"\n— Technical debt gets named explicitly in reviews, not buried in a comment or left for someone else to discover. If you're merging known debt, say so and create the follow-up.\n— Senior engineers model the behavior they want. If they approve quickly without engagement, everyone else will too.\n\nCode review culture also shapes how teams handle harder conversations — incident postmortems, architecture disagreements, standards drift. Teams that practice honest, respectful feedback in reviews tend to handle those moments better too. The muscle transfers.\n\nThis isn't about slowing down delivery. It's about what you're actually building alongside the features: trust, shared standards, and systems you can reason about six months from now.\n\nWhat's one practice your team has adopted that genuinely improved how code reviews work?",
+  "social_post": "The way a team does code reviews tells you almost everything about its engineering culture. Not the tool. The behavior. Healthy reviews build trust and shared standards — the same muscle that makes postmortems and hard technical conversations work. What's improved yours?",
+  "created_at": "2026-10-23T02:45:09Z",
+  "type": "linkedin"
+}
