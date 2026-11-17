@@ -123,6 +123,20 @@ export const PROJECTS: { tag: string; name: string; desc: string; stack: string[
     repo: "https://github.com/neerajsinghi/dsa-interview-go",
   },
   {
+    tag: "Open Source · Databases",
+    name: "go-respkv",
+    desc: "A Redis-compatible key-value server in Go: 84 commands, TTLs, transactions, pub/sub and an append-only file with group commit, tested against a real redis-server.",
+    stack: ["Go", "RESP", "Storage engines", "Durability"],
+    repo: "https://github.com/neerajsinghi/go-respkv",
+  },
+  {
+    tag: "Open Source · NestJS",
+    name: "nest-respkv",
+    desc: "The same Redis-compatible server built with NestJS: decorator-discovered commands, lock-free atomicity on the event loop, group commit and HTTP health checks.",
+    stack: ["TypeScript", "NestJS", "Node.js", "RESP"],
+    repo: "https://github.com/neerajsinghi/nest-respkv",
+  },
+  {
     tag: "Open Source · Security",
     name: "go-license",
     desc: "Offline Ed25519 license keys with feature gating, clock-rollback detection and a tamper-evident, hash-chained usage log, plus a CLI.",
