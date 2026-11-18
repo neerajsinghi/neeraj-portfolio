@@ -383,6 +383,18 @@ var Projects = []Project{
 		URL:   "https://github.com/neerajsinghi/dsa-interview-go",
 	},
 	{
+		Name:  "go-respkv (open source)",
+		Desc:  "A Redis-compatible in-memory key-value server: RESP2 and 84 commands, TTLs, MULTI/EXEC, pub/sub, and an append-only file with group commit, checked by a differential test against a real redis-server.",
+		Stack: "Go (standard library only), RESP protocol, storage engines, durability",
+		URL:   "https://github.com/neerajsinghi/go-respkv",
+	},
+	{
+		Name:  "nest-respkv (open source)",
+		Desc:  "The same Redis-compatible server built with NestJS: decorator-discovered commands run synchronously on the event loop for lock-free atomicity, with group commit on the thread pool and HTTP health checks.",
+		Stack: "TypeScript, NestJS, Node.js, RESP protocol",
+		URL:   "https://github.com/neerajsinghi/nest-respkv",
+	},
+	{
 		Name:  "go-license (open source)",
 		Desc:  "Offline Ed25519-signed license keys with feature gating, seat limits, clock-rollback detection and a tamper-evident hash-chained usage log, plus a golicense CLI.",
 		Stack: "Go, Ed25519, HMAC-SHA256, CLI",
