@@ -1,0 +1,16 @@
+{
+  "title": "Engineering Philosophy: Defaults vs. Decisions",
+  "slug": "engineering-philosophy-defaults-vs-decisions",
+  "description": "A reflection on how the best backend engineers distinguish between default patterns and deliberate tradeoffs in production system design.",
+  "tags": [
+    "backend engineering",
+    "engineering philosophy",
+    "distributed systems",
+    "career growth"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The most expensive mistakes I've seen in production systems weren't caused by bad engineers. They were caused by good engineers who never questioned their defaults.\n\nThere's a pattern that shows up repeatedly when building distributed systems at scale. A team adopts a pattern — retry logic, caching strategy, consistency model, deployment approach — because it worked somewhere else, or because it's what the framework encouraged, or because nobody pushed back. Then six months later, the system is misbehaving in ways nobody predicted, and the postmortem reveals the same thing every time: the decision was never actually a decision. It was a default that nobody examined.\n\nThe engineers I've respected most share one habit: they treat every significant technical choice as something that requires an explicit \"why this, why now, why not something else.\" Not because they're slow or indecisive, but because they understand that distributed systems don't forgive defaults that don't fit the context. Idempotency, failure modes, data consistency guarantees, blast radius — these aren't things you can inherit from a template and hope for the best.\n\nA few things I've come to believe after years in this space:\n— A pattern that's wrong for your system is worse than no pattern at all. Familiarity is not the same as fit.\n— The most valuable engineering judgment is knowing when NOT to generalize. Premature abstraction in backend systems creates more coupling, not less.\n— Operational complexity is a cost most teams undercount at design time and overpay for in production.\n— If you can't articulate the failure mode of your own design, you don't own the design yet.\n\nNone of this is about perfectionism. It's about being honest that production systems reward intentional tradeoffs and punish borrowed assumptions.\n\nWhat's a default assumption in your current system that nobody has questioned in a while?",
+  "social_post": "The costliest production mistakes aren't from bad engineers — they're from good engineers who never questioned their defaults. Intentional tradeoffs beat borrowed assumptions every time. What assumption in your system is overdue for a second look?",
+  "created_at": "2026-10-25T02:43:32Z",
+  "type": "linkedin"
+}
