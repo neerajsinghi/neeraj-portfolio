@@ -1,0 +1,16 @@
+{
+  "title": "Engineering Standards as Living Agreements",
+  "slug": "engineering-standards-as-living-agreements",
+  "description": "Reframes engineering standards not as rules handed down but as ongoing team agreements that require active maintenance and shared ownership.",
+  "tags": [
+    "engineering culture",
+    "backend engineering",
+    "team practices",
+    "engineering leadership"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Engineering standards don't fail because teams ignore them. They fail because nobody treats them as something that needs ongoing care.\n\nMost teams write standards once — during onboarding, after an incident, or when someone influential pushed for consistency. Then those standards sit in a wiki page or a CONTRIBUTING.md file, slowly decoupling from the way the system actually evolves. Six months later, the codebase has drifted, the standards are stale, and nobody wants to be the person who points that out.\n\nWhat actually works is treating engineering standards like you treat interfaces in a distributed system: you version them, you communicate changes, and you build in explicit moments to revisit them. Not a bureaucratic process — a lightweight habit. A quarterly engineering sync where the team asks: what guidance are we writing in code review comments repeatedly that should already be documented? What standard made sense when we had three services but creates friction now that we have fifteen?\n\nThe teams I've seen do this well share a few traits:\n— Standards have owners, not just authors\n— Exceptions are documented, not silently made\n— New engineers are asked what's confusing within their first month, because fresh eyes surface gaps veterans stopped seeing\n— The standard evolves when the team does, not just when something breaks\n\nThe hardest part isn't writing the standard. It's creating a culture where someone can say \"this guideline is outdated\" without it feeling like a challenge to whoever wrote it.\n\nEngineering standards are a team agreement, not a policy document. The moment they stop reflecting how your best engineers actually make decisions, they've already stopped being useful.\n\nWhat's your team's process for keeping engineering standards current — or is that a gap most teams quietly accept?",
+  "social_post": "Engineering standards fail not because teams ignore them — but because nobody treats them as something that needs ongoing care. Standards are team agreements, not policy docs. How does your team keep them current?",
+  "created_at": "2026-11-02T02:34:41Z",
+  "type": "linkedin"
+}
