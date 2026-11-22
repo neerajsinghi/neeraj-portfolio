@@ -1,0 +1,16 @@
+{
+  "title": "Late 2026 Backend Tooling Shifts Worth Paying Attention To",
+  "slug": "late-2026-backend-tooling-shifts",
+  "description": "Industry commentary on meaningful engineering trends in backend, cloud, and Go tooling heading into 2027",
+  "tags": [
+    "backend",
+    "cloud",
+    "Go",
+    "engineering"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "A few things I'm watching closely in the backend and cloud space right now — not hype, just patterns that keep showing up in real infrastructure decisions.\n\n**Go's continued consolidation in platform engineering.** It's not news that Go dominates CLI tooling and infrastructure SDKs. What's more interesting is how teams are now reaching for it in areas they previously handed to Python — internal automation, data pipeline controllers, lightweight ML serving wrappers. The operational simplicity argument is winning more rooms.\n\n**Observability is quietly becoming a first-class design constraint.** Not an afterthought, not a bolt-on. Teams that have lived through enough production incidents are now making tracing and structured logging decisions at the architecture stage, not after the first PagerDuty alert. OpenTelemetry adoption has matured enough that the conversation has shifted from \"should we\" to \"how do we standardize across services.\"\n\n**Cloud cost pressure is reshaping workload placement decisions.** Serverless made sense when scale was unpredictable. As traffic patterns stabilize for a lot of mature products, teams are revisiting the economics. Long-running compute, container-first architectures, and smarter use of reserved capacity are back in serious conversations — not because serverless failed, but because engineering has gotten more precise about where it fits.\n\n**AI-assisted tooling is landing differently than expected.** It's not replacing backend engineers. It's compressing the time spent on boilerplate, scaffolding, and first-pass code review feedback. The engineers getting the most value from it are the ones who already have strong judgment — they know what output to trust and what to push back on.\n\nNone of these are sudden shifts. They're the result of compounding decisions across teams over the past couple of years finally becoming visible at scale.\n\nWhat's your team actually changing heading into 2027 — tooling, architecture, or something else entirely?",
+  "social_post": "A few backend/cloud trends worth watching: Go expanding beyond infra, observability becoming a design constraint, cloud cost economics shifting workload placement, and AI tooling compressing boilerplate — not replacing judgment. What's your team actually changing heading into 2027?",
+  "created_at": "2026-11-20T02:33:26Z",
+  "type": "linkedin"
+}
