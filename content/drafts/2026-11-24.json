@@ -1,0 +1,16 @@
+{
+  "title": "On Building Systems That Survive You",
+  "slug": "building-systems-that-survive-you",
+  "description": "Neeraj shares his engineering philosophy around building production systems that outlast the original author — focusing on clarity, constraint, and honesty over cleverness.",
+  "tags": [
+    "engineering",
+    "backend",
+    "productionstystems",
+    "softwaredevelopment"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The best thing I ever did for the systems I built was stop trying to be clever.\n\nAfter years of building production backends, distributed services, and cloud infrastructure, I've landed on a philosophy that sounds almost boring: clarity outlasts cleverness every time. The elegant abstraction you're proud of today becomes the thing someone is cursing at 2am eighteen months from now — and that someone might be you.\n\nA few convictions I've built up the hard way:\n\n— Constraints are design. When you skip defining boundaries early — what a service owns, what it refuses to do, what it will not scale to handle — you're not being flexible. You're deferring a decision until it costs ten times more to make it.\n\n— Operational honesty matters more than architectural purity. A system that's slightly impure but observable, recoverable, and understood by the team will outperform the pristine design that only one person can reason about. Purity that lives only in your head is a liability.\n\n— The system reflects what the team actually values, not what it says it values. Logging gaps, missing runbooks, deferred alerts — none of that is accidental. It's just honesty about priorities showing up in production.\n\n— Boring technology earns trust. I've reached for well-understood tools over exciting ones more times than I can count, and I've rarely regretted it. When something fails at 3am, you want to be debugging a problem, not a learning curve.\n\nProduction has a way of stripping out ego. What survives isn't the most sophisticated design — it's the one that the next engineer can pick up, reason about, and safely change. That's what I try to build toward now.\n\nWhat's a conviction about production systems that you've arrived at the hard way?",
+  "social_post": "After years in production backend work, the clearest lesson: clarity outlasts cleverness. Constraints are design. Operational honesty beats architectural purity. What do you build toward? #engineering #backend #distributedsystems",
+  "created_at": "2026-11-24T02:34:26Z",
+  "type": "linkedin"
+}
