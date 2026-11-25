@@ -1,0 +1,16 @@
+{
+  "title": "Incident Postmortems That Actually Change Behavior",
+  "slug": "incident-postmortems-that-actually-change-behavior",
+  "description": "Practical take on why most postmortems fail to drive real change and what engineering teams can do differently",
+  "tags": [
+    "engineering",
+    "postmortems",
+    "teamculture",
+    "backendengineer"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Most incident postmortems are written for the archive, not for the team.\n\nYou fill out the template. You list the timeline. You write up action items with owners and due dates. Then three weeks later, the same class of problem shows up in a slightly different form, and everyone nods awkwardly because we've seen this before.\n\nThe ceremony happened. The learning didn't.\n\nAfter working through production incidents across distributed systems and high-throughput backends, a few patterns stand out in postmortems that actually shift behavior:\n\n— The conversation starts with the system, not the person. Blame migrates underground when it's not safe to surface. Underground blame produces sanitized postmortems that miss the real failure modes.\n\n— The action items are specific enough to be testable. \"Improve observability\" is not an action item. \"Add latency histograms to the payment processing path before next deploy\" is. Vague actions survive postmortems. Specific ones actually get done.\n\n— The team revisits the incident 30 days later. Not to grade completion, but to ask: did anything change? Did a related incident happen? Did we learn what we thought we learned? That second conversation is where most of the real calibration happens.\n\n— The postmortem surfaces what the system made easy to get wrong. Good postmortems find the missing guardrail, the misleading alert, the runbook that hasn't been updated since the architecture changed. That's where leverage lives.\n\nPostmortems aren't documentation exercises. They're one of the few structured moments engineering teams have to actually update their shared mental model of how the system behaves under pressure.\n\nIf your postmortems feel like paperwork, the format isn't the problem. The incentives and the follow-through are.\n\nWhat's the most useful change your team has made to how it runs postmortems?",
+  "social_post": "Most incident postmortems are written for the archive, not the team. The ceremony happens. The learning doesn't. What actually makes postmortems shift behavior? Follow-through, testable action items, and revisiting the incident 30 days later.",
+  "created_at": "2026-11-22T02:33:59Z",
+  "type": "linkedin"
+}
