@@ -1,0 +1,16 @@
+{
+  "title": "System Design Interview: What Panels Actually Want to See",
+  "slug": "system-design-interview-what-panels-want",
+  "description": "Practical insight into what strong backend engineers demonstrate during system design interviews, beyond just drawing boxes and arrows.",
+  "tags": [
+    "hiring",
+    "systemdesign",
+    "backendengineering",
+    "interviews"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "Most system design interviews don't fail candidates on knowledge. They fail them on reasoning.\n\nAfter years of building distributed systems in production — dealing with the actual consequences of tradeoff decisions — I've noticed a consistent pattern when evaluating backend engineers. The candidates who stand out aren't the ones who immediately jump to the \"right\" architecture. They're the ones who slow down, ask clarifying questions, and treat ambiguity as part of the problem.\n\nHere's what strong backend engineers actually demonstrate in system design conversations:\n\n— They define constraints before proposing solutions. Scale, consistency requirements, latency targets — they establish scope rather than guess at it.\n\n— They reason about failure modes early. Not as an afterthought. What breaks first? Where does data loss live? How does the system degrade gracefully?\n\n— They name tradeoffs explicitly. \"I'm choosing eventual consistency here because X, and accepting the cost of Y.\" That sentence alone signals production experience.\n\n— They course-correct without ego. When an interviewer pushes back or introduces a new constraint, strong candidates adjust their thinking visibly rather than defending their first sketch.\n\nWhat panels often undervalue is candidates who ask \"what problem are we actually solving?\" before touching the whiteboard. That instinct — to validate the problem before designing the solution — is exactly what good engineers do in production.\n\nSystem design interviews are most useful when they're treated as collaborative design conversations, not technical pop quizzes. The best candidates make you feel like you're working through a real problem together.\n\nIf you're preparing for backend interviews: practice narrating your reasoning out loud. The thinking matters more than the final diagram.\n\nWhat's the most underrated signal you look for — or demonstrate — in a system design round?",
+  "social_post": "System design interviews fail candidates on reasoning, not knowledge. The best backend engineers slow down, name tradeoffs explicitly, and ask what problem they're actually solving before touching the whiteboard. Practice narrating your thinking out loud.",
+  "created_at": "2026-11-26T02:34:39Z",
+  "type": "linkedin"
+}
