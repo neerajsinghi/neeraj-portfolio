@@ -1,0 +1,16 @@
+{
+  "title": "Mentoring as Engineering Leverage",
+  "slug": "mentoring-as-engineering-leverage",
+  "description": "How senior backend engineers create compounding impact through deliberate mentoring rather than individual output",
+  "tags": [
+    "career growth",
+    "mentoring",
+    "backend engineering",
+    "engineering leadership"
+  ],
+  "article_markdown": "",
+  "linkedin_post": "The quietest senior engineers I've worked around were often the most influential. Not because they were reserved—but because they'd figured out that mentoring is a force multiplier individual output never matches.\n\nAt some point in a backend career, writing more Go, shipping more services, or closing more tickets stops being the signal that matters. What starts mattering is whether the engineers around you are getting sharper. Can someone on your team now make a call you used to be the only person trusted to make? That's leverage.\n\nMentoring in backend engineering isn't a formal program. It's mostly invisible work:\n— Reviewing a design doc and asking the question that reframes the whole approach\n— Being honest when a technical decision is locally clever but systemically costly\n— Letting someone own a problem fully, even when you could resolve it faster yourself\n— Naming the tradeoff explicitly instead of just announcing the answer\n\nThe shift from mid to senior often gets framed around technical depth. And depth matters—you need enough of it to earn the room. But the actual leap happens when you start treating your judgment as something to transfer, not just apply. When you're more interested in what someone learned from an incident than in fixing the incident yourself.\n\nDistributed systems and cloud infrastructure at scale will always create hard problems. What compounds over time isn't your personal ability to solve them—it's how many people on your team can hold that complexity without defaulting to whoever's been around longest.\n\nIf you're a senior backend or Go engineer right now: who on your team is better at something because of how you operate? That answer says more about your growth trajectory than your most recent architecture diagram.\n\nCurious what mentoring has actually looked like in the environments you've worked in—structured, informal, or somewhere in between.",
+  "social_post": "Senior backend engineers: the real leverage isn't writing more Go or shipping more services. It's how many people around you can now make calls you used to be the only one trusted to make. Mentoring is compounding interest. #BackendEngineering #CareerGrowth",
+  "created_at": "2026-11-28T02:33:38Z",
+  "type": "linkedin"
+}
